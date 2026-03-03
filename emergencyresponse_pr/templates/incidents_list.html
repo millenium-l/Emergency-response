@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}My Incidents - Emergency Response System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="fas fa-list"></i> My Emergency Incidents</h1>
+        <p class="text-muted">Manage and track your emergency reports</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'create_incident' %}" class="btn btn-danger btn-lg">
+            <i class="fas fa-exclamation-triangle"></i> Report New Emergency
+        </a>
+    </div>
+</div>
+
+{% if incidents %}
+    <div class="row">
+        {% for incident in incidents %}
+        <div class="col-md-6 mb-4">
+            <div class="card incident-card {{ incident.get_status_display|lower }}">
+                <div class="card-header priority-{{ incident.priority }}" style="color: white;">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="card-title mb-0">{{ incident.title }}</h5>
+                            <small>{{ incident.created_at|date:"d M Y, H:i" }}</small>
+                        </div>
+                        <span class="badge status-{{ incident.status }}">{{ incident.get_status_display }}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ incident.description|truncatewords:20 }}</p>
+                    
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Priority:</strong> 
+                            <span class="badge priority-{{ incident.priority }}" style="color:white;">{{ incident.get_priority_display }}</span>
+                        </div>
+                        <div class="col-6">
+                            <strong>Department:</strong>
+                            {% if incident.department %}
+                                <br><small>{{ incident.department.get_name_display }}</small>
+                            {% else %}
+                                <br><small class="text-muted">Not specified</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <strong>Location:</strong>
+                            <p class="small text-muted mb-0">{{ incident.location_description }}</p>
+                        </div>
+                    </div>
+
+                    {% if incident.assigned_responder %}
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <strong>Assigned To:</strong>
+                            <p class="small mb-0">{{ incident.assigned_responder.user.get_full_name }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-light">
+                    <a href="{% url 'incident_detail' incident.id %}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-eye"></i> View Details
+                    </a>
+                    {% if incident.status != 'resolved' %}
+                        <a href="#" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle"></i> 
+        <strong>No incidents reported yet.</strong>
+        <a href="{% url 'create_incident' %}">Report an emergency</a> if you need help.
+    </div>
+{% endif %}
+{% endblock %}
