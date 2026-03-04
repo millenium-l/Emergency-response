@@ -1,3 +1,4 @@
+{% load static %} {% load django_bootstrap5 %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -232,6 +233,10 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'responders_map' %}"><i class="fas fa-map"></i> Responders</a>
                         </li>
+
+                        <li>
+                            <a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i> Profile</a>                            
+                        </li>
                         <li class="nav-item">
                             <!-- Using GET since view now permits logout_on_get=True -->
                             <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -264,6 +269,9 @@
             {% block content %}{% endblock %}
         </div>
     </main>
+
+     
+
 
     <!-- Footer -->
     <footer class="footer">

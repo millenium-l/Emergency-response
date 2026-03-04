@@ -39,6 +39,18 @@ CHUDA_AREA_CHOICES = [
 ]
 
 
+class Profile(models.Model):
+    """Extended user profile for emergency users and responders"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    full_name = models.CharField(max_length=255)
+    phone_number = models.CharField(max_length=20)
+    location = models.CharField(max_length=100, choices=CHUDA_AREA_CHOICES, default=CHUDA_AREA_CHOICES[0][0])
+    emergency_contact_name = models.CharField(max_length=255)
+    emergency_contact_phone = models.CharField(max_length=20)
+    
+    def __str__(self):
+        return self.full_name
+
 class Department(models.Model):
     """Emergency Response Departments"""
     name = models.CharField(max_length=100, choices=DEPARTMENT_CHOICES)

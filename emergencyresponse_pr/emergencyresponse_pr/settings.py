@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'emergencyresponse_app',
+    'accounts',
     'django_bootstrap5',
 ]
 

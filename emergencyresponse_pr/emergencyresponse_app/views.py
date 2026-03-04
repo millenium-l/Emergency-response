@@ -2,22 +2,17 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db.models import Q
 import json
 from datetime import datetime
 
+
 from .models import (
-    Department, Responder, EmergencyUser, Incident, 
+    Department, Profile, Responder, EmergencyUser, Incident, 
     IncidentResponse, PRIORITY_CHOICES, CHUDA_AREA_CHOICES
 )
 
-
-def logout_view(request):
-    """Log the user out and redirect home (allows GET requests)."""
-    logout(request)
-    return redirect('home')
 
 
 def home(request):
@@ -33,69 +28,16 @@ def home(request):
         'mombasa_lng': 39.6682,
         'map_zoom': 14,
     }
-    return render(request, 'home.html', context)
+    return render(request, 'templates/home.html', context)
+
+def profile(request):
+    profile = request.user.profile
+    context = {
+        'title': profile,
+        'profile': profile, }
+    return render(request, 'templates/profile.html', context)
 
 
-def register(request):
-    """User registration"""
-    if request.user.is_authenticated:
-        return redirect('home')
-    
-    if request.method == 'POST':
-        full_name = request.POST.get('full_name')
-        phone_number = request.POST.get('phone_number')
-        location = request.POST.get('location')
-        emergency_contact_name = request.POST.get('emergency_contact_name')
-        emergency_contact_phone = request.POST.get('emergency_contact_phone')
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        
-        if User.objects.filter(username=username).exists():
-            context = {'error': 'Username already exists', 'locations': CHUDA_AREA_CHOICES}
-            return render(request, 'register.html', context)
-        
-        # Create user
-        user = User.objects.create_user(
-            username=username,
-            password=password,
-            first_name=full_name.split()[0] if full_name else '',
-            last_name=' '.join(full_name.split()[1:]) if len(full_name.split()) > 1 else '',
-        )
-        
-        # Create emergency user profile
-        EmergencyUser.objects.create(
-            user=user,
-            phone_number=phone_number,
-            location=location,
-            emergency_contact_name=emergency_contact_name,
-            emergency_contact_phone=emergency_contact_phone,
-        )
-        
-        # Login user
-        login(request, user)
-        return redirect('home')
-    
-    return render(request, 'register.html', {'locations': CHUDA_AREA_CHOICES})
-
-
-def login_view(request):
-    """User login"""
-    if request.user.is_authenticated:
-        return redirect('home')
-    
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        
-        if user is not None:
-            login(request, user)
-            return redirect('home')
-        else:
-            context = {'error': 'Invalid credentials'}
-            return render(request, 'login.html', context)
-    
-    return render(request, 'login.html')
 
 
 @login_required
@@ -131,7 +73,7 @@ def create_incident(request):
             department=department,
         )
         
-        return redirect('incident_detail', incident_id=incident.id)
+        return redirect('templates/incident_detail', incident_id=incident.id)
     
     departments = Department.objects.all()
     context = {
@@ -140,7 +82,7 @@ def create_incident(request):
         'mombasa_lat': -4.0435,
         'mombasa_lng': 39.6682,
     }
-    return render(request, 'create_incident.html', context)
+    return render(request, 'templates/create_incident.html', context)
 
 
 @login_required
@@ -154,7 +96,7 @@ def incident_detail(request, incident_id):
         'responses': responses,
         'can_edit': incident.user.user == request.user,
     }
-    return render(request, 'incident_detail.html', context)
+    return render(request, 'templates/incident_detail.html', context)
 
 
 @login_required
@@ -167,7 +109,7 @@ def incidents_list(request):
         incidents = []
     
     context = {'incidents': incidents}
-    return render(request, 'incidents_list.html', context)
+    return render(request, 'templates/incidents_list.html', context)
 
 
 @login_required
@@ -182,7 +124,7 @@ def responders_map(request):
         'mombasa_lat': -4.0435,
         'mombasa_lng': 39.6682,
     }
-    return render(request, 'responders_map.html', context)
+    return render(request, 'templates/responders_map.html', context)
 
 
 # API endpoints for AJAX requests

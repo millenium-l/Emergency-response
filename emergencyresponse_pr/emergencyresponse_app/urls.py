@@ -5,12 +5,11 @@ from . import views
 urlpatterns = [
     # Main pages
     path('', views.home, name='home'),
-    path('register/', views.register, name='register'),
-    path('login/', views.login_view, name='login'),
+    path('profile/', views.profile, name='profile'),
+    
     # Django 6+: use LogoutView instead of deprecated logout_view
     # allow GET requests so simple links work (LogoutView defaults to POST only)
     # custom view handles GET/POST
-    path('logout/', views.logout_view, name='logout'),
     
     # Incident management
     path('incident/create/', views.create_incident, name='create_incident'),

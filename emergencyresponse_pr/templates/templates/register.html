@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Emergency Response System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card mt-3">
+            <div class="card-header bg-danger text-white text-center">
+    <h4 class="mb-0 fw-bold">
+         Emergency Response Registration
+    </h4>
+</div>
+            <div class="card-body">
+                {% if error %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
+
+                <div class="div2">
+            <div class="button">
+
+{% if form.errors %}
+    <div class="alert alert-danger">
+        {{ form.errors }}
+    </div>
+{% endif %}
+<form method="post" class="form">
+    {% csrf_token %}
+
+    <h5 class="text-danger fw-bold mb-3">
+        🚨 Personal Information
+    </h5>
+
+    <div class="mb-3">
+        <input type="text" name="full_name" maxlength="255"
+               placeholder="Full Name"
+               class="form-control form-control-lg border-danger"
+               required>
+    </div>
+
+    <div class="mb-3">
+        <input type="text" name="phone_number" maxlength="20"
+               placeholder="Phone Number"
+               class="form-control form-control-lg border-danger"
+               required>
+    </div>
+
+    <div class="mb-4">
+        <select name="location"
+                class="form-select form-select-lg border-danger"
+                required>
+            <option value="">Select Your Area</option>
+            <option value="north">North Tudor</option>
+            <option value="south">South Tudor</option>
+            <option value="east">East Tudor</option>
+            <option value="west">West Tudor</option>
+        </select>
+    </div>
+
+    <h5 class="text-danger fw-bold mb-3">
+        🆘 Emergency Contact
+    </h5>
+
+    <div class="mb-3">
+        <input type="text" name="emergency_contact_name" maxlength="255"
+               placeholder="Emergency Contact Name"
+               class="form-control form-control-lg border-warning"
+               required>
+    </div>
+
+    <div class="mb-4">
+        <input type="text" name="emergency_contact_phone" maxlength="20"
+               placeholder="Emergency Contact Phone"
+               class="form-control form-control-lg border-warning"
+               required>
+    </div>
+
+    <h5 class="text-danger fw-bold mb-3">
+        🔐 Account Credentials
+    </h5>
+
+    <div class="mb-3">
+        <input type="text" name="username" maxlength="150"
+               placeholder="Username"
+               class="form-control form-control-lg"
+               required>
+    </div>
+
+    <div class="mb-3">
+        <input type="email" name="email"
+               placeholder="Email"
+               class="form-control form-control-lg"
+               required>
+    </div>
+
+    <div class="mb-3">
+        <input type="password" name="password1"
+               placeholder="Password"
+               class="form-control form-control-lg"
+               required>
+    </div>
+
+    <div class="mb-4">
+        <input type="password" name="password2"
+               placeholder="Confirm Password"
+               class="form-control form-control-lg"
+               required>
+    </div>
+
+    <button type="submit"
+            class="btn btn-danger btn-lg w-100 fw-bold">
+        🚨 CREATE ACCOUNT
+    </button>
+</form>
+            </div>
+
+                <hr>
+
+                <p class="text-center">
+                    Already have an account? 
+                    <a href="{% url 'login' %}">Login here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

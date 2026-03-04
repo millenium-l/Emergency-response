@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Department, Responder, EmergencyUser, Incident, IncidentResponse
+from .models import Department, Responder, EmergencyUser, Incident, IncidentResponse, Profile
 
 
 @admin.register(Department)
@@ -95,3 +95,5 @@ class IncidentResponseAdmin(admin.ModelAdmin):
     def get_responder_name(self, obj):
         return obj.responder.user.get_full_name() if obj.responder else 'N/A'
     get_responder_name.short_description = 'Responder'
+
+admin.site.register(Profile)
