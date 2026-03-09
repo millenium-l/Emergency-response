@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% block title %}Incident Details - Emergency Response{% endblock %}
+
+{% block content %}
+<div class="row">
+  <!-- Left Column: Incident Details & Responses -->
+  <div class="col-md-8">
+    <div class="card mb-3">
+      <div class="card-header priority-{{ incident.priority }}" style="color: black;">
+        <div class="d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">{{ incident.title }}</h4>
+          <span class="badge status-{{ incident.status }}">{{ incident.get_status_display }}</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <!-- Description & Priority -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <h6><strong><i class="fas fa-info-circle"></i> Description</strong></h6>
+            <p>{{ incident.description }}</p>
+          </div>
+          <div class="col-md-6">
+            <h6><strong><i class="fas fa-exclamation"></i> Priority</strong></h6>
+            <p>
+              <span class="badge priority-{{ incident.priority }}" style="color: black;">
+                {{ incident.get_priority_display }}
+              </span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Department & Assigned Responder -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <h6><strong><i class="fas fa-hospital"></i> Department</strong></h6>
+            <p>
+              {% if incident.department %}
+                {{ incident.department.get_name_display }}
+              {% else %}
+                <span class="text-muted">Not assigned</span>
+              {% endif %}
+            </p>
+          </div>
+          <div class="col-md-6">
+            <h6><strong><i class="fas fa-user-md"></i> Assigned Responder</strong></h6>
+            <p>
+              {% if incident.assigned_responder %}
+                {{ incident.assigned_responder.user.get_full_name }}<br>
+                <small class="text-muted">{{ incident.assigned_responder.department.get_name_display }}</small>
+              {% else %}
+                <span class="text-muted">Not assigned yet</span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+
+        <!-- Reported & Reported By -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <h6><strong><i class="fas fa-clock"></i> Reported</strong></h6>
+            <p>{{ incident.created_at|date:"d M Y, H:i" }}</p>
+          </div>
+          <div class="col-md-6">
+            <h6><strong><i class="fas fa-user"></i> Reported By</strong></h6>
+            <p>{{ incident.user.user.get_full_name }}</p>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div class="row mb-4">
+          <div class="col-md-12">
+            <h6><strong><i class="fas fa-map-marker-alt"></i> Location</strong></h6>
+            <p>{{ incident.location_description }}</p>
+            <p class="text-muted"><small>Coordinates: {{ incident.latitude }}, {{ incident.longitude }}</small></p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        {% if user.is_staff or incident.user == request.user.profile %}
+        <hr />
+        <hr />
+<div class="row mb-2">
+  <div class="col-md-12">
+
+    <!-- Staff/Admin can resolve -->
+    {% if user.is_staff and incident.status != "resolved" %}
+      <a href="{% url 'resolve_incident' incident.id %}" class="btn btn-success">
+        <i class="fas fa-check"></i> Mark as Resolved
+      </a>
+    {% endif %}
+
+    <!-- Reporter can reopen only if resolved -->
+    {% if incident.status == "resolved" and incident.user == request.user.profile %}
+      <a href="{% url 'reopen_incident' incident.id %}" class="btn btn-warning">
+        ⚠ Reopen Incident
+      </a>
+    {% endif %}
+
+  </div>
+</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Response Updates -->
+    <div class="card">
+      <div class="card-header bg-info text-white">
+        <h5 class="mb-0"><i class="fas fa-comments"></i> Response Updates ({{ responses.count }})</h5>
+      </div>
+      <div class="card-body" style="max-height:400px; overflow-y:auto;">
+        {% if responses %}
+          {% for response in responses %}
+            <div class="card mb-2">
+              <div class="card-body p-2">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <strong>{{ response.responder.user.get_full_name }}</strong><br>
+                    <small>{{ response.responder.department.get_name_display }}</small>
+                  </div>
+                  <span class="badge status-{{ response.status }}">{{ response.get_status_display }}</span>
+                </div>
+                <p class="mb-1">{{ response.notes }}</p>
+                <small class="text-muted">Responded at: {{ response.response_time|date:"H:i, d M Y" }}</small>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No responses yet.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Map & Contact -->
+  <div class="col-md-4">
+    <!-- Incident Map -->
+    <div class="card mb-3">
+      <div class="card-header bg-danger text-white"><h5 class="mb-0"><i class="fas fa-map"></i> Incident Location</h5></div>
+      <div class="card-body p-0">
+        <div id="incidentMap" style="height:350px;"></div>
+      </div>
+      <div class="card-footer">
+        <strong>Status:</strong> <span class="badge status-{{ incident.status }}">{{ incident.get_status_display }}</span>
+      </div>
+    </div>
+
+    <!-- Caller Info -->
+    <div class="card mb-3">
+      <div class="card-header bg-secondary text-white"><h5 class="mb-0"><i class="fas fa-address-card"></i> Caller Information</h5></div>
+      <div class="card-body">
+        <p><strong>Name:</strong> {{ incident.user.user.get_full_name }}</p>
+        <p><strong>Phone:</strong> <a href="tel:{{ incident.user.phone_number }}">{{ incident.user.phone_number }}</a></p>
+        <p><strong>Emergency Contact:</strong> {{ incident.user.emergency_contact_name }}</p>
+        <p><strong>Contact Phone:</strong> <a href="tel:{{ incident.user.emergency_contact_phone }}">{{ incident.user.emergency_contact_phone }}</a></p>
+      </div>
+    </div>
+
+    <!-- Department Info -->
+    {% if incident.department %}
+    <div class="card">
+      <div class="card-header"><h5 class="mb-0"><i class="fas fa-hospital"></i> {{ incident.department.get_name_display }}</h5></div>
+      <div class="card-body">
+        <p>{{ incident.department.description }}</p>
+        <p><strong>Phone:</strong> <a href="tel:{{ incident.department.phone_number }}">{{ incident.department.phone_number }}</a></p>
+        <p><strong>Location:</strong> {{ incident.department.location_name }}</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const INCIDENT_LAT = parseFloat("{{ incident.latitude|default:'0' }}");
+  const INCIDENT_LNG = parseFloat("{{ incident.longitude|default:'0' }}");
+
+  // Initialize map
+  const map = L.map('incidentMap').setView([INCIDENT_LAT, INCIDENT_LNG], 15);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Incident marker
+  const incidentMarker = L.marker([INCIDENT_LAT, INCIDENT_LNG]).addTo(map)
+    .bindPopup(`<strong>{{ incident.title|escapejs }}</strong><br>{{ incident.location_description|escapejs }}`)
+    .openPopup();
+
+  // Load responders
+  fetch("{% url 'api_responders' %}")
+    .then(response => response.json())
+    .then(responders => {
+      responders.forEach(responder => {
+        if (responder.latitude && responder.longitude) {
+          L.marker([responder.latitude, responder.longitude], {
+            icon: L.icon({
+              iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+              iconSize: [25,41],
+              iconAnchor: [12,41],
+              popupAnchor: [1,-34],
+              shadowSize: [41,41]
+            })
+          }).addTo(map)
+            .bindPopup(`<strong>${responder.user__first_name} ${responder.user__last_name}</strong><br>${responder.department__name}`);
+        }
+      });
+    });
+});
+</script>
+{% endblock %}

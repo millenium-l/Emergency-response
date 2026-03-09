@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+
+{% block title %}Report Emergency{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <div class="row">
+
+    <!-- LEFT: FORM -->
+    <div class="col-md-6">
+
+      <div class="card shadow">
+        <div class="card-header bg-danger text-white">
+          <h4>
+            <i class="fas fa-exclamation-triangle"></i>
+            Report {{ department|title }} Emergency
+          </h4>
+        </div>
+
+        <div class="card-body">
+
+          <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label class="form-label">Title</label>
+              {{ form.title }}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              {{ form.description }}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Location Area</label>
+              {{ form.location_name }}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Location Description</label>
+              {{ form.location_description }}
+            </div>
+
+            <!-- Hidden coordinate fields -->
+            {{ form.latitude }}
+            {{ form.longitude }}
+
+            <div class="alert alert-light small">
+              Latitude: <strong id="lat-value">-</strong><br>
+              Longitude: <strong id="lng-value">-</strong>
+            </div>
+
+            <!-- GPS BUTTON -->
+            <button type="button" class="btn btn-info w-100 mb-3" id="useLocation">
+              <i class="fas fa-location-crosshairs"></i>
+              Use My Current Location
+            </button>
+
+            <button class="btn btn-danger w-100 btn-lg">
+              <i class="fas fa-paper-plane"></i>
+              Submit Emergency
+            </button>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- RIGHT: MAP -->
+    <div class="col-md-6">
+
+      <div class="card shadow">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fas fa-map"></i> Select Location
+          </h5>
+        </div>
+
+        <div class="card-body p-0">
+          <div id="map" style="height:500px;"></div>
+        </div>
+
+      </div>
+      <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> Instructions</h5>
+            </div>
+            <div class="card-body">
+                <ul class="small">
+                    <li>Click on the map to select your emergency location</li>
+                    <li>Use the "Use My Current Location" button for automatic GPS location</li>
+                    <li>Drag the marker to adjust the location if needed</li>
+                    <li>Fill in emergency details and submit</li>
+                    <li>Responders will be notified immediately</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    
+
+  </div>
+
+</div>
+{% endblock %}
+
+
+
+{% block extra_js %}
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const defaultLat = -4.0435
+    const defaultLng = 39.6682
+
+    const map = L.map('map').setView([defaultLat, defaultLng], 13)
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+        maxZoom:19
+    }).addTo(map)
+
+    let marker = L.marker([defaultLat, defaultLng], {draggable:true}).addTo(map)
+
+    function updateCoords(lat,lng){
+        document.getElementById("id_latitude").value = lat
+        document.getElementById("id_longitude").value = lng
+
+        document.getElementById("lat-value").innerText = lat.toFixed(5)
+        document.getElementById("lng-value").innerText = lng.toFixed(5)
+    }
+
+    updateCoords(defaultLat, defaultLng)
+
+    // Drag marker
+    marker.on("dragend", function(){
+        const pos = marker.getLatLng()
+        updateCoords(pos.lat, pos.lng)
+    })
+
+    // Click map
+    map.on("click", function(e){
+        marker.setLatLng(e.latlng)
+        updateCoords(e.latlng.lat, e.latlng.lng)
+    })
+
+
+    // GPS BUTTON
+    document.getElementById("useLocation").addEventListener("click", function(){
+
+        if(!navigator.geolocation){
+            alert("Geolocation is not supported by your browser")
+            return
+        }
+
+        this.innerHTML = "Getting location..."
+
+        navigator.geolocation.getCurrentPosition(
+
+            function(position){
+
+                const lat = position.coords.latitude
+                const lng = position.coords.longitude
+
+                marker.setLatLng([lat,lng])
+                map.setView([lat,lng], 16)
+
+                updateCoords(lat,lng)
+
+                document.getElementById("useLocation").innerHTML =
+                    "Location captured ✓"
+
+            },
+
+            function(){
+                alert("Unable to retrieve your location. Please allow GPS permission.")
+                document.getElementById("useLocation").innerHTML =
+                    "Use My Current Location"
+            }
+
+        )
+
+    })
+
+})
+
+</script>
+{% endblock %}

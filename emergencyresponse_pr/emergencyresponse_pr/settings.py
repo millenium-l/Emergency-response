@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-+6wqzq-o4bp_wzc!0y092ln0@y&h!$f5iaj^fo3-f4rp_xb-@8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.100.4', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'emergencyresponse_app',
+    'accounts',
     'django_bootstrap5',
 ]
 
@@ -56,7 +57,7 @@ ROOT_URLCONF = 'emergencyresponse_pr.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -110,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 
@@ -121,3 +122,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Authentication
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+
+# Google Maps API Key - Add your API key here
+GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY_HERE'
+
+# Map defaults for Mombasa Chuda area
+DEFAULT_MAP_LAT = -4.0435
+DEFAULT_MAP_LNG = 39.6682
+DEFAULT_MAP_ZOOM = 14

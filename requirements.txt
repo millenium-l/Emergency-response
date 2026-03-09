@@ -1,5 +1,6 @@
-asgiref==3.11.1
 Django==6.0.2
-django-bootstrap5==26.2
-sqlparse==0.5.5
-tzdata==2025.3
+django-bootstrap5==24.1
+Pillow==10.0.0
+psycopg2-binary==2.9.9
+gunicorn==21.2.0
+python-decouple==3.8
