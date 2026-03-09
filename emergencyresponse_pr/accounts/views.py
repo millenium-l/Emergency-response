@@ -1,8 +1,4 @@
 from django.shortcuts import render
-<<<<<<< HEAD
-
-# Create your views here.
-=======
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django import forms
@@ -55,4 +51,4 @@ def login_view(request):
     
     return render(request, 'templates/login.html', {'form': form})
 
->>>>>>> Sketch.1
+
