@@ -1,351 +1,407 @@
 {% load static %} {% load django_bootstrap5 %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Emergency Response System - Mombasa Chuda{% endblock %}</title>
-    
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}Emergency Response System - Mombasa Chuda{% endblock %}
+    </title>
+
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
-    
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+    />
+
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
     <style>
-        :root {
-            --primary-color: #dc3545;
-            --emergency-red: #e74c3c;
-            --success-green: #27ae60;
-            --warning-yellow: #f39c12;
-            --info-blue: #3498db;
+      :root {
+        --primary-color: #dc3545;
+        --emergency-red: #e74c3c;
+        --success-green: #27ae60;
+        --warning-yellow: #f39c12;
+        --info-blue: #3498db;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f5f5;
+      }
+
+      .navbar {
+        background-color: var(--primary-color);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar-brand {
+        font-weight: bold;
+        font-size: 1.5rem;
+      }
+
+      .emergency-btn {
+        background-color: var(--emergency-red);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        border: none;
+        font-weight: bold;
+        animation: pulse 2s infinite;
+      }
+
+      .emergency-btn:hover {
+        background-color: #c0392b;
+        transform: scale(1.05);
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
         }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
+        50% {
+          box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
         }
-        
-        .navbar {
-            background-color: var(--primary-color);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+
+      .map-container {
+        height: 500px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin: 20px 0;
+      }
+
+      .map-full {
+        height: 600px;
+      }
+
+      .card {
+        border-left: 4px solid var(--primary-color);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
+      }
+
+      .incident-card.pending {
+        border-left-color: var(--warning-yellow);
+      }
+
+      .incident-card.in-progress {
+        border-left-color: var(--info-blue);
+      }
+
+      .incident-card.resolved {
+        border-left-color: var(--success-green);
+      }
+
+      .priority-high {
+        color: #dc3545;
+        font-weight: bold;
+      }
+
+      .priority-critical {
+        color: #8b0000;
+        font-weight: bold;
+        animation: blink 1s infinite;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0.7;
         }
-        
-        .navbar-brand {
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
-        
-        .emergency-btn {
-            background-color: var(--emergency-red);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            border: none;
-            font-weight: bold;
-            animation: pulse 2s infinite;
-        }
-        
-        .emergency-btn:hover {
-            background-color: #c0392b;
-            transform: scale(1.05);
-        }
-        
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
-            50% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
-        }
-        
-        .map-container {
-            height: 500px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin: 20px 0;
-        }
-        
-        .map-full {
-            height: 600px;
-        }
-        
-        .card {
-            border-left: 4px solid var(--primary-color);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 15px;
-        }
-        
-        .incident-card.pending {
-            border-left-color: var(--warning-yellow);
-        }
-        
-        .incident-card.in-progress {
-            border-left-color: var(--info-blue);
-        }
-        
-        .incident-card.resolved {
-            border-left-color: var(--success-green);
-        }
-        
-        .priority-high {
-            color: #dc3545;
-            font-weight: bold;
-        }
-        
-        .priority-critical {
-            color: #8b0000;
-            font-weight: bold;
-            animation: blink 1s infinite;
-        }
-        
-        @keyframes blink {
-            50% { opacity: 0.7; }
-        }
-        
-        .dept-badge {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            margin: 5px 0;
-        }
-        
-        .dept-fire {
-            background-color: #ff6b6b;
-            color: white;
-        }
-        
-        .dept-medical {
-            background-color: #51cf66;
-            color: white;
-        }
-        
-        .dept-police {
-            background-color: #748ffc;
-            color: white;
-        }
-        
-        .marker-cluster {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-clip: padding-box;
-            border-radius: 50%;
-            font-weight: bold;
-            color: white;
-        }
-        
-        .marker-cluster-small {
-            background-color: rgba(181, 226, 140, 0.6);
-            border: 2px solid rgba(110, 204, 57, 0.5);
-        }
-        
-        .marker-cluster-medium {
-            background-color: rgba(240, 194, 123, 0.6);
-            border: 2px solid rgba(241, 128, 23, 0.5);
-        }
-        
-        .marker-cluster-large {
-            background-color: rgba(253, 156, 115, 0.6);
-            border: 2px solid rgba(241, 61, 23, 0.5);
-        }
-        
-        .footer {
-            background-color: #343a40;
-            color: white;
-            padding: 20px 0;
-            margin-top: 40px;
-            text-align: center;
-        }
-        
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            font-weight: bold;
-        }
-        
-        .status-pending {
-            background-color: #ffc107;
-            color: black;
-        }
-        
-        .status-assigned {
-            background-color: #0dcaf0;
-            color: black;
-        }
-        
-        .status-in-progress {
-            background-color: #0d6efd;
-            color: white;
-        }
-        
-        .status-resolved {
-            background-color: #198754;
-            color: white;
-        }
-        
-        .leaflet-popup-content {
-            font-size: 0.9rem;
-        }
-        
-        .leaflet-popup-content p {
-            margin: 5px 0;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-label {
-            font-weight: 600;
-            color: #333;
-        }
+      }
+
+      .dept-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        margin: 5px 0;
+      }
+
+      .dept-fire {
+        background-color: #ff6b6b;
+        color: white;
+      }
+
+      .dept-medical {
+        background-color: #51cf66;
+        color: white;
+      }
+
+      .dept-police {
+        background-color: #748ffc;
+        color: white;
+      }
+
+      .marker-cluster {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-clip: padding-box;
+        border-radius: 50%;
+        font-weight: bold;
+        color: white;
+      }
+
+      .marker-cluster-small {
+        background-color: rgba(181, 226, 140, 0.6);
+        border: 2px solid rgba(110, 204, 57, 0.5);
+      }
+
+      .marker-cluster-medium {
+        background-color: rgba(240, 194, 123, 0.6);
+        border: 2px solid rgba(241, 128, 23, 0.5);
+      }
+
+      .marker-cluster-large {
+        background-color: rgba(253, 156, 115, 0.6);
+        border: 2px solid rgba(241, 61, 23, 0.5);
+      }
+
+      .footer {
+        background-color: #343a40;
+        color: white;
+        padding: 20px 0;
+        margin-top: 40px;
+        text-align: center;
+      }
+
+      .status-badge {
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        font-weight: bold;
+      }
+
+      .status-pending {
+        background-color: #ffc107;
+        color: black;
+      }
+
+      .status-assigned {
+        background-color: #0dcaf0;
+        color: black;
+      }
+
+      .status-in-progress {
+        background-color: #0d6efd;
+        color: white;
+      }
+
+      .status-resolved {
+        background-color: #198754;
+        color: white;
+      }
+
+      .leaflet-popup-content {
+        font-size: 0.9rem;
+      }
+
+      .leaflet-popup-content p {
+        margin: 5px 0;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        font-weight: 600;
+        color: #333;
+      }
     </style>
-    
+
     {% block extra_css %}{% endblock %}
-</head>
-<body>
+  </head>
+  <body>
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">
-                <i class="fas fa-siren"></i> Emergency Response System
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link emergency-btn" href="{% url 'create_incident' %}">
-                                <i class="fas fa-exclamation-triangle"></i> SOS
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'incidents_list' %}"><i class="fas fa-list"></i> My Incidents</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'responders_map' %}"><i class="fas fa-map"></i> Responders</a>
-                        </li>
+      <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">
+          <i class="fas fa-siren"></i> Emergency Response System
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'home' %}"
+                ><i class="fas fa-home"></i> Home</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link emergency-btn"
+                href="{% url 'create_incident' %}"
+              >
+                <i class="fas fa-exclamation-triangle"></i> SOS
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'incidents_list' %}"
+                ><i class="fas fa-list"></i> My Incidents</a
+              >
+            </li>
 
-                        <li>
-                            <a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i> Profile</a>                            
-                        </li>
-                        <li class="nav-item">
-                            <!-- Using GET since view now permits logout_on_get=True -->
-                            <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' %}"><i class="fas fa-user-plus"></i> Register</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
+            {% if user.is_staff %}
+            <li class="nav-item">
+            <a href="{% url 'all_incidents' %}" class="nav-link">
+              <i class="fas fa-shield-alt"></i> All Incidents
+            </a>
+            </li>
+            
+            {% endif %}
+
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'responders_map' %}"
+                ><i class="fas fa-map"></i> Responders</a
+              >
+            </li>
+
+            <li>
+              <a class="nav-link" href="{% url 'profile' %}"
+                ><i class="fas fa-user"></i> Profile</a
+              >
+            </li>
+            <li class="nav-item">
+              <!-- Using GET since view now permits logout_on_get=True -->
+              <a class="nav-link" href="{% url 'logout' %}"
+                ><i class="fas fa-sign-out-alt"></i> Logout</a
+              >
+            </li>
+            {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}"
+                ><i class="fas fa-sign-in-alt"></i> Login</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'register' %}"
+                ><i class="fas fa-user-plus"></i> Register</a
+              >
+            </li>
+            {% endif %}
+          </ul>
         </div>
+      </div>
     </nav>
 
     <!-- Main Content -->
     <main class="py-4">
-        <div class="container">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-            
-            {% block content %}{% endblock %}
+      <div class="container">
+        {% if messages %} {% for message in messages %}
+        <div
+          class="alert alert-{{ message.tags }} alert-dismissible fade show"
+          role="alert"
+        >
+          {{ message }}
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+          ></button>
         </div>
+        {% endfor %} {% endif %} {% block content %}{% endblock %}
+      </div>
     </main>
-
-     
-
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <p>&copy; 2026 Emergency Response System - Mombasa Chuda. All rights reserved.</p>
-            <p>For emergencies, call: <strong>911</strong> or use the SOS button above</p>
-        </div>
+      <div class="container">
+        <p>
+          &copy; 2026 Emergency Response System - Mombasa Chuda. All rights
+          reserved.
+        </p>
+        <p>
+          For emergencies, call: <strong>911</strong> or use the SOS button
+          above
+        </p>
+      </div>
     </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Leaflet JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-    
+
     <!-- Google Maps API -->
     <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&language=en"></script>
-    
+
     <!-- Custom JS -->
     <script>
-        // Helper function to initialize map
-        function initMap(elementId, lat, lng, zoom = 14) {
-            const map = L.map(elementId).setView([lat, lng], zoom);
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors',
-                maxZoom: 19,
-                zIndex: 1
-            }).addTo(map);
-            
-            return map;
+      // Helper function to initialize map
+      function initMap(elementId, lat, lng, zoom = 14) {
+        const map = L.map(elementId).setView([lat, lng], zoom);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "&copy; OpenStreetMap contributors",
+          maxZoom: 19,
+          zIndex: 1,
+        }).addTo(map);
+
+        return map;
+      }
+
+      // Add markers to map
+      function addMarker(map, lat, lng, title, popup, color = "red") {
+        const marker = L.circleMarker([lat, lng], {
+          radius: 8,
+          fillColor: color,
+          color: "#000",
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.8,
+          zIndex: 100,
+        }).addTo(map);
+
+        if (popup) {
+          marker.bindPopup(popup);
         }
-        
-        // Add markers to map
-        function addMarker(map, lat, lng, title, popup, color = 'red') {
-            const marker = L.circleMarker([lat, lng], {
-                radius: 8,
-                fillColor: color,
-                color: '#000',
-                weight: 2,
-                opacity: 1,
-                fillOpacity: 0.8,
-                zIndex: 100
-            }).addTo(map);
-            
-            if (popup) {
-                marker.bindPopup(popup);
-            }
-            return marker;
-        }
-        
-        // Get device location
-        function getDeviceLocation() {
-            return new Promise((resolve, reject) => {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        position => {
-                            resolve({
-                                lat: position.coords.latitude,
-                                lng: position.coords.longitude,
-                                accuracy: position.coords.accuracy
-                            });
-                        },
-                        error => {
-                            reject(error);
-                        }
-                    );
-                } else {
-                    reject(new Error('Geolocation not supported'));
-                }
-            });
-        }
+        return marker;
+      }
+
+      // Get device location
+      function getDeviceLocation() {
+        return new Promise((resolve, reject) => {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                resolve({
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude,
+                  accuracy: position.coords.accuracy,
+                });
+              },
+              (error) => {
+                reject(error);
+              },
+            );
+          } else {
+            reject(new Error("Geolocation not supported"));
+          }
+        });
+      }
     </script>
-    
+
     {% block extra_js %}{% endblock %}
-</body>
+  </body>
 </html>

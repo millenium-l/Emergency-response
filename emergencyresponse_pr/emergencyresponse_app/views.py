@@ -5,8 +5,10 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
 from django.db.models import Q
 import json
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils import timezone
 from datetime import datetime
-
+from .forms import *
 
 from .models import (
     Department, Profile, Responder, EmergencyUser, Incident, 
@@ -37,6 +39,117 @@ def profile(request):
         'profile': profile, }
     return render(request, 'templates/profile.html', context)
 
+def profile_edit(request):
+    profile = request.user.profile
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+        return redirect('profile')
+    else:
+        form = ProfileForm(instance=profile)
+    return render(request, 'templates/profile_edit.html', {'form': form})
+
+
+
+def report_incident(request, department):
+
+    department_obj = Department.objects.get(name=department)
+
+    if request.method == "POST":
+        form = IncidentReportForm(request.POST)
+
+        if form.is_valid():
+            incident = form.save(commit=False)
+            incident.user = request.user.profile
+            incident.department = department_obj
+
+            incident.title = f"{department_obj.get_name_display()} Emergency"
+
+            incident.priority = "high" 
+            incident.save()
+            return redirect("incidents_list")
+
+    else:
+        form = IncidentReportForm()
+
+    return render(request, "templates/report_incident.html", {
+        "department": department_obj,
+        "form": form
+    })
+
+
+def my_incidents(request):
+    profile = request.user.profile  # get the current logged-in user profile
+    incidents = Incident.objects.filter(user=profile).order_by('-created_at')
+
+    return render(request, "templates/incidents_list.html", {
+        "incidents": incidents
+    })
+
+
+@staff_member_required
+def all_incidents(request):
+    incidents = Incident.objects.select_related(
+        'user', 'department', 'assigned_responder'
+    ).order_by('-created_at')
+
+    return render(request, "templates/allincidents.html", {
+        "incidents": incidents
+    })
+
+
+
+@staff_member_required
+def resolve_incident(request, incident_id):
+
+    incident = get_object_or_404(Incident, id=incident_id)
+
+    incident.status = "resolved"
+    incident.resolved_at = timezone.now()
+
+    incident.save()
+
+    return redirect("incident_detail", incident_id=incident.id)
+
+
+@login_required
+def reopen_incident(request, incident_id):
+
+    incident = get_object_or_404(Incident, id=incident_id)
+
+    # Only the person who created the incident can reopen it
+    if incident.user == request.user.profile:
+
+        incident.status = "pending"
+        incident.resolved_at = None
+        incident.save()
+
+    return redirect("incident_detail", incident_id=incident.id)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -44,43 +157,25 @@ def profile(request):
 def create_incident(request):
     """Create new incident/SOS request"""
     if request.method == 'POST':
-        title = request.POST.get('title')
-        description = request.POST.get('description')
-        priority = request.POST.get('priority', 'high')
-        latitude = request.POST.get('latitude')
-        longitude = request.POST.get('longitude')
-        location_description = request.POST.get('location_description', '')
-        department_id = request.POST.get('department')
-        
-        try:
-            emergency_user = EmergencyUser.objects.get(user=request.user)
-        except EmergencyUser.DoesNotExist:
-            return render(request, 'create_incident.html', 
-                        {'error': 'Please complete your profile first'})
-        
-        department = None
-        if department_id:
-            department = get_object_or_404(Department, id=department_id)
-        
-        incident = Incident.objects.create(
-            user=emergency_user,
-            title=title,
-            description=description,
-            priority=priority,
-            latitude=float(latitude),
-            longitude=float(longitude),
-            location_description=location_description,
-            department=department,
-        )
-        
-        return redirect('templates/incident_detail', incident_id=incident.id)
+        form = IncidentReportForm(request.POST)
+       
+        if form.is_valid():
+            incident = form.save(commit=False)
+            incident.user = request.user.profile
+            incident.priority = "high"
+
+
+            incident.save()
+    
+            return redirect('incidents_list')   
+    else:
+        form = IncidentReportForm()     
     
     departments = Department.objects.all()
     context = {
         'departments': departments,
-        'priorities': PRIORITY_CHOICES,
-        'mombasa_lat': -4.0435,
-        'mombasa_lng': 39.6682,
+        'form': form,
+
     }
     return render(request, 'templates/create_incident.html', context)
 

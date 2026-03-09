@@ -33,41 +33,42 @@
 
 <!-- Emergency Categories -->
 <div class="container mt-5 mb-5">
-    <div class="row g-3 justify-content-center">
+<div class="row g-3 justify-content-center">
 
-        <div>
-            <button class="btn btn-danger btn-lg w-100">
-                <i class="fas fa-exclamation-triangle"></i> Sos
-        </div>
+  
 
-        <div class="col-6 col-md-3">
-            <button class="btn btn-outline-danger btn-lg w-100">
-                <i class="fas fa-fire"></i> Fire
-            </button>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <button class="btn btn-outline-success btn-lg w-100">
-                <i class="fas fa-ambulance"></i> Medical
-            </button>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <button class="btn btn-outline-primary btn-lg w-100">
-                <i class="fas fa-shield-alt"></i> Police
-            </button>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <button class="btn btn-secondary btn-lg w-100">
-                <i class="fas fa-bell fa-shake"></i> General Alert
-            </button>
-        </div>
-
-    </div>
+<div class="col-12">
+<a href="{% url 'create_incident' %}" class="btn btn-danger btn-lg w-100">
+<i class="fas fa-exclamation-triangle"></i> SOS
+</a>
 </div>
 
+<div class="col-6 col-md-3">
+<a href="{% url 'report_incident' 'fire' %}" class="btn btn-outline-danger btn-lg w-100">
+<i class="fas fa-fire"></i> Fire
+</a>
+</div>
 
+<div class="col-6 col-md-3">
+<a href="{% url 'report_incident' 'medical' %}" class="btn btn-outline-success btn-lg w-100">
+<i class="fas fa-ambulance"></i> Medical
+</a>
+</div>
+
+<div class="col-6 col-md-3">
+<a href="{% url 'report_incident' 'police' %}" class="btn btn-outline-primary btn-lg w-100">
+<i class="fas fa-shield-alt"></i> Police
+</a>
+</div>
+
+<div class="col-6 col-md-3">
+<a href="{% url 'create_incident' %}" class="btn btn-secondary btn-lg w-100">
+<i class="fas fa-bell"></i> General Alert
+</a>
+</div>
+
+</div>
+</div>
 
 
 

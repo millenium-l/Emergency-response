@@ -27,9 +27,9 @@ PRIORITY_CHOICES = [
 
 # Neighborhoods / areas within Mombasa Chuda to use in registration dropdown
 CHUDA_AREA_CHOICES = [
-    ('chuda', 'Chuda'),
-    ('chuda_centre', 'Chuda Centre'),
-    ('chuda_estate', 'Chuda Estate'),
+    ('Tudor', 'Tudor'),
+    ('Tudor_centre', 'Tudor Centre'),
+    ('Tudor_estate', 'Tudor Estate'),
     ('kizingo', 'Kizingo'),
     ('miritini', 'Miritini'),
     ('tononoka', 'Tononoka'),
@@ -56,9 +56,9 @@ class Department(models.Model):
     name = models.CharField(max_length=100, choices=DEPARTMENT_CHOICES)
     description = models.TextField(blank=True)
     phone_number = models.CharField(max_length=20)
-    latitude = models.FloatField(default=-4.0435)  # Mombasa Chuda area
-    longitude = models.FloatField(default=39.6682)
-    location_name = models.CharField(max_length=255, default='Mombasa Chuda')
+    latitude = models.FloatField(default=-4.0435, null=True, blank=True)  # Mombasa Chuda area
+    longitude = models.FloatField(default=39.6682, null=True, blank=True)  # Mombasa Chuda area
+    location_name = models.CharField(max_length=255, choices=CHUDA_AREA_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
@@ -100,19 +100,21 @@ class EmergencyUser(models.Model):
 
 class Incident(models.Model):
     """Emergency Incidents/Requests"""
-    user = models.ForeignKey(EmergencyUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE)  # ← use Profile
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(max_length=2000)
     priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='high')
     status = models.CharField(max_length=20, choices=INCIDENT_STATUS_CHOICES, default='pending')
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    location_name = models.CharField(max_length=255, blank=True, choices=CHUDA_AREA_CHOICES)
     location_description = models.CharField(max_length=255, blank=True)
     assigned_responder = models.ForeignKey(Responder, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     resolved_at = models.DateTimeField(null=True, blank=True)
+    reported_by = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank=True)
     
     class Meta:
         ordering = ['-created_at']

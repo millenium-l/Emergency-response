@@ -6,15 +6,20 @@ urlpatterns = [
     # Main pages
     path('', views.home, name='home'),
     path('profile/', views.profile, name='profile'),
+    path('profile/edit/', views.profile_edit, name='profile_edit'),
     
     # Django 6+: use LogoutView instead of deprecated logout_view
     # allow GET requests so simple links work (LogoutView defaults to POST only)
     # custom view handles GET/POST
     
     # Incident management
+    path('incident/report/<str:department>/', views.report_incident, name='report_incident'),
     path('incident/create/', views.create_incident, name='create_incident'),
     path('incident/<int:incident_id>/', views.incident_detail, name='incident_detail'),
-    path('incidents/', views.incidents_list, name='incidents_list'),
+    path('incidents/', views.my_incidents, name='incidents_list'),
+    path('all-incidents/', views.all_incidents, name='all_incidents'),
+    path("incident/<int:incident_id>/resolve/",views.resolve_incident,name="resolve_incident"),
+    path("incident/<int:incident_id>/reopen/",views.reopen_incident,name="reopen_incident"),
     
     # Responder views
     path('responders/', views.responders_map, name='responders_map'),

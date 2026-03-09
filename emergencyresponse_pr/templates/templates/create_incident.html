@@ -20,38 +20,27 @@
                 <form method="post" id="emergencyForm">
                     {% csrf_token %}
 
-                    <div class="form-group">
-                        <label for="title" class="form-label"><i class="fas fa-heading"></i> Emergency Type</label>
-                        <input type="text" class="form-control" id="title" name="title" 
-                               placeholder="e.g., House Fire, Medical Emergency, Accident" required>
-                    </div>
+                    
+
+                    
 
                     <div class="form-group">
                         <label for="description" class="form-label"><i class="fas fa-file-alt"></i> Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="4" 
-                                  placeholder="Provide detailed information about the emergency" required></textarea>
+                        {{form.description}}
                     </div>
 
-                    <div class="form-group">
-                        <label for="priority" class="form-label"><i class="fas fa-exclamation"></i> Priority Level</label>
-                        <select class="form-select" id="priority" name="priority">
-                            {% for value, label in priority_choices %}
-                                <option value="{{ value }}" {% if value == 'high' %}selected{% endif %}>
-                                    {{ label }}
-                                </option>
-                            {% endfor %}
-                        </select>
+                    <div>
+                        <label for="location_name" class="form-label"><i class="fas fa-map-marker-alt"></i> Location Name</label>
+                        {{ form.location_name }}
                     </div>
 
-                    <div class="form-group">
-                        <label for="department" class="form-label"><i class="fas fa-hospital"></i> Required Department</label>
-                        <select class="form-select" id="department" name="department">
-                            <option value="">-- Select Department (Optional) --</option>
-                            {% for dept in departments %}
-                                <option value="{{ dept.id }}">{{ dept.get_name_display }}</option>
-                            {% endfor %}
-                        </select>
+
+                    <div>
+                        <label for="location_description" class="form-label"><i class="fas fa-directions"></i> Location Description</label>
+                         {{ form.location_description }}
                     </div>
+                   
+
 
                     <div class="form-group">
                         <label class="form-label"><i class="fas fa-map-pin"></i> Location</label>
@@ -60,11 +49,6 @@
                         <input type="hidden" id="longitude" name="longitude" value="39.6682" required>
                     </div>
 
-                    <div class="form-group">
-                        <label for="location_description" class="form-label"><i class="fas fa-directions"></i> Location Description</label>
-                        <input type="text" class="form-control" id="location_description" name="location_description" 
-                               placeholder="e.g., Near main market, opposite hospital">
-                    </div>
 
                     <div class="form-group">
                         <button type="button" class="btn btn-info w-100 mb-2" id="useCurrentLocation">
