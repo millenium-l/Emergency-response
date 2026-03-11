@@ -1,3 +1,5 @@
+from urllib import request
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -14,15 +16,38 @@ from .models import (
     Department, Profile, Responder, EmergencyUser, Incident, 
     IncidentResponse, PRIORITY_CHOICES, CHUDA_AREA_CHOICES
 )
-
-
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     """Home page with emergency map and incident list"""
-    incidents = Incident.objects.filter(status__in=['pending', 'assigned', 'in_progress']).order_by('-created_at')[:10]
+
     departments = Department.objects.all()
-    
-    # Mombasa Chuda area coordinates
+
+    if request.user.is_authenticated:
+
+        # SUPERUSER → see everything
+        if request.user.is_superuser:
+            incidents = Incident.objects.filter(
+                status__in=['pending', 'assigned', 'in_progress']
+            ).order_by('-created_at')[:10]
+
+        # RESPONDER → see department incidents
+        elif hasattr(request.user, "responder"):
+            responder = request.user.responder
+
+            incidents = Incident.objects.filter(
+                department=responder.department,
+                status__in=['pending', 'assigned', 'in_progress']
+            ).order_by('-created_at')[:10]
+
+        else:
+            incidents = Incident.objects.none()
+
+    else:
+        incidents = Incident.objects.filter(
+            status__in=['pending', 'assigned', 'in_progress']
+        ).order_by('-created_at')[:10]
+
     context = {
         'incidents': incidents,
         'departments': departments,
@@ -30,8 +55,10 @@ def home(request):
         'mombasa_lng': 39.6682,
         'map_zoom': 14,
     }
+
     return render(request, 'templates/home.html', context)
 
+@login_required
 def profile(request):
     profile = request.user.profile
     context = {
@@ -39,6 +66,7 @@ def profile(request):
         'profile': profile, }
     return render(request, 'templates/profile.html', context)
 
+@login_required
 def profile_edit(request):
     profile = request.user.profile
 
@@ -91,14 +119,26 @@ def my_incidents(request):
 
 @staff_member_required
 def all_incidents(request):
-    incidents = Incident.objects.select_related(
-        'user', 'department', 'assigned_responder'
-    ).order_by('-created_at')
+
+    # SUPERUSER → see all incidents
+    if request.user.is_superuser:
+        incidents = Incident.objects.select_related(
+            'user', 'department', 'assigned_responder'
+        ).order_by('-created_at')
+
+    # RESPONDER → see only their department
+    else:
+        responder = request.user.responder
+
+        incidents = Incident.objects.select_related(
+            'user', 'department', 'assigned_responder'
+        ).filter(
+            department=responder.department
+        ).order_by('-created_at')
 
     return render(request, "templates/allincidents.html", {
         "incidents": incidents
     })
-
 
 
 @staff_member_required
@@ -127,30 +167,6 @@ def reopen_incident(request, incident_id):
         incident.save()
 
     return redirect("incident_detail", incident_id=incident.id)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 @login_required
@@ -205,6 +221,30 @@ def incidents_list(request):
     
     context = {'incidents': incidents}
     return render(request, 'templates/incidents_list.html', context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @login_required

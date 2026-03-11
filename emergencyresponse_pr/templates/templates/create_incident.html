@@ -19,11 +19,7 @@
             <div class="card-body">
                 <form method="post" id="emergencyForm">
                     {% csrf_token %}
-
                     
-
-                    
-
                     <div class="form-group">
                         <label for="description" class="form-label"><i class="fas fa-file-alt"></i> Description</label>
                         {{form.description}}

@@ -6,6 +6,7 @@ DEPARTMENT_CHOICES = [
     ('fire', 'Fire Department'),
     ('medical', 'Medical/Ambulance'),
     ('police', 'Police Department'),
+    ('general rescue', 'General Rescue Services'),
 ]
 
 # Incident status choices
