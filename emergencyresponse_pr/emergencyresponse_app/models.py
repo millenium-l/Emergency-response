@@ -4,9 +4,9 @@ from django.contrib.auth.models import User
 # Department types for emergency services
 DEPARTMENT_CHOICES = [
     ('fire', 'Fire Department'),
-    ('medical', 'Medical/Ambulance'),
+    ('medical', 'Medical Department'),
     ('police', 'Police Department'),
-    ('general rescue', 'General Rescue Services'),
+    ('general', 'General Department'),
 ]
 
 # Incident status choices

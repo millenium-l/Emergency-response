@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django import forms
 from django.shortcuts import render, redirect
-from .forms import CustomUserCreationForm, Tudor_AREA_CHOICES
+from .forms import CustomUserCreationForm
 from django.contrib.auth.models import *
 
 
@@ -25,7 +25,6 @@ def register(request):
     
     return render(request, 'templates/register.html', {
     'form': form,
-    'locations': Tudor_AREA_CHOICES,
 })
 
 

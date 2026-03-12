@@ -116,7 +116,7 @@ def my_incidents(request):
         "incidents": incidents
     })
 
-
+#role based views for staff to see all incidents and manage them
 @staff_member_required
 def all_incidents(request):
 
