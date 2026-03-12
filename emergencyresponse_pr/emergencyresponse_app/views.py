@@ -169,31 +169,6 @@ def reopen_incident(request, incident_id):
     return redirect("incident_detail", incident_id=incident.id)
 
 
-@login_required
-def create_incident(request):
-    """Create new incident/SOS request"""
-    if request.method == 'POST':
-        form = IncidentReportForm(request.POST)
-       
-        if form.is_valid():
-            incident = form.save(commit=False)
-            incident.user = request.user.profile
-            incident.priority = "high"
-
-
-            incident.save()
-    
-            return redirect('incidents_list')   
-    else:
-        form = IncidentReportForm()     
-    
-    departments = Department.objects.all()
-    context = {
-        'departments': departments,
-        'form': form,
-
-    }
-    return render(request, 'templates/create_incident.html', context)
 
 
 @login_required

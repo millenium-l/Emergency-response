@@ -6,11 +6,11 @@
 <div class="row mb-4">
     <div class="col-md-8">
         <h1><i class="fas fa-map"></i> Emergency Response Dashboard</h1>
-        <p class="text-muted">Live incidents and emergency services in Mombasa Chuda area</p>
+        <p class="text-muted">Live incidents and emergency services in Mombasa Tudor area</p>
     </div>
     <div class="col-md-4 text-end">
         {% if user.is_authenticated %}
-            <a href="{% url 'create_incident' %}" class="btn btn-danger btn-lg">
+            <a href="#emergency-options" class="btn btn-danger btn-lg">
                 <i class="fas fa-exclamation-triangle"></i> Report Emergency
             </a>
         {% else %}
@@ -32,32 +32,32 @@
 </div>
 
 <!-- Emergency Categories -->
-<div class="container mt-5 mb-5">
+<div id="emergency-options" class="container mt-5 mb-5">
 <div class="row g-3 justify-content-center">
 
   
 
 <div class="col-12">
-<a href="{% url 'create_incident' %}" class="btn btn-danger btn-lg w-100">
+<a href="#emergency-options" class="btn btn-danger btn-lg w-100">
 <i class="fas fa-exclamation-triangle"></i> SOS
 </a>
 </div>
 
 <div class="col-6 col-md-3">
 <a href="{% url 'report_incident' 'fire' %}" class="btn btn-outline-danger btn-lg w-100">
-<i class="fas fa-fire"></i> Fire
-</a>
+<i class="fas fa-fire"></i> Fire Emergency
+</a> 
 </div>
 
 <div class="col-6 col-md-3">
 <a href="{% url 'report_incident' 'medical' %}" class="btn btn-outline-success btn-lg w-100">
-<i class="fas fa-ambulance"></i> Medical
+<i class="fas fa-ambulance"></i> Medical Emergency
 </a>
 </div>
 
 <div class="col-6 col-md-3">
 <a href="{% url 'report_incident' 'police' %}" class="btn btn-outline-primary btn-lg w-100">
-<i class="fas fa-shield-alt"></i> Police
+<i class="fas fa-shield-alt"></i> Police Emergency
 </a>
 </div>
 
