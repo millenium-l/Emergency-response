@@ -9,7 +9,7 @@
         <p class="text-muted">Manage and track your emergency reports</p>
     </div>
     <div class="col-md-4 text-end">
-        <a href="{% url 'create_incident' %}" class="btn btn-danger btn-lg">
+        <a href="{% url 'home' %}#emergency-options" class="btn btn-danger btn-lg">
             <i class="fas fa-exclamation-triangle"></i> Report New Emergency
         </a>
     </div>
@@ -19,8 +19,8 @@
     <div class="row">
         {% for incident in incidents %}
         <div class="col-md-6 mb-4">
-            <div class="card incident-card {{ incident.get_status_display|lower }}">
-                <div class="card-header priority-{{ incident.priority }}" style="color: black;">
+            <div class="card incident-card {{ incident.status }} " >
+                <div class="card-header priority-{{ incident.priority }}" style="color: white; background-color: rgb(113, 107, 107);">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <h5 class="card-title mb-0">{{ incident.title }}</h5>
@@ -30,12 +30,14 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <strong>Description:</strong>
                     <p class="card-text">{{ incident.description|truncatewords:20 }}</p>
-                    
+                        <a href="{% url 'incident_detail' incident.id %}">Read more</a>
+
                     <div class="row mb-3">
                         <div class="col-6">
                             <strong>Priority:</strong> 
-                            <span class="badge priority-{{ incident.priority }}" style="color:white;">{{ incident.get_priority_display }}</span>
+                            <span class="badge priority-{{ incident.priority }}" style="color:black;">{{ incident.get_priority_display }}</span>
                         </div>
                         <div class="col-6">
                             <strong>Department:</strong>
@@ -81,7 +83,7 @@
     <div class="alert alert-info" role="alert">
         <i class="fas fa-info-circle"></i> 
         <strong>No incidents reported yet.</strong>
-        <a href="{% url 'create_incident' %}">Report an emergency</a> if you need help.
+        <a href="{% url 'home' %}#emergency-options">Report an emergency</a> if you need help.
     </div>
 {% endif %}
 {% endblock %}

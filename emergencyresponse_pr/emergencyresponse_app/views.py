@@ -1,3 +1,5 @@
+from urllib import request
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -14,15 +16,38 @@ from .models import (
     Department, Profile, Responder, EmergencyUser, Incident, 
     IncidentResponse, PRIORITY_CHOICES, CHUDA_AREA_CHOICES
 )
-
-
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     """Home page with emergency map and incident list"""
-    incidents = Incident.objects.filter(status__in=['pending', 'assigned', 'in_progress']).order_by('-created_at')[:10]
+
     departments = Department.objects.all()
-    
-    # Mombasa Chuda area coordinates
+
+    if request.user.is_authenticated:
+
+        # SUPERUSER → see everything
+        if request.user.is_superuser:
+            incidents = Incident.objects.filter(
+                status__in=['pending', 'assigned', 'in_progress']
+            ).order_by('-created_at')[:10]
+
+        # RESPONDER → see department incidents
+        elif hasattr(request.user, "responder"):
+            responder = request.user.responder
+
+            incidents = Incident.objects.filter(
+                department=responder.department,
+                status__in=['pending', 'assigned', 'in_progress']
+            ).order_by('-created_at')[:10]
+
+        else:
+            incidents = Incident.objects.none()
+
+    else:
+        incidents = Incident.objects.filter(
+            status__in=['pending', 'assigned', 'in_progress']
+        ).order_by('-created_at')[:10]
+
     context = {
         'incidents': incidents,
         'departments': departments,
@@ -30,8 +55,10 @@ def home(request):
         'mombasa_lng': 39.6682,
         'map_zoom': 14,
     }
+
     return render(request, 'templates/home.html', context)
 
+@login_required
 def profile(request):
     profile = request.user.profile
     context = {
@@ -39,6 +66,7 @@ def profile(request):
         'profile': profile, }
     return render(request, 'templates/profile.html', context)
 
+@login_required
 def profile_edit(request):
     profile = request.user.profile
 
@@ -88,17 +116,29 @@ def my_incidents(request):
         "incidents": incidents
     })
 
-
+#role based views for staff to see all incidents and manage them
 @staff_member_required
 def all_incidents(request):
-    incidents = Incident.objects.select_related(
-        'user', 'department', 'assigned_responder'
-    ).order_by('-created_at')
+
+    # SUPERUSER → see all incidents
+    if request.user.is_superuser:
+        incidents = Incident.objects.select_related(
+            'user', 'department', 'assigned_responder'
+        ).order_by('-created_at')
+
+    # RESPONDER → see only their department
+    else:
+        responder = request.user.responder
+
+        incidents = Incident.objects.select_related(
+            'user', 'department', 'assigned_responder'
+        ).filter(
+            department=responder.department
+        ).order_by('-created_at')
 
     return render(request, "templates/allincidents.html", {
         "incidents": incidents
     })
-
 
 
 @staff_member_required
@@ -131,55 +171,6 @@ def reopen_incident(request, incident_id):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@login_required
-def create_incident(request):
-    """Create new incident/SOS request"""
-    if request.method == 'POST':
-        form = IncidentReportForm(request.POST)
-       
-        if form.is_valid():
-            incident = form.save(commit=False)
-            incident.user = request.user.profile
-            incident.priority = "high"
-
-
-            incident.save()
-    
-            return redirect('incidents_list')   
-    else:
-        form = IncidentReportForm()     
-    
-    departments = Department.objects.all()
-    context = {
-        'departments': departments,
-        'form': form,
-
-    }
-    return render(request, 'templates/create_incident.html', context)
-
-
 @login_required
 def incident_detail(request, incident_id):
     """View incident details and map"""
@@ -207,6 +198,42 @@ def incidents_list(request):
     return render(request, 'templates/incidents_list.html', context)
 
 
+
+def start_incident(request, incident_id):
+    incident = get_object_or_404(Incident, id=incident_id)
+
+    incident.status = "in_progress"
+    incident.save()
+
+    return redirect("incident_detail", incident_id=incident_id)
+
+
+def cancel_incident(request, incident_id):
+    incident = get_object_or_404(Incident, id=incident_id)
+
+    incident.status = "cancelled"
+    incident.save()
+
+    return redirect("incident_detail", incident_id=incident_id)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @login_required
 def responders_map(request):
     """Map view of available responders"""
@@ -218,6 +245,7 @@ def responders_map(request):
         'departments': departments,
         'mombasa_lat': -4.0435,
         'mombasa_lng': 39.6682,
+        'map_zoom': 14,
     }
     return render(request, 'templates/responders_map.html', context)
 
