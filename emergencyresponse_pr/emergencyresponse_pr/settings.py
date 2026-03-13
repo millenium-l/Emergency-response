@@ -77,15 +77,10 @@ WSGI_APPLICATION = 'emergencyresponse_pr.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'django_lee',
-        'USER': 'lee',
-        'PASSWORD': 'lee',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',  # Use SQLite instead of PostgreSQL
+        'NAME': BASE_DIR / 'db.sqlite3',        # Default SQLite database file in project root
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
