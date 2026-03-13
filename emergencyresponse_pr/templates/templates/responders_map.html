@@ -4,55 +4,59 @@
 
 {% block content %}
 <div class="row mb-4">
-    <div class="col-md-12">
-        <h1><i class="fas fa-map-location-dot"></i> Emergency Responders Map</h1>
-        <p class="text-muted">Real-time location of available emergency responders in Mombasa Chuda</p>
+    <div class="col-12">
+        <h1 class="fw-bold">
+            <i class="fas fa-map-location-dot text-info me-2"></i> Emergency Responders Map
+        </h1>
+        <p class="text-muted mb-0">Real-time location of available emergency responders in Mombasa Chuda</p>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-9">
-        <div class="card">
-            <div class="card-header bg-info text-white">
-                <h5 class="mb-0"><i class="fas fa-map"></i> Live Responders</h5>
+<div class="row g-4">
+    <!-- Map -->
+    <div class="col-lg-9">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-info text-white py-2">
+                <h5 class="mb-0"><i class="fas fa-map me-2"></i> Live Responders</h5>
             </div>
             <div class="card-body p-0">
-                <div id="responderMap" class="map-container map-full"></div>
+                <div id="responderMap" class="map-container map-full" style="height:600px;"></div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card h-100">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0"><i class="fas fa-users"></i> Available Responders</h5>
+    <!-- Sidebar -->
+    <div class="col-lg-3 d-flex flex-column gap-4">
+        <!-- Available Responders -->
+        <div class="card shadow-sm border-0 flex-fill">
+            <div class="card-header bg-success text-white py-2">
+                <h5 class="mb-0"><i class="fas fa-users me-2"></i> Available Responders</h5>
             </div>
-            <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+            <div class="card-body p-2 overflow-auto" style="max-height:600px;">
                 {% if responders %}
                     {% for responder in responders %}
-                    <div class="card mb-3 responder-card" data-id="{{ responder.id }}"
-                         data-lat="{{ responder.latitude }}" data-lng="{{ responder.longitude }}">
+                    <div class="card mb-2 border responder-card shadow-sm">
                         <div class="card-body p-3">
-                            <h6 class="card-title">
+                            <h6 class="card-title mb-1 fw-semibold">
                                 {% if responder.department.get_name_display == 'Fire Department' %}
-                                    <i class="fas fa-fire" style="color: #ff6b6b;"></i>
+                                    <i class="fas fa-fire text-danger me-1"></i>
                                 {% elif responder.department.get_name_display == 'Medical/Ambulance' %}
-                                    <i class="fas fa-ambulance" style="color: #51cf66;"></i>
+                                    <i class="fas fa-ambulance text-success me-1"></i>
                                 {% else %}
-                                    <i class="fas fa-shield-alt" style="color: #748ffc;"></i>
+                                    <i class="fas fa-shield-alt text-primary me-1"></i>
                                 {% endif %}
-                                {{ responder.user__first_name }} {{ responder.user__last_name }}
+                                {{ responder.user.first_name }} {{ responder.user.last_name }}
                             </h6>
-                            <p class="card-text small text-muted mb-1">
-                                {{ responder.department__name|upper }}
+                            <p class="small text-muted mb-1">
+                                {{ responder.department.get_name_display|upper }}
                             </p>
                             {% if responder.latitude and responder.longitude %}
-                            <p class="card-text small">
-                                <i class="fas fa-location-dot"></i> 
+                            <p class="small mb-1">
+                                <i class="fas fa-location-dot text-secondary"></i>
                                 {{ responder.latitude|floatformat:3 }}, {{ responder.longitude|floatformat:3 }}
                             </p>
                             {% else %}
-                            <p class="card-text small text-muted">
+                            <p class="small text-muted mb-1">
                                 <i class="fas fa-location-dot"></i> Location unavailable
                             </p>
                             {% endif %}
@@ -61,40 +65,32 @@
                     </div>
                     {% endfor %}
                 {% else %}
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-circle"></i> No responders currently available
+                    <div class="alert alert-warning mb-0">
+                        <i class="fas fa-exclamation-circle me-1"></i>
+                        No responders currently available
                     </div>
                 {% endif %}
             </div>
         </div>
 
         <!-- Department Stats -->
-        <div class="card mt-3">
-            <div class="card-header bg-secondary text-white">
-                <h5 class="mb-0"><i class="fas fa-hospital"></i> Departments</h5>
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-secondary text-white py-2">
+                <h5 class="mb-0"><i class="fas fa-hospital me-2"></i> Departments</h5>
             </div>
-            <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+            <div class="card-body p-2 overflow-auto" style="max-height:300px;">
                 {% for dept in departments %}
-                <div class="card mb-2">
+                <div class="card mb-2 border-0 bg-light">
                     <div class="card-body p-2">
                         {% if dept.get_name_display == 'Fire Department' %}
-                            <span class="dept-badge dept-fire">
-                                <i class="fas fa-fire"></i> {{ dept.get_name_display }}
-                            </span>
+                            <span class="dept-badge dept-fire"><i class="fas fa-fire me-1"></i> {{ dept.get_name_display }}</span>
                         {% elif dept.get_name_display == 'Medical/Ambulance' %}
-                            <span class="dept-badge dept-medical">
-                                <i class="fas fa-ambulance"></i> {{ dept.get_name_display }}
-                            </span>
+                            <span class="dept-badge dept-medical"><i class="fas fa-ambulance me-1"></i> {{ dept.get_name_display }}</span>
                         {% else %}
-                            <span class="dept-badge dept-police">
-                                <i class="fas fa-shield-alt"></i> {{ dept.get_name_display }}
-                            </span>
+                            <span class="dept-badge dept-police"><i class="fas fa-shield-alt me-1"></i> {{ dept.get_name_display }}</span>
                         {% endif %}
-                        <p class="small mb-1 mt-2">
-                            <strong><i class="fas fa-phone"></i></strong>
-                            <a href="tel:{{ dept.phone_number }}">{{ dept.phone_number }}</a>
-                        </p>
-                        <p class="small mb-0 text-muted">{{ dept.location_name }}</p>
+                        <p class="small mb-1 mt-2"><strong><i class="fas fa-phone"></i></strong> <a href="tel:{{ dept.phone_number }}">{{ dept.phone_number }}</a></p>
+                        <p class="small text-muted mb-0">{{ dept.location_name }}</p>
                     </div>
                 </div>
                 {% endfor %}
@@ -105,25 +101,17 @@
 
 <!-- Legend -->
 <div class="row mt-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header bg-light">
-                <h5 class="mb-0"><i class="fas fa-key"></i> Map Legend</h5>
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-light py-2">
+                <h5 class="mb-0"><i class="fas fa-key me-2"></i> Map Legend</h5>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3">
-                        <p><i class="fas fa-map-marker" style="color: #ff6b6b;"></i> Fire Department</p>
-                    </div>
-                    <div class="col-md-3">
-                        <p><i class="fas fa-map-marker" style="color: #51cf66;"></i> Medical/Ambulance</p>
-                    </div>
-                    <div class="col-md-3">
-                        <p><i class="fas fa-map-marker" style="color: #748ffc;"></i> Police Department</p>
-                    </div>
-                    <div class="col-md-3">
-                        <p><i class="fas fa-map-marker" style="color: #0066cc;"></i> Responder Location</p>
-                    </div>
+                <div class="row text-center">
+                    <div class="col-md-3"><p class="mb-1"><i class="fas fa-map-marker text-danger"></i> Fire Department</p></div>
+                    <div class="col-md-3"><p class="mb-1"><i class="fas fa-map-marker text-success"></i> Medical/Ambulance</p></div>
+                    <div class="col-md-3"><p class="mb-1"><i class="fas fa-map-marker text-primary"></i> Police Department</p></div>
+                    <div class="col-md-3"><p class="mb-1"><i class="fas fa-map-marker text-info"></i> Responder Location</p></div>
                 </div>
             </div>
         </div>
@@ -133,117 +121,50 @@
 
 {% block extra_js %}
 <script>
-// helper that creates the map and loads department markers
-function initRespondersMap(defaultLat, defaultLng) {
-    const map = initMap('responderMap', defaultLat, defaultLng, 14);
+// Inject map defaults from Django
+const MOMBASA_LAT = '{{ mombasa_lat }}';
+const MOMBASA_LNG = '{{ mombasa_lng }}';
+const MAP_ZOOM = '{{ map_zoom }}';
+</script>
 
-    fetch('{% url "api_departments" %}')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize map
+    const map = initMap('responderMap', MOMBASA_LAT, MOMBASA_LNG, MAP_ZOOM);
+
+    // Fetch responders
+    fetch("{% url 'api_responders' %}")
+        .then(response => response.json())
+        .then(responders => {
+            responders.forEach(responder => {
+                const popup = `
+                    <div>
+                        <strong>${responder.user__first_name} ${responder.user__last_name}</strong><br>
+                        Department: ${responder.department__name}
+                    </div>
+                `;
+                addMarker(map, responder.latitude, responder.longitude, "Responder", popup, "#17a2b8");
+            });
+        });
+
+    // Fetch departments
+    fetch("{% url 'api_departments' %}")
         .then(response => response.json())
         .then(departments => {
             departments.forEach(dept => {
-                const name = dept.name.toLowerCase();
-                const deptColor =
-                    name === 'fire' ? '#ff6b6b' :
-                    name === 'medical' ? '#51cf66' :
-                    '#748ffc';
-
+                const deptIcon = dept.name.toLowerCase() === 'fire' ? '🚒' :
+                                 dept.name.toLowerCase() === 'medical' ? '🚑' :
+                                 dept.name.toLowerCase() === 'police' ? '🚓' : '📍';
                 const popup = `
                     <div>
-                        <strong>${dept.name.toUpperCase()}</strong><br>
+                        <strong>${deptIcon} ${dept.name.toUpperCase()}</strong><br>
                         <strong>${dept.location_name}</strong><br>
                         <i class="fas fa-phone"></i> ${dept.phone_number}
                     </div>
                 `;
-
-                addMarker(
-                    map,
-                    dept.latitude,
-                    dept.longitude,
-                    dept.location_name,
-                    popup,
-                    deptColor
-                );
+                addMarker(map, dept.latitude, dept.longitude, dept.location_name, popup, "#0066cc");
             });
-        })
-        .catch(error => {
-            console.error("Error loading departments:", error);
-        });
-
-    return map;
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const mombasaLat = JSON.parse(document.getElementById('mombasa-lat').textContent);
-    const mombasaLng = JSON.parse(document.getElementById('mombasa-lng').textContent);
-
-    // try to get user location before initializing map
-    getDeviceLocation()
-        .then(loc => {
-            const map = initRespondersMap(loc.lat, loc.lng);
-            window._responderMap = map;
-        })
-        .catch(err => {
-            console.log('geolocation denied or unavailable, falling back to default', err);
-            const map = initRespondersMap(mombasaLat, mombasaLng);
-            window._responderMap = map;
         });
 });
-    // Add responders to map
-    const responderMarkers = {};
-    
-    function loadResponders() {
-        fetch('{% url "api_responders" %}')
-            .then(response => response.json())
-            .then(responders => {
-                responders.forEach(responder => {
-                    if (responder.latitude && responder.longitude) {
-                        const markerId = responder.id;
-                        const popup = `
-                            <div>
-                                <strong>${responder.user__first_name} ${responder.user__last_name}</strong><br>
-                                ${responder.department__name.toUpperCase()}<br>
-                                <i class="fas fa-phone"></i> Contact available
-                            </div>
-                        `;
-                        
-                        const responderColor = 
-                            responder.department__name === 'fire' ? '#ff6b6b' :
-                            responder.department__name === 'medical' ? '#51cf66' :
-                            '#748ffc';
-                        
-                        if (responderMarkers[markerId]) {
-                            responderMarkers[markerId].setLatLng([responder.latitude, responder.longitude]);
-                        } else {
-                            responderMarkers[markerId] = addMarker(
-                                map, 
-                                responder.latitude, 
-                                responder.longitude, 
-                                `${responder.user__first_name} ${responder.user__last_name}`, 
-                                popup,
-                                responderColor
-                            );
-                        }
-                    }
-                });
-            });
-    }
-
-    // Load responders initially
-    loadResponders();
-
-    // Refresh responder locations every 10 seconds
-    setInterval(loadResponders, 10000);
-
-    // Add click event to responder cards
-    document.querySelectorAll('.responder-card').forEach(card => {
-        card.addEventListener('click', function() {
-            const lat = parseFloat(this.dataset.lat);
-            const lng = parseFloat(this.dataset.lng);
-            if (!isNaN(lat) && !isNaN(lng)) {
-                map.setView([lat, lng], 16);
-            }
-        });
-    });
-
 </script>
 {% endblock %}

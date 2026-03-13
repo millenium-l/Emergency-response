@@ -73,6 +73,7 @@
 
 
 <div class="row">
+    {% if user.is_staff %}
     <!-- Active Incidents -->
     <div class="col-md-6">
         <div class="card">
@@ -112,6 +113,9 @@
             </div>
         </div>
     </div>
+{% endif %}
+
+
 
     <!-- Emergency Departments -->
     <div class="col-md-6">

@@ -199,10 +199,22 @@ def incidents_list(request):
 
 
 
+def start_incident(request, incident_id):
+    incident = get_object_or_404(Incident, id=incident_id)
+
+    incident.status = "in_progress"
+    incident.save()
+
+    return redirect("incident_detail", incident_id=incident_id)
 
 
+def cancel_incident(request, incident_id):
+    incident = get_object_or_404(Incident, id=incident_id)
 
+    incident.status = "cancelled"
+    incident.save()
 
+    return redirect("incident_detail", incident_id=incident_id)
 
 
 
@@ -233,6 +245,7 @@ def responders_map(request):
         'departments': departments,
         'mombasa_lat': -4.0435,
         'mombasa_lng': 39.6682,
+        'map_zoom': 14,
     }
     return render(request, 'templates/responders_map.html', context)
 
