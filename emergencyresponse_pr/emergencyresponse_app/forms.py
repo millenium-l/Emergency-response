@@ -9,11 +9,9 @@ class ProfileForm(forms.ModelForm):
 class IncidentReportForm(forms.ModelForm):
     class Meta:
         model = Incident
-        fields = ['description', 'location_name', 'location_description', 'latitude', 'longitude']
+        fields = ['description', 'latitude', 'longitude']
         widgets = {
             'description': forms.Textarea(attrs={'class':'form-control'}),
-            'location_name': forms.Select(attrs={'class':'form-select'}),
-            'location_description': forms.TextInput(attrs={'class':'form-control'}),
             'latitude': forms.HiddenInput(),
             'longitude': forms.HiddenInput(),
         }

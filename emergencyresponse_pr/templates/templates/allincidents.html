@@ -24,8 +24,8 @@
 
         <div class="card-body">
             <strong>Description:</strong>
-          <p>{{ incident.description }}</p>
-
+          <p>{{ incident.description|truncatewords:30 }}</p>
+          <a href="{% url 'incident_detail' incident.id %}">Read more</a>
           <p>
             <strong>Reported by:</strong>
             {{ incident.user.user.username }}
@@ -43,7 +43,7 @@
 
           <p>
             <strong>Location:</strong>
-            {{ incident.location_description }}
+            {{ incident.location_description|truncatewords:20 }}
           </p>
 
           <a
