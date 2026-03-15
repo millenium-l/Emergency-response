@@ -18,7 +18,6 @@ urlpatterns = [
     path('incidents/', views.my_incidents, name='incidents_list'),
     path('all-incidents/', views.all_incidents, name='all_incidents'),
     path("incident/<int:incident_id>/resolve/",views.resolve_incident,name="resolve_incident"),
-    path("incident/<int:incident_id>/reopen/",views.reopen_incident,name="reopen_incident"),
 
     path("incident/<int:incident_id>/start/", views.start_incident, name="start_incident"),
     path("incident/<int:incident_id>/cancel/", views.cancel_incident, name="cancel_incident"),

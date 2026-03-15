@@ -70,7 +70,6 @@
         <div class="row mb-4">
           <div class="col-md-12">
             <h6><strong><i class="fas fa-map-marker-alt"></i> Location</strong></h6>
-            <p>{{ incident.location_description }}</p>
             <p class="text-muted"><small>Coordinates: {{ incident.latitude }}, {{ incident.longitude }}</small></p>
           </div>
         </div>
@@ -102,13 +101,6 @@
       </a>
     {% endif %}
 
-
-    <!-- Reporter can reopen only if resolved -->
-    {% if incident.status == "resolved" and incident.user == request.user.profile %}
-      <a href="{% url 'reopen_incident' incident.id %}" class="btn btn-warning">
-        ⚠ Reopen Incident
-      </a>
-    {% endif %}
 
   </div>
 </div>

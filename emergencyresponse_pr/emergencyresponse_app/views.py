@@ -154,20 +154,6 @@ def resolve_incident(request, incident_id):
     return redirect("incident_detail", incident_id=incident.id)
 
 
-@login_required
-def reopen_incident(request, incident_id):
-
-    incident = get_object_or_404(Incident, id=incident_id)
-
-    # Only the person who created the incident can reopen it
-    if incident.user == request.user.profile:
-
-        incident.status = "pending"
-        incident.resolved_at = None
-        incident.save()
-
-    return redirect("incident_detail", incident_id=incident.id)
-
 
 
 
