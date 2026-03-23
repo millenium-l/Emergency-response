@@ -10,9 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-import os
 from pathlib import Path
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,15 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-+6wqzq-o4bp_wzc!0y092ln0@y&h!$f5iaj^fo3-f4rp_xb-@8'
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-# SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = [
-    '192.168.100.4',
-    '127.0.0.1',
-    'localhost',
-    '.onrender.com',
-]
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+ALLOWED_HOSTS = ['192.168.100.4', '127.0.0.1', 'localhost']
+
 
 # Application definition
 
@@ -80,12 +75,10 @@ WSGI_APPLICATION = 'emergencyresponse_pr.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.environ.get('SQLITE_PATH', BASE_DIR / 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.sqlite3',  # Use SQLite instead of PostgreSQL
+        'NAME': BASE_DIR / 'db.sqlite3',        # Default SQLite database file in project root
     }
 }
 
