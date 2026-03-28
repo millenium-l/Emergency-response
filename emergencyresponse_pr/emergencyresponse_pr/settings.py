@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['192.168.100.4', '127.0.0.1', 'localhost']
 
+# Security settings
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
 
 # Application definition
 

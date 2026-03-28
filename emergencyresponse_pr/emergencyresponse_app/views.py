@@ -126,6 +126,24 @@ def all_incidents(request):
             'user', 'department', 'assigned_responder'
         ).order_by('-created_at')
 
+        # also get all departments for filtering
+        departments = Department.objects.all()  if request.user.is_superuser else None
+
+        department_id = request.GET.get('department')
+        if department_id:
+            incidents = incidents.filter(department_id=department_id)
+
+        # filter by search term
+        search = request.GET.get('search', '')
+        if search:
+            incidents = incidents.filter(
+                Q(title__icontains=search) |
+                Q(description__icontains=search) |
+                Q(user__user__first_name__icontains=search) |
+                Q(user__user__last_name__icontains=search) |
+                Q(department__name__icontains=search)
+            )
+
     # RESPONDER → see only their department
     else:
         responder = request.user.responder
@@ -137,7 +155,7 @@ def all_incidents(request):
         ).order_by('-created_at')
 
     return render(request, "templates/allincidents.html", {
-        "incidents": incidents
+        "incidents": incidents, "departments": departments
     })
 
 

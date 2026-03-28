@@ -10,28 +10,48 @@
     </div>
     <p class="text-muted mb-4">Administrator overview of all reported emergencies</p>
 
+<form method="GET">
     <div class="card border-0 shadow-sm rounded-3 mb-4 bg-light">
         <div class="card-body p-2">
             <div class="row g-2">
+
                 <div class="col-md-2">
-                    <select class="form-select form-select-sm border-0 bg-white">
-                        <option>Status: All</option>
+                    <select name="status" class="form-select form-select-sm border-0 bg-white">
+                        <option value="">Status: All</option>
                     </select>
                 </div>
+
                 <div class="col-md-2">
-                    <select class="form-select form-select-sm border-0 bg-white">
-                        <option>Department: All</option>
+                    <select name="department" onchange="this.form.submit()" class="form-select form-select-sm border-0 bg-white">
+                        <option value="">Department: {{department.name}} </option>
+                        {% for department in departments %}
+                            <option value="{{ department.id }}">
+                                {{ department.name }}
+                            </option>
+                        {% endfor %}
                     </select>
                 </div>
+
                 <div class="col-md-4">
                     <div class="input-group input-group-sm bg-white rounded border">
-                        <span class="input-group-text bg-transparent border-0"><i class="fas fa-search"></i></span>
-                        <input type="text" class="form-control border-0" placeholder="Search incidents...">
+                        <span class="input-group-text bg-transparent border-0">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text"
+                               class="form-control border-0"
+                               placeholder="Search incidents..."
+                               name="search"
+                               value="{{ request.GET.search }}">
+                        <button class="btn btn-outline-secondary border-0" type="submit">
+                            search
+                        </button>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
+</form>
 
     {% if incidents %}
     <div class="row g-4">
