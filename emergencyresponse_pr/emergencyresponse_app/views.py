@@ -120,38 +120,25 @@ def my_incidents(request):
 @staff_member_required
 def all_incidents(request):
 
-    # SUPERUSER → see all incidents
+    # 🔍 Get shared filters first
+    search = request.GET.get('search', '')
+    status = request.GET.get('status')  # optional if you want later
+
+    # SUPERUSER → full access
     if request.user.is_superuser:
         incidents = Incident.objects.select_related(
             'user', 'department', 'assigned_responder'
         ).order_by('-created_at')
 
-        # also get all departments for filtering
-        departments = Department.objects.all()  if request.user.is_superuser else None
+        departments = Department.objects.all()
 
+        # 🏢 Department filter
         department_id = request.GET.get('department')
         if department_id:
             incidents = incidents.filter(department_id=department_id)
 
-        # filter by status
-        status = request.GET.get('status')
-        if status:
-            incidents = incidents.filter(status=status)
 
-        # filter by search term
-        search = request.GET.get('search', '')
-        if search:
-            incidents = incidents.filter(
-                Q(title__icontains=search) |
-                Q(description__icontains=search) |
-                Q(user__user__first_name__icontains=search) |
-                Q(user__user__last_name__icontains=search) |
-                Q(department__name__icontains=search)
-            )
-
-            
-
-    # RESPONDER → see only their department
+    # STAFF → restricted access
     else:
         responder = request.user.responder
 
@@ -161,10 +148,26 @@ def all_incidents(request):
             department=responder.department
         ).order_by('-created_at')
 
-    return render(request, "templates/allincidents.html", {
-        "incidents": incidents, "departments": departments
-    })
+        departments = None
 
+        # 📊 Status filter (optional for superuser)
+        if status:
+            incidents = incidents.filter(status=status)
+
+    # 🔍 SEARCH (applies to BOTH)
+    if search:
+        incidents = incidents.filter(
+            Q(title__icontains=search) |
+            Q(description__icontains=search) |
+            Q(user__user__first_name__icontains=search) |
+            Q(user__user__last_name__icontains=search) |
+            Q(department__name__icontains=search)
+        )
+
+    return render(request, "templates/allincidents.html", {
+        "incidents": incidents,
+        "departments": departments
+    })
 
 @staff_member_required
 def resolve_incident(request, incident_id):

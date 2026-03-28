@@ -16,16 +16,12 @@
             <div class="row g-2">
 
                 
-                <select name="status"
-        onchange="this.form.submit()"
-        class="form-select form-select-sm border-0 bg-white">
-
-    <!-- ✅ All -->
+                <select name="status" onchange="this.form.submit()" class="form-select form-select-sm border-0 bg-white">
+<!-- ✅ All -->
     <option value=""
         {% if not request.GET.status %}
             selected
-        {% endif %}
-    >
+        {% endif %}>
         Status: All
     </option>
 
