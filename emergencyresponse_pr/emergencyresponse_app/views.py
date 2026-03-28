@@ -150,9 +150,10 @@ def all_incidents(request):
 
         departments = None
 
-        # 📊 Status filter (optional for superuser)
-        if status:
-            incidents = incidents.filter(status=status)
+        
+    # 📊 Status filter (optional for superuser)
+    if status:
+        incidents = incidents.filter(status=status)
 
     # 🔍 SEARCH (applies to BOTH)
     if search:

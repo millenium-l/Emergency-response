@@ -83,23 +83,23 @@
 
     <!-- Staff/Admin can resolve -->
 
-    {% if user.is_staff and incident.status == "reported" %}
-      <a href="{% url 'start_incident' incident.id %}" class="btn btn-primary">
-        <i class="fas fa-play"></i> Start Response
-      </a>
+     {% if user.is_staff %}
+    {% if incident.status == "pending" %}
+        <a href="{% url 'start_incident' incident.id %}" class="btn btn-primary">
+            <i class="fas fa-play"></i> Start Response
+        </a>
+        <a href="{% url 'cancel_incident' incident.id %}" class="btn btn-danger">
+            <i class="fas fa-times"></i> Cancel Incident
+        </a>
+    {% elif incident.status == "in_progress" %}
+        <a href="{% url 'cancel_incident' incident.id %}" class="btn btn-danger">
+            <i class="fas fa-times"></i> Cancel Incident
+        </a>
+        <a href="{% url 'resolve_incident' incident.id %}" class="btn btn-success">
+            <i class="fas fa-check"></i> Mark as Resolved
+        </a>
     {% endif %}
-
-     {% if user.is_staff and incident.status == "reported" or user.is_staff and incident.status == "in_progress" %}
-      <a href="{% url 'cancel_incident' incident.id %}" class="btn btn-danger">
-        <i class="fas fa-times"></i> Cancel Incident
-      </a>
-    {% endif %}
-
-    {% if user.is_staff and incident.status != "resolved" %}
-      <a href="{% url 'resolve_incident' incident.id %}" class="btn btn-success">
-        <i class="fas fa-check"></i> Mark as Resolved
-      </a>
-    {% endif %}
+{% endif %}
 
 
   </div>

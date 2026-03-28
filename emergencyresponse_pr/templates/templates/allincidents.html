@@ -10,68 +10,70 @@
     </div>
     <p class="text-muted mb-4">Administrator overview of all reported emergencies</p>
 
+<!-- FILTERS: department, status & search -->
 <form method="GET">
     <div class="card border-0 shadow-sm rounded-3 mb-4 bg-light">
         <div class="card-body p-2">
             <div class="row g-2">
 
-                
-                <select name="status" onchange="this.form.submit()" class="form-select form-select-sm border-0 bg-white">
-<!-- ✅ All -->
-    <option value=""
-        {% if not request.GET.status %}
-            selected
-        {% endif %}>
-        Status: All
-    </option>
-
-    <!-- ✅ Options -->
-    <option value="pending"
-        {% if request.GET.status == "pending" %}selected{% endif %}
-    >
-        Pending
-    </option>
-
-    <option value="in_progress"
-        {% if request.GET.status == "in_progress" %}selected{% endif %}
-    >
-        In Progress
-    </option>
-
-    <option value="resolved"
-        {% if request.GET.status == "resolved" %}selected{% endif %}
-    >
-        Resolved
-    </option>
-
-</select>
-
+                <!-- ✅ Status Filter -->
                 <div class="col-md-2">
-                   <select name="department"
-        onchange="this.form.submit()"
-        class="form-select form-select-sm border-0 bg-white">
+                    <select name="status" onchange="this.form.submit()" class="form-select form-select-sm border-0 bg-white">
+                        <!-- ✅ All -->
+                        <option value=""
+                            {% if not request.GET.status %}
+                                selected
+                            {% endif %}>
+                            Status: All
+                        </option>
 
-    <!-- ✅ Show ALL option -->
-    <option value=""
-        {% if not request.GET.department %}
-            selected
-        {% endif %}
-    >
-        Department: All
-    </option>
+                        <!-- ✅ Options -->
+                        <option value="pending"
+                            {% if request.GET.status == "pending" %}selected{% endif %}>
+                            Pending
+                        </option>
 
-    {% for department in departments %}
-        <option value="{{ department.id }}"
-            {% if request.GET.department == department.id|stringformat:"s" %}
-                selected
-            {% endif %}
-        >
-            {{ department.name }}
-        </option>
-    {% endfor %}
-</select>
+                        <option value="in_progress"
+                            {% if request.GET.status == "in_progress" %}selected{% endif %}>
+                            In Progress
+                        </option>
+
+                        <option value="resolved"
+                            {% if request.GET.status == "resolved" %}selected{% endif %}>
+                            Resolved
+                        </option>
+
+
+                    </select>
+                </div>
+                
+
+
+                <!-- ✅ Department Filter -->
+                <div class="col-md-2">
+                    <select name="department"onchange="this.form.submit()"class="form-select form-select-sm border-0 bg-white">
+
+                        <!--  Show ALL option -->
+                        <option value=""
+                            {% if not request.GET.department %}
+                                selected
+                            {% endif %}>
+                            Department: All
+                        </option>
+
+                        {% for department in departments %}
+                            <option value="{{ department.id }}"
+                                {% if request.GET.department == department.id|stringformat:"s" %}
+                                    selected
+                                {% endif %}>
+                                {{ department.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
                 </div>
 
+               
+                <!-- ✅ Search Bar -->
                 <div class="col-md-4">
                     <div class="input-group input-group-sm bg-white rounded border">
                         <span class="input-group-text bg-transparent border-0">
