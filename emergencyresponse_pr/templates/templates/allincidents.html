@@ -15,21 +15,65 @@
         <div class="card-body p-2">
             <div class="row g-2">
 
-                <div class="col-md-2">
-                    <select name="status" class="form-select form-select-sm border-0 bg-white">
-                        <option value="">Status: All</option>
-                    </select>
-                </div>
+                
+                <select name="status"
+        onchange="this.form.submit()"
+        class="form-select form-select-sm border-0 bg-white">
+
+    <!-- ✅ All -->
+    <option value=""
+        {% if not request.GET.status %}
+            selected
+        {% endif %}
+    >
+        Status: All
+    </option>
+
+    <!-- ✅ Options -->
+    <option value="pending"
+        {% if request.GET.status == "pending" %}selected{% endif %}
+    >
+        Pending
+    </option>
+
+    <option value="in_progress"
+        {% if request.GET.status == "in_progress" %}selected{% endif %}
+    >
+        In Progress
+    </option>
+
+    <option value="resolved"
+        {% if request.GET.status == "resolved" %}selected{% endif %}
+    >
+        Resolved
+    </option>
+
+</select>
 
                 <div class="col-md-2">
-                    <select name="department" onchange="this.form.submit()" class="form-select form-select-sm border-0 bg-white">
-                        <option value="">Department: {{department.name}} </option>
-                        {% for department in departments %}
-                            <option value="{{ department.id }}">
-                                {{ department.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
+                   <select name="department"
+        onchange="this.form.submit()"
+        class="form-select form-select-sm border-0 bg-white">
+
+    <!-- ✅ Show ALL option -->
+    <option value=""
+        {% if not request.GET.department %}
+            selected
+        {% endif %}
+    >
+        Department: All
+    </option>
+
+    {% for department in departments %}
+        <option value="{{ department.id }}"
+            {% if request.GET.department == department.id|stringformat:"s" %}
+                selected
+            {% endif %}
+        >
+            {{ department.name }}
+        </option>
+    {% endfor %}
+</select>
                 </div>
 
                 <div class="col-md-4">

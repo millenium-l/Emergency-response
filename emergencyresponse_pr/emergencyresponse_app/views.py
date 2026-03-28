@@ -133,6 +133,11 @@ def all_incidents(request):
         if department_id:
             incidents = incidents.filter(department_id=department_id)
 
+        # filter by status
+        status = request.GET.get('status')
+        if status:
+            incidents = incidents.filter(status=status)
+
         # filter by search term
         search = request.GET.get('search', '')
         if search:
@@ -143,6 +148,8 @@ def all_incidents(request):
                 Q(user__user__last_name__icontains=search) |
                 Q(department__name__icontains=search)
             )
+
+            
 
     # RESPONDER → see only their department
     else:
