@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'emergencyresponse_app',
     'accounts',
     'django_bootstrap5',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -139,3 +141,10 @@ GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY_HERE'
 DEFAULT_MAP_LAT = -4.0435
 DEFAULT_MAP_LNG = 39.6682
 DEFAULT_MAP_ZOOM = 14
+
+
+
+# settings.py (at the bottom)
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"

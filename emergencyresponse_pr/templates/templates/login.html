@@ -3,41 +3,103 @@
 {% block title %}Login - Emergency Response System{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card mt-5">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0"><i class="fas fa-sign-in-alt"></i> Login</h4>
+<style>
+    :root {
+        --primary-navy: #1a375d;
+        --accent-blue: #2c5282;
+        --border-light: #e2e8f0;
+    }
+
+    .login-card {
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        background: white;
+        overflow: hidden;
+    }
+
+    .login-header {
+        background-color: var(--primary-navy) !important;
+        padding: 2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--primary-navy);
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid #cbd5e0;
+    }
+
+    .btn-login {
+        background-color: var(--accent-blue);
+        color: white;
+        border: none;
+        padding: 0.8rem;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+
+    .btn-login:hover {
+        background-color: var(--primary-navy);
+        color: white;
+        transform: translateY(-1px);
+    }
+</style>
+
+<div class="row justify-content-center py-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card login-card">
+            <div class="card-header login-header text-white text-center">
+                <h4 class="mb-1 fw-bold"><i class="fas fa-sign-in-alt me-2"></i>Secure Login</h4>
+                <p class="mb-0 small opacity-75">Access the Response Network</p>
             </div>
-            <div class="card-body">
+            
+            <div class="card-body p-4 p-md-5">
                 {% if error %}
-                    <div class="alert alert-danger">{{ error }}</div>
+                    <div class="alert alert-danger small py-2">
+                        <i class="fas fa-exclamation-circle me-1"></i> {{ error }}
+                    </div>
                 {% endif %}
 
                 <form method="post">
                     {% csrf_token %}
                     
-                    <div class="form-group">
-                        <label for="username" class="form-label"><i class="fas fa-user"></i> Username</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-user text-muted"></i></span>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="password" class="form-label"><i class="fas fa-lock"></i> Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between">
+                            <label for="password" class="form-label">Password</label>
+                            <a href="#" class="small text-decoration-none" style="color: var(--accent-blue);">Forgot?</a>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-lock text-muted"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
+                        </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-sign-in-alt"></i> Login
+                    <button type="submit" class="btn btn-login w-100 shadow-sm mb-3">
+                        SIGN IN
                     </button>
                 </form>
 
-                <hr>
-
-                <p class="text-center">
-                    Don't have an account? 
-                    <a href="{% url 'register' %}">Register here</a>
-                </p>
+                <div class="mt-4 pt-3 border-top text-center">
+                    <p class="text-muted small">
+                        Don't have an account? 
+                        <a href="{% url 'register' %}" class="text-decoration-none fw-bold" style="color: var(--accent-blue);">Register here</a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
