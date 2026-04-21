@@ -1,107 +1,232 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container py-5">
 
-    <!-- Emergency Header -->
-    <div class="text-center mb-4">
-        <h2 class="fw-bold text-danger">
-            🚨 Emergency Response Profile
-        </h2>
-        <p class="text-muted">
-            Your registered emergency information
-        </p>
-    </div>
+<style>
+:root {
+    --primary: #e76f51;
+    --primary-soft: #f4a261;
+    --danger: #d62828;
+}
 
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
+/* Avatar */
+.avatar-circle {
+    width: 60px;
+    height: 60px;
+    background: var(--primary);
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-            <div class="card shadow-lg border-0 rounded-4">
+/* Primary button (soft, warm) */
+.btn-primary-custom {
+    background: var(--primary);
+    color: white;
+    border: none;
+}
 
-                <!-- Card Header -->
-                <div class="card-header bg-danger text-white rounded-top-4">
-                    <h5 class="mb-0 fw-bold">
-                        🧍 Personal Information
-                    </h5>
-                </div>
+.btn-primary-custom:hover {
+    background: #d65a3f;
+    transform: scale(1.02);
+}
 
-                <!-- Card Body -->
-                <div class="card-body bg-light">
+/* Emergency button (stronger but not harsh) */
+.btn-emergency {
+    background: linear-gradient(135deg, var(--danger), var(--primary));
+    color: white;
+    border: none;
+    font-size: 16px;
+}
 
-                    <!-- Personal Info -->
-                    <div class="mb-4">
-                        <div class="row mb-3">
-                            <div class="col-5 fw-bold text-dark">
-                                Username
-                            </div>
-                            <div class="col-7">
-                                {{ user.username }}
-                            </div>
-                        </div>
+.btn-emergency:hover {
+    transform: scale(1.03);
+}
 
-                        <div class="row mb-3">
-                            <div class="col-5 fw-bold text-dark">
-                                Phone Number
-                            </div>
-                            <div class="col-7 text-danger fw-semibold">
-                                {{ profile.phone_number }}
-                            </div>
-                        </div>
+/* Text accents */
+.text-accent {
+    color: var(--primary);
+}
 
-                        <div class="row mb-3">
-                            <div class="col-5 fw-bold text-dark">
-                                Location
-                            </div>
-                            <div class="col-7">
-                                {{ profile.location|title }}
-                            </div>
-                        </div>
-                    </div>
+.text-danger-soft {
+    color: var(--danger);
+}
 
-                    <hr>
+/* About list items */
+.about-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 8px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #333;
+    transition: 0.2s;
+}
 
-                    <!-- Emergency Contact Section -->
-                    <div class="mt-4">
-                        <h6 class="text-danger fw-bold mb-3">
-                            🆘 Emergency Contact
-                        </h6>
+.about-item:hover {
+    background: rgba(231, 111, 81, 0.08); /* soft warm hover */
+}
 
-                        <div class="row mb-3">
-                            <div class="col-5 fw-bold text-dark">
-                                Contact Name
-                            </div>
-                            <div class="col-7">
-                                {{ profile.emergency_contact_name }}
-                            </div>
-                        </div>
+/* App icon */
+.app-icon {
+    width: 60px;
+    height: 60px;
+    background: #1f2a44; /* deep calm blue */
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin: auto;
+}
 
-                        <div class="row mb-3">
-                            <div class="col-5 fw-bold text-dark">
-                                Contact Phone
-                            </div>
-                            <div class="col-7 text-danger fw-semibold">
-                                {{ profile.emergency_contact_phone }}
-                            </div>
-                        </div>
-                    </div>
+/* Logout button tweak */
+.logout-btn {
+    border-color: #e76f51;
+    color: #e76f51;
+}
 
-                    <hr>
+.logout-btn:hover {
+    background: #e76f51;
+    color: white;
+}
+</style>
 
-                    <!-- Action Buttons -->
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="{% url 'profile_edit' %}" class="btn btn-outline-danger px-4">
-                            ✏️ Edit Profile
-                        </a>
 
-                        <a href="{% url 'home' %}#emergency-options" class="btn btn-danger px-4 fw-bold">
-                            🚑 Request Emergency Help
-                        </a>
-                    </div>
 
-                </div>
+
+<div class="container py-4">
+
+    <!-- PROFILE HERO -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 p-4 text-center">
+        <div class="mb-3">
+            <div class="avatar-circle mx-auto mb-2">
+                {{ user.username|first|upper }}
             </div>
-
+            <h5 class="fw-bold mb-1">{{ user.username }}</h5>
+            <p class="text-muted small mb-1">
+                <i class="fas fa-location-dot me-1"></i> {{ profile.location|title }}
+            </p>
+            <p class="text-danger fw-semibold">
+                <i class="fas fa-phone me-1"></i> {{ profile.phone_number }}
+            </p>
         </div>
     </div>
+
+    <!-- 🚨 PRIMARY ACTION -->
+    <div class="mb-4">
+        <a href="{% url 'home' %}#emergency-options"
+           class="btn btn-outline-danger w-100 py-3 fw-bold rounded-4 shadow">
+            🚨 REQUEST EMERGENCY HELP
+        </a>
+    </div>
+
+    <!-- PERSONAL INFO -->
+    <div class="card border-0 shadow-sm rounded-4 mb-3 p-3">
+        <h6 class="fw-bold mb-3 text-dark">👤 Personal Info</h6>
+
+        <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Username</span>
+            <span class="fw-semibold">{{ user.username }}</span>
+        </div>
+
+        <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Phone</span>
+            <span class="text-danger fw-semibold">{{ profile.phone_number }}</span>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <span class="text-muted">Location</span>
+            <span>{{ profile.location|title }}</span>
+        </div>
+    </div>
+
+    <!-- EMERGENCY CONTACT -->
+    <div class="card border-0 shadow-sm rounded-4 mb-3 p-3">
+        <h6 class="fw-bold text-danger mb-3">🆘 Emergency Contact</h6>
+
+        <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Name</span>
+            <span>{{ profile.emergency_contact_name }}</span>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <span class="text-muted">Phone</span>
+            <span class="text-danger fw-semibold">
+                {{ profile.emergency_contact_phone }}
+            </span>
+        </div>
+    </div>
+
+    <!-- EDIT BUTTON -->
+    <div class="text-center mt-3">
+        <a href="{% url 'profile_edit' %}" class="btn btn-outline-danger rounded-pill px-4">
+            ✏️ Edit Profile
+        </a>
+    </div>
+
+
+    <hr class="my-4">
+
+<!-- ABOUT SECTION -->
+<div class="card border-0 shadow-sm rounded-4 mt-4 p-3">
+
+    <h6 class="fw-bold mb-3 text-dark">About</h6>
+
+    <!-- Item -->
+    <a href="#" class="about-item">
+        <div>
+            <i class="fas fa-info-circle me-2 text-muted"></i>
+            About Mombasa ERS
+        </div>
+        <i class="fas fa-chevron-right text-muted"></i>
+    </a>
+
+    <!-- Item -->
+    <a href="#" class="about-item">
+        <div>
+            <i class="fas fa-file-contract me-2 text-muted"></i>
+            Terms & Conditions
+        </div>
+        <i class="fas fa-chevron-right text-muted"></i>
+    </a>
+
+    <!-- Item -->
+    <a href="#" class="about-item">
+        <div>
+            <i class="fas fa-bug me-2 text-muted"></i>
+            Report a Bug
+        </div>
+        <i class="fas fa-chevron-right text-muted"></i>
+    </a>
+
+    <hr>
+
+    <!-- App Info -->
+    <div class="text-center py-3">
+        <div class="app-icon mb-2">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <p class="mb-0 small text-muted">
+            Mombasa Emergency System
+        </p>
+        <small class="text-muted">Version 1.0.0</small>
+    </div>
+
+</div>
+
+<!-- LOGOUT -->
+<div class="mt-3">
+    <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100 py-3 rounded-4 fw-semibold logout-btn">
+        <i class="fas fa-sign-out-alt me-2"></i> Logout
+    </a>
+</div>
+
 </div>
 {% endblock %}

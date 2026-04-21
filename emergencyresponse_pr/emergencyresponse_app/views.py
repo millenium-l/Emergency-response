@@ -1,5 +1,4 @@
 from urllib import request
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -58,6 +57,8 @@ def home(request):
 
     return render(request, 'templates/home.html', context)
 
+
+
 @login_required
 def profile(request):
     profile = request.user.profile
@@ -82,8 +83,12 @@ def profile_edit(request):
 
 
 def report_incident(request, department):
+    if not request.user.is_authenticated:
+        return redirect(f"/accounts/login/?next=/incident/report/{department}/")
+    
+    else:
 
-    department_obj = Department.objects.get(name=department)
+        department_obj = Department.objects.get(name=department)
 
     if request.method == "POST":
         form = IncidentReportForm(request.POST)
@@ -107,7 +112,7 @@ def report_incident(request, department):
         "form": form
     })
 
-
+@login_required
 def my_incidents(request):
     profile = request.user.profile  # get the current logged-in user profile
     incidents = Incident.objects.filter(user=profile).order_by('-created_at')

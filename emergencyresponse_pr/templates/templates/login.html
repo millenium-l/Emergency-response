@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Login - Emergency Response System{% endblock %}
 
@@ -29,10 +30,21 @@
         font-size: 0.9rem;
     }
 
+    .input-group-text {
+        border-radius: 8px 0 0 8px;
+        background-color: #f8f9fa;
+    }
+
     .form-control {
         padding: 0.75rem;
         border-radius: 8px;
         border: 1px solid #cbd5e0;
+    }
+
+    /* Fixed the password toggle button layout */
+    .password-toggle {
+        cursor: pointer;
+        border-radius: 0 8px 8px 0 !important;
     }
 
     .btn-login {
@@ -54,16 +66,16 @@
 
 <div class="row justify-content-center py-5">
     <div class="col-md-6 col-lg-5">
-        <div class="card login-card">
-            <div class="card-header login-header text-white text-center">
-                <h4 class="mb-1 fw-bold"><i class="fas fa-sign-in-alt me-2"></i>Secure Login</h4>
+        <div class="card login-card shadow">
+            <div class="card-header login-header text-white text-center border-0">
+                <h4 class="mb-1 fw-bold"><i class="fas fa-shield-alt me-2"></i>Secure Login</h4>
                 <p class="mb-0 small opacity-75">Access the Response Network</p>
             </div>
             
             <div class="card-body p-4 p-md-5">
                 {% if error %}
-                    <div class="alert alert-danger small py-2">
-                        <i class="fas fa-exclamation-circle me-1"></i> {{ error }}
+                    <div class="alert alert-danger small py-2 d-flex align-items-center">
+                        <i class="fas fa-exclamation-circle me-2"></i> {{ error }}
                     </div>
                 {% endif %}
 
@@ -73,19 +85,22 @@
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="fas fa-user text-muted"></i></span>
+                            <span class="input-group-text"><i class="fas fa-user text-muted"></i></span>
                             <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
                         </div>
                     </div>
 
                     <div class="mb-4">
                         <div class="d-flex justify-content-between">
-                            <label for="password" class="form-label">Password</label>
+                            <label for="password_field" class="form-label">Password</label>
                             <a href="#" class="small text-decoration-none" style="color: var(--accent-blue);">Forgot?</a>
                         </div>
                         <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="fas fa-lock text-muted"></i></span>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
+                            <span class="input-group-text"><i class="fas fa-lock text-muted"></i></span>
+                            <input type="password" class="form-control border-end-0" id="password_field" name="password" placeholder="••••••••" required>
+                            <span class="input-group-text bg-white border-start-0 password-toggle" onclick="togglePassword('password_field')">
+                                <i class="fas fa-eye text-muted" id="toggleIcon_password_field"></i>
+                            </span>
                         </div>
                     </div>
 
@@ -104,4 +119,20 @@
         </div>
     </div>
 </div>
+
+<script>
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById('toggleIcon_' + inputId);
+        
+        if (input.type === "password") {
+            input.type = "text";
+            // Switched to FontAwesome to match your other icons
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+</script>
 {% endblock %}

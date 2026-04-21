@@ -4,25 +4,24 @@
 
 {% block content %}
 <div class="row mb-4">
-    <div class="col-md-8">
-        <h1><i class="fas fa-map"></i> Live Operational Overview - Mombasa Tudor Area</h1>
-        <p class="text-muted">Live incidents and emergency services in Mombasa Tudor area</p>
-    </div>
-    <div class="col-md-4 text-end">
-        {% if user.is_authenticated %}
-            <a href="#emergency-options" class="btn btn-danger btn-lg">
-                <i class="fas fa-plus"></i> Report Emergency
-            </a>
-        {% else %}
-            <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
-                <i class="fas fa-sign-in-alt"></i> Login to Report
-            </a>
-        {% endif %}
-    </div>
+    
+    
 </div>
 
 <!-- map-->
 <div class="row g-4 mb-4">
+
+    <!-- Map Column -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+            
+            <div class="card-body p-0 position-relative">
+                <div id="map" class="bg-light d-flex align-items-center justify-content-center" style="height: 450px;">
+                    <p class="text-muted"><i class="fas fa-map-marked-alt fa-3x mb-3 d-block"></i> Leaflet Map Initializing...</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- emergency options -->
     <div id = "emergency-options" class="col-lg-4">
@@ -64,24 +63,7 @@
         </div>
     </div>
 
-
-    <div class="col-lg-8">
-        <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
-            <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold"><i class="fas fa-map-location-dot text-danger me-2"></i>Live Emergency Map</h5>
-                <div class="dropdown">
-                    <button class="btn btn-light btn-sm dropdown-toggle border" type="button" data-bs-toggle="dropdown">
-                        Filter Map
-                    </button>
-                </div>
-            </div>
-            <div class="card-body p-0 position-relative">
-                <div id="map" class="bg-light d-flex align-items-center justify-content-center" style="height: 450px;">
-                    <p class="text-muted"><i class="fas fa-map-marked-alt fa-3x mb-3 d-block"></i> Leaflet Map Initializing...</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 </div>
 
 <!-- Incident Feed and Departments -->
@@ -103,7 +85,7 @@
                                     <h6 class="fw-bold mb-0 text-dark">{{ incident.title }}</h6>
                                     <small class="text-muted"><i class="fas fa-location-dot me-1"></i>{{ incident.location_description }}</small>
                                 </div>
-                                <span class="badge rounded-pill bg-{{ incident.status }}-subtle text-{{ incident.status }} px-3">
+                                <span class="badge rounded-pill bg-{{ incident.status }}-subtle text-{{ incident.status }} px-3" style="background-color: black;">
                                     {{ incident.get_status_display }}
                                 </span>
                             </div>
@@ -192,7 +174,7 @@
             </div>
         </div>
     </div>
-
+    <!-- Departments Column -->
     <div class="col-md-3 mb-4">
         <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-body">
@@ -213,7 +195,7 @@
             </div>
         </div>
     </div>
-
+    <!-- Service Area Column -->
     <div class="col-md-3 mb-4">
         <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-body">
@@ -234,7 +216,7 @@
             </div>
         </div>
     </div>
-
+    <!-- System Status Column -->
     <div class="col-md-3 mb-4">
         <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-body">
