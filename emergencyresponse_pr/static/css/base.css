@@ -1,14 +1,17 @@
 :root {
-    --primary-color: #dc3545;
-    --emergency-red: #e74c3c;
-    --success-green: #27ae60;
-    --warning-yellow: #f39c12;
-    --info-blue: #3498db;
+    --primary: #E53935;
+    --bg: #F7F8FA;
+    --text: #1A1A1A;
+
+    --radius: 16px;
+    --radius-sm: 10px;
+
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 body {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #F5F5F5;
+    background: var(--bg);
+    font-family: 'Inter', sans-serif;
 }
 
 .navbar {
@@ -281,4 +284,150 @@ footer {
     .mobile-bottom-nav {
         display: none;
     }
+}
+
+/* General spacing for main content */
+.app-main {
+    padding-bottom: 90px;
+    /* space for bottom nav */
+}
+
+.app-section {
+    padding: 16px;
+}
+
+/* Header with gradient and rounded corners */
+.app-header {
+    background: linear-gradient(135deg, #E53935, #D32F2F);
+    color: white;
+    padding: 16px;
+    /*border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;*/
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app-greeting {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.app-subtext {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.app-avatar {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px;
+    border-radius: 50%;
+    color: white;
+}
+
+
+/* Bottom navigation */
+.app-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+
+    background: white;
+    border-top: 1px solid #eee;
+
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    z-index: 1000;
+}
+
+.app-bottom-nav .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 11px;
+    color: #777;
+    text-decoration: none;
+}
+
+.app-bottom-nav .nav-item i {
+    font-size: 18px;
+}
+
+.app-bottom-nav .nav-item.active {
+    color: #E53935;
+}
+
+/* SOS BUTTON */
+.nav-sos {
+    position: absolute;
+    top: -20px;
+
+    background: #E53935;
+    color: white;
+
+    width: 60px;
+    height: 60px;
+
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: bold;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Map container */
+.map-wrapper {
+    height: 250px;
+    width: 100%;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+
+
+/* Desktop Enhancements */
+@media (min-width: 992px) {
+
+    /* Center content and limit width */
+    .container {
+        max-width: 1100px;
+    }
+
+    /* Improve spacing */
+    main {
+        padding-top: 30px;
+        padding-bottom: 30px;
+    }
+
+    /* Card grid layout */
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    /* Cards shouldn't be too wide */
+    .incident-card {
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
 }

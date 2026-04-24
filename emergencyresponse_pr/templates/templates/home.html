@@ -8,7 +8,18 @@
     
 </div>
 
+
+ 
+
 <!-- map-->
+<div class="container">
+    <div class="px-3">
+    <a href="#emergency-options"
+       class="btn btn-danger btn-lg w-100 rounded-3 mb-4 py-3 fw-bold shadow-sm">
+        <i class="fas fa-exclamation-triangle pulse me-2"></i> Report Emergency 
+    </a>
+</div>
+
 <div class="row g-4 mb-4">
 
     <!-- Map Column -->
@@ -29,9 +40,7 @@
             <div class="card-body p-4">
                 <h5 class="fw-bold mb-3">Report Emergency</h5>
                 
-                <a href="#emergency-options" class="btn btn-danger btn-lg w-100 rounded-3 mb-4 py-3 fw-bold shadow-sm">
-                    <i class="fas fa-exclamation-triangle pulse me-2"></i> SEND SOS SIGNAL
-                </a>
+                
 
                 <div class="row g-2">
                     <div class="col-6 text-center">
@@ -65,8 +74,10 @@
 
     
 </div>
+</div>
 
 <!-- Incident Feed and Departments -->
+ <div class="container">
 <div class="row g-4">
     {% if user.is_staff %}
     <div class="col-md-6">
@@ -112,6 +123,7 @@
             </div>
         </div>
     </div>
+    
     {% endif %}
 
     <!-- Departments Column -->
@@ -151,8 +163,10 @@
         </div>
     </div>
 </div>
+</div>
 
 <!-- Statistics Row -->
+ <div class="container">
 <div class="row mt-4">
     <div class="col-md-3 mb-4">
         <div class="card border-0 shadow-sm rounded-4 h-100">
@@ -237,6 +251,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}
 

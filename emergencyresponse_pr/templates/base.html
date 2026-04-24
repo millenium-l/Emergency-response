@@ -100,93 +100,106 @@
 
 
     <!-- MOBILE HEADER -->
-<div class="mobile-header d-lg-none">
-    <div class="d-flex justify-content-between align-items-center px-3 py-2">
+    <div class="mobile-header d-lg-none">
+    <div class="app-header">
 
-        <!-- App Name -->
-        <div class="fw-bold d-flex align-items-center">
-            <i class="fas fa-map me-2"></i>
-            <a href="{% url 'home' %}" style="color: inherit; text-decoration: none;">
-                Mombasa ERS
-            </a>
+      <a href="{% url 'home' %}"class="text-decoration-none text-white">
+        <div>
+            <div class="app-greeting">Hello, {{ user.username|default:"Guest" }} 👋</div>
+            <div class="app-subtext">Stay safe, we’re here to help.</div>
         </div>
+      </a>
 
-        <!-- Right Side -->
+        
+        
+        <!--
         <div class="d-flex align-items-center gap-3">
+            <i class="fas fa-bell"></i>
+        </div>-->
 
-            <!-- Quick SOS -->
-            <a href="{% url 'home' %}#emergency-options"
-               class="btn btn-sm rounded-pill px-3 sos-btn">
-                SOS
-            </a>
-
-            <!-- Profile -->
-             {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}" class="text-dark">
-                <i class="fas fa-user-circle fa-sm">{{ user.username }}</i>
-            </a>
-            {% else %}
-            <a href="{% url 'login' %}" class="text-dark">
-                <i class="fas fa-user-circle fa-sm">login</i>
-            </a>
-            {% endif %}
-
-        </div>
-
+        {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}" class="text-decoration-none text-dark">
+  <div class="d-flex align-items-center gap-2 p-2 rounded-3 profile-link">
+    
+    <div class="bg-light d-flex justify-content-center align-items-center rounded-circle"
+         style="width: 36px; height: 36px;">
+      <i class="fas fa-user"></i>
     </div>
+
+    <span class="fw-medium">{{ user.username|default:"User" }}</span>
+  
+  </div>
+</a>
+        {% else %}
+        <div>
+          <a href="{% url 'login' %}" class="btn btn-sm btn-primary">Login</a>
+          <a href="{% url 'register' %}" class="btn btn-sm btn-secondary">Register</a>
+        </div>
+        {% endif %}
+      </div>
 </div>
 
 
 
     <!-- Main Content -->
-    <main class="py-4">
-      <div class="container">
-        {% if messages %} {% for message in messages %}
-        <div
-          class="alert alert-{{ message.tags }} alert-dismissible fade show"
-          role="alert"
-        >
-          {{ message }}
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-          ></button>
+    <main class="app-main">
+    {% if messages %}
+        <div class="app-alerts px-3">
+            {% for message in messages %}
+                <div class="app-alert">{{ message }}</div>
+            {% endfor %}
         </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
 
         
-        {% endfor %} {% endif %} {% block content %}{% endblock %}
+        
 
 
 
 
-        <nav class="mobile-bottom-nav">
-  <a href="{% url 'home' %}" class="nav-item">
-    <i class="fas fa-home"></i>
-    <span>Home</span>
-  </a>
+    <nav class="app-bottom-nav d-lg-none">
 
-  <a href="{% url 'incidents_list' %}" class="nav-item">
-    <i class="fas fa-list"></i>
-    <span>Incidents</span>
-  </a>
+    <a href="{% url 'home' %}" class="nav-item">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+    </a>
 
-  {% if user.is_staff %}
+    <a href="{% url 'incidents_list' %}" class="nav-item">
+        <i class="fas fa-list"></i>
+        <span>Incidents</span>
+    </a>
+
+    
+
+    
+
+
+    {% if user.is_staff %}
   <a href="{% url 'all_incidents' %}" class="nav-item">
     <i class="fas fa-shield-alt"></i>
     <span>All</span>
   </a>
+  {% else%}
+  <!-- CENTER SOS -->
+    <a href="{% url 'home' %}#emergency-options" class="nav-sos">
+        SOS
+    </a>
   {% endif %}
 
-  <a href="{% url 'responders_map' %}" class="nav-item">
-    <i class="fas fa-map"></i>
-    <span>Map</span>
-  </a>
+  
+    <a href="{% url 'responders_map' %}" class="nav-item">
+        <i class="fas fa-map"></i>
+        <span>Map</span>
+    </a>
 
-  <a href="{% url 'profile' %}" class="nav-item">
-    <i class="fas fa-user"></i>
-    <span>Profile</span>
-  </a>
+    <a href="{% url 'profile' %}" class="nav-item">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+    </a>
+
 </nav>
 
 
