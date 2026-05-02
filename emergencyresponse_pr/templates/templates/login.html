@@ -1,138 +1,174 @@
-{% extends 'base.html' %}
-{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-{% block title %}Login - Emergency Response System{% endblock %}
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-{% block content %}
-<style>
-    :root {
-        --primary-navy: #1a375d;
-        --accent-blue: #2c5282;
-        --border-light: #e2e8f0;
-    }
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
-    .login-card {
-        border: 1px solid var(--border-light);
-        border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-        background: white;
-        overflow: hidden;
-    }
+    <title>Login</title>
 
-    .login-header {
-        background-color: var(--primary-navy) !important;
-        padding: 2rem;
-    }
+    <style>
+        :root {
+            --primary-navy: #1a375d;
+            --accent-blue: #2c5282;
+            --border-light: #e2e8f0;
+        }
 
-    .form-label {
-        font-weight: 600;
-        color: var(--primary-navy);
-        font-size: 0.9rem;
-    }
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f4f8;
+        }
 
-    .input-group-text {
-        border-radius: 8px 0 0 8px;
-        background-color: #f8f9fa;
-    }
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+            background: white;
+            overflow: hidden;
+        }
 
-    .form-control {
-        padding: 0.75rem;
-        border-radius: 8px;
-        border: 1px solid #cbd5e0;
-    }
+        .login-header {
+            background-color: var(--primary-navy);
+            padding: 1.8rem;
+        }
 
-    /* Fixed the password toggle button layout */
-    .password-toggle {
-        cursor: pointer;
-        border-radius: 0 8px 8px 0 !important;
-    }
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-navy);
+            font-size: 0.85rem;
+        }
 
-    .btn-login {
-        background-color: var(--accent-blue);
-        color: white;
-        border: none;
-        padding: 0.8rem;
-        border-radius: 8px;
-        font-weight: bold;
-        transition: all 0.3s;
-    }
+        .input-group-text {
+            border-radius: 8px 0 0 8px;
+            background-color: #f8f9fa;
+        }
 
-    .btn-login:hover {
-        background-color: var(--primary-navy);
-        color: white;
-        transform: translateY(-1px);
-    }
-</style>
+        .form-control {
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #cbd5e0;
+        }
 
-<div class="row justify-content-center py-5">
-    <div class="col-md-6 col-lg-5">
-        <div class="card login-card shadow">
-            <div class="card-header login-header text-white text-center border-0">
-                <h4 class="mb-1 fw-bold"><i class="fas fa-shield-alt me-2"></i>Secure Login</h4>
-                <p class="mb-0 small opacity-75">Access the Response Network</p>
-            </div>
-            
-            <div class="card-body p-4 p-md-5">
-                {% if error %}
-                    <div class="alert alert-danger small py-2 d-flex align-items-center">
-                        <i class="fas fa-exclamation-circle me-2"></i> {{ error }}
-                    </div>
-                {% endif %}
+        .password-toggle {
+            cursor: pointer;
+            border-radius: 0 8px 8px 0 !important;
+        }
 
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-user text-muted"></i></span>
-                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
-                        </div>
-                    </div>
+        .btn-login {
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-weight: bold;
+        }
 
-                    <div class="mb-4">
-                        <div class="d-flex justify-content-between">
-                            <label for="password_field" class="form-label">Password</label>
-                            <a href="#" class="small text-decoration-none" style="color: var(--accent-blue);">Forgot?</a>
-                        </div>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-lock text-muted"></i></span>
-                            <input type="password" class="form-control border-end-0" id="password_field" name="password" placeholder="••••••••" required>
-                            <span class="input-group-text bg-white border-start-0 password-toggle" onclick="togglePassword('password_field')">
-                                <i class="fas fa-eye text-muted" id="toggleIcon_password_field"></i>
-                            </span>
-                        </div>
-                    </div>
+        .btn-login:hover {
+            background-color: var(--primary-navy);
+        }
 
-                    <button type="submit" class="btn btn-login w-100 shadow-sm mb-3">
-                        SIGN IN
-                    </button>
-                </form>
+        /* Mobile tweaks */
+        @media (max-width: 576px) {
+            body {
+                padding: 1rem;
+                align-items: center;
+            }
 
-                <div class="mt-4 pt-3 border-top text-center">
-                    <p class="text-muted small">
-                        Don't have an account? 
-                        <a href="{% url 'register' %}" class="text-decoration-none fw-bold" style="color: var(--accent-blue);">Register here</a>
-                    </p>
+            .login-card {
+                margin-top: 2rem;
+                border-radius: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-card ">
+    <div class="login-header text-white text-center">
+        <h5 class="mb-1 fw-bold">
+            <i class="fas fa-shield-alt me-2"></i>Secure Login
+        </h5>
+        <p class="mb-0 small opacity-75">Access the Response Network</p>
+    </div>
+
+    <div class="p-4">
+        {% if error %}
+        <div class="alert alert-danger small py-2">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-user text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="username" name="username" required>
                 </div>
             </div>
+
+            <div class="mb-4">
+                <div class="d-flex justify-content-between">
+                    <label class="form-label">Password</label>
+                    <a href="#" class="small text-decoration-none text-primary">Forgot?</a>
+                </div>
+
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-lock text-muted"></i>
+                    </span>
+                    <input type="password" class="form-control border-end-0" id="password_field" placeholder="**********" name="password" required>
+
+                    <span class="input-group-text bg-remote border-start-0 password-toggle"
+                          onclick="togglePassword('password_field')">
+                        <i class="fas fa-eye text-muted" id="toggleIcon_password_field"></i>
+                    </span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-login w-100 mb-3">
+                SIGN IN
+            </button>
+        </form>
+
+        <div class="text-center pt-3 border-top">
+            <small class="text-muted">
+                Don't have an account?
+                <a href="{% url 'register' %}" class="fw-bold text-decoration-none">Register</a>
+            </small>
         </div>
     </div>
 </div>
 
 <script>
-    function togglePassword(inputId) {
-        const input = document.getElementById(inputId);
-        const icon = document.getElementById('toggleIcon_' + inputId);
-        
-        if (input.type === "password") {
-            input.type = "text";
-            // Switched to FontAwesome to match your other icons
-            icon.classList.replace('fa-eye', 'fa-eye-slash');
-        } else {
-            input.type = "password";
-            icon.classList.replace('fa-eye-slash', 'fa-eye');
-        }
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById('toggleIcon_' + inputId);
+
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = "password";
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
     }
+}
 </script>
-{% endblock %}
+
+</body>
+</html>
