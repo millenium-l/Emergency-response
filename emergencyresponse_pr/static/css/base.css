@@ -298,7 +298,7 @@ footer {
 
 /* Header with gradient and rounded corners */
 .app-header {
-    background: linear-gradient(135deg, #E53935, #D32F2F);
+    background: linear-gradient(135deg, #cecbcb, #ffffff);
     color: white;
     padding: 16px;
     /*border-bottom-left-radius: 20px;
@@ -333,9 +333,9 @@ footer {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 70px;
+    height: 65px;
 
-    background: white;
+    background: #fff;
     border-top: 1px solid #eee;
 
     display: flex;
@@ -345,43 +345,61 @@ footer {
     z-index: 1000;
 }
 
+/* Nav items */
 .app-bottom-nav .nav-item {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    color: #888;
+    text-decoration: none;
+
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 11px;
-    color: #777;
-    text-decoration: none;
+    justify-content: center;
 }
 
+/* Icons */
 .app-bottom-nav .nav-item i {
     font-size: 18px;
+    margin-bottom: 2px;
 }
 
+/* Active state */
 .app-bottom-nav .nav-item.active {
     color: #E53935;
 }
 
-/* SOS BUTTON */
+/* 🔴 CENTER SOS BUTTON */
 .nav-sos {
     position: absolute;
-    top: -20px;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
 
     background: #E53935;
     color: white;
 
-    width: 60px;
-    height: 60px;
-
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
 
     font-weight: bold;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    border: 4px solid white;
+    /* this gives that floating cut-out look */
 }
 
+/* Slight hover feedback */
+.nav-sos:active {
+    transform: translateX(-50%) scale(0.95);
+}
 
 /* Map container */
 .map-wrapper {
@@ -430,4 +448,70 @@ footer {
         margin-right: auto;
     }
 
+}
+
+
+
+
+
+
+/* BIG SOS BUTTON in home.html */
+.sos-container {
+    padding-top: 10px;
+}
+
+.sos-big-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 140px;
+    height: 140px;
+    margin: 0 auto;
+
+    border-radius: 50%;
+
+    background: radial-gradient(circle, #ff4d4d, #E53935);
+    color: white;
+
+    font-size: 28px;
+    font-weight: bold;
+    text-decoration: none;
+
+    box-shadow:
+        0 0 0 10px rgba(229, 57, 53, 0.15),
+        0 0 0 20px rgba(229, 57, 53, 0.08),
+        0 10px 25px rgba(0, 0, 0, 0.2);
+
+    transition: transform 0.2s ease;
+}
+
+/* Press feedback */
+.sos-big-btn:active {
+    transform: scale(0.95);
+}
+
+/* Optional subtle pulse */
+@keyframes sosPulse {
+    0% {
+        box-shadow:
+            0 0 0 0 rgba(229, 57, 53, 0.4),
+            0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    70% {
+        box-shadow:
+            0 0 0 25px rgba(229, 57, 53, 0),
+            0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    100% {
+        box-shadow:
+            0 0 0 0 rgba(229, 57, 53, 0),
+            0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+}
+
+.sos-big-btn {
+    animation: sosPulse 2s infinite;
 }

@@ -103,7 +103,7 @@
     <div class="mobile-header d-lg-none">
     <div class="app-header">
 
-      <a href="{% url 'home' %}"class="text-decoration-none text-white">
+      <a href="{% url 'home' %}"class="text-decoration-none text-black">
         <div>
             <div class="app-greeting">Hello, {{ user.username|default:"Guest" }} 👋</div>
             <div class="app-subtext">Stay safe, we’re here to help.</div>
@@ -158,7 +158,7 @@
 
 
 
-
+<!-- Mobile Bottom Navigation -->
 
     <nav class="app-bottom-nav d-lg-none">
 
@@ -172,24 +172,29 @@
         <span>Incidents</span>
     </a>
 
+<<<<<<< HEAD
 
 
 
 
 
+=======
+>>>>>>> 92faf2e84dc79f9462550a2b78b761ba05c9a81d
     {% if user.is_staff %}
-  <a href="{% url 'all_incidents' %}" class="nav-item">
-    <i class="fas fa-shield-alt"></i>
-    <span>All</span>
-  </a>
-  {% else%}
-  <!-- CENTER SOS -->
+    <a href="{% url 'all_incidents' %}" class="nav-item">
+        <i class="fas fa-shield-alt"></i>
+        <span>All</span>
+    </a>
+    {% else %}
     <a href="{% url 'home' %}#emergency-options" class="nav-sos">
         SOS
     </a>
-  {% endif %}
+    {% endif %}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 92faf2e84dc79f9462550a2b78b761ba05c9a81d
     <a href="{% url 'responders_map' %}" class="nav-item">
         <i class="fas fa-map"></i>
         <span>Map</span>
@@ -201,7 +206,6 @@
     </a>
 
 </nav>
-
 
       </div>
     </main>
