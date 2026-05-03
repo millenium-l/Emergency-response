@@ -1,8 +1,80 @@
 {% extends 'base.html' %}
 
+
+
 {% block title %}Home - Emergency Response System{% endblock %}
 
 {% block content %}
+<style>
+/* BIG SOS BUTTON in home.html */
+.sos-container {
+    padding-top: 10px;
+}
+
+.sos-big-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 140px;
+    height: 140px;
+    margin: 0 auto;
+
+    border-radius: 50%;
+
+    background: radial-gradient(circle, #ff4d4d, #E53935);
+    color: white;
+
+    font-size: 28px;
+    font-weight: bold;
+    text-decoration: none;
+
+    box-shadow:
+        0 0 0 10px rgba(229, 57, 53, 0.15),
+        0 0 0 20px rgba(229, 57, 53, 0.08),
+        0 10px 25px rgba(0, 0, 0, 0.2);
+
+    transition: transform 0.2s ease;
+}
+
+/* Press feedback */
+.sos-big-btn:active {
+    transform: scale(0.95);
+}
+
+/* Optional subtle pulse */
+@keyframes sosPulse {
+    0% {
+        box-shadow:
+            0 0 0 0 rgba(229, 57, 53, 0.4),
+            0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    70% {
+        box-shadow:
+            0 0 0 25px rgba(229, 57, 53, 0),
+            0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    100% {
+        box-shadow:
+            0 0 0 0 rgba(229, 57, 53, 0),
+            0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+}
+
+.sos-big-btn {
+    animation: sosPulse 2s infinite;
+}
+
+</style>
+
+
+
+
+
+
+
 <div class="row mb-4">
     
     
@@ -11,28 +83,27 @@
 
  
 
-<!-- map-->
-<div class="container">
-    <div class="px-3">
-    <a href="#emergency-options"
-       class="btn btn-danger btn-lg w-100 rounded-3 mb-4 py-3 fw-bold shadow-sm">
-        <i class="fas fa-exclamation-triangle pulse me-2"></i> Report Emergency 
-    </a>
-</div>
+
 
 <div class="row g-4 mb-4">
 
-    <!-- Map Column -->
-    <div class="col-lg-8">
-        <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
-            
-            <div class="card-body p-0 position-relative">
-                <div id="map" class="bg-light d-flex align-items-center justify-content-center" style="height: 450px;">
-                    <p class="text-muted"><i class="fas fa-map-marked-alt fa-3x mb-3 d-block"></i> Leaflet Map Initializing...</p>
-                </div>
-            </div>
-        </div>
+    <!-- SOS Button -->
+    <div class="px-3 mb-4">
+
+    <div class="sos-container text-center">
+
+        <a href="{% url 'home' %}#emergency-options" class="sos-big-btn">
+            SOS
+        </a>
+
+        <p class="text-muted small mt-3">
+            Hold or tap to alert emergency responders
+        </p>
+
     </div>
+
+</div>
+
 
     <!-- emergency options -->
     <div id = "emergency-options" class="col-lg-4">
