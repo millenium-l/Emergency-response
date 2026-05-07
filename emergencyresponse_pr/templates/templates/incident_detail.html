@@ -141,10 +141,12 @@
             <div class="detail-label">Responder</div>
             <div class="detail-value">
                 {% if incident.assigned_responder %}
-                    {{ incident.assigned_responder.user.get_full_name }}
-                {% else %}
-                    Not assigned yet
-                {% endif %}
+    <span class="badge bg-success">
+        {{ incident.assigned_responder.user.get_full_name }}
+    </span>
+{% else %}
+    <span class="text-muted">Not assigned yet</span>
+{% endif %}
             </div>
         </div>
 
@@ -178,27 +180,69 @@
 
         <div class="action-buttons">
 
-            {% if incident.status == "pending" %}
-                <a href="{% url 'start_incident' incident.id %}" class="btn btn-primary btn-app">
-                    Start
-                </a>
-                <a href="{% url 'cancel_incident' incident.id %}" class="btn btn-danger btn-app">
-                    Cancel
-                </a>
+    {% if incident.status == "pending" %}
+        
+        {% if incident.assigned_responder %}
+            <a href="{% url 'start_incident' incident.id %}" class="btn btn-primary btn-app">
+                Start Response
+            </a>
+        {% else %}
+            <button class="btn btn-secondary btn-app" disabled>
+                Assign responder first
+            </button>
+        {% endif %}
 
-            {% elif incident.status == "in_progress" %}
-                <a href="{% url 'resolve_incident' incident.id %}" class="btn btn-success btn-app">
-                    Resolve
-                </a>
-                <a href="{% url 'cancel_incident' incident.id %}" class="btn btn-danger btn-app">
-                    Cancel
-                </a>
-            {% endif %}
+        <a href="{% url 'cancel_incident' incident.id %}" class="btn btn-danger btn-app">
+            Cancel
+        </a>
 
-        </div>
+    {% elif incident.status == "assigned" %}
+        <a href="{% url 'start_incident' incident.id %}" class="btn btn-primary btn-app">
+            Start Response
+        </a>
+
+    {% elif incident.status == "in_progress" %}
+        <a href="{% url 'resolve_incident' incident.id %}" class="btn btn-success btn-app">
+            Resolve
+        </a>
+        <a href="{% url 'cancel_incident' incident.id %}" class="btn btn-danger btn-app">
+            Cancel
+        </a>
+    {% endif %}
+
+</div>
     </div>
     {% endif %}
 
+
+    {% if user.is_staff and not incident.assigned_responder %}
+
+<div class="detail-card">
+
+    <div class="detail-label mb-2">Assign Responder</div>
+
+    <form method="post" action="{% url 'assign_responder' incident.id %}">
+        {% csrf_token %}
+
+        <select name="responder_id" class="form-select mb-2" required>
+            <option value="">Select available responder</option>
+            {% for responder in available_responders %}
+                <option value="{{ responder.id }}">
+                    {{ responder.user.get_full_name }} 
+                    ({{ responder.department.get_name_display }})
+                </option>
+            {% endfor %}
+        </select>
+
+        <button class="btn btn-primary w-100">
+            Assign Responder
+        </button>
+
+    </form>
+
+</div>
+
+{% endif %}
 
     <!-- user details-->
     <!-- CALLER INFO -->

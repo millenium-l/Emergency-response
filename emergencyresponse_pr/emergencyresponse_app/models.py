@@ -9,6 +9,13 @@ DEPARTMENT_CHOICES = [
     ('general', 'General Department'),
 ]
 
+# Response status choices
+RESPONSE_STATUS_CHOICES = [
+    ('available', 'Available'),
+    ('busy', 'Busy'),
+    ('offline', 'Offline'),
+]
+
 # Incident status choices
 INCIDENT_STATUS_CHOICES = [
     ('pending', 'Pending'),
@@ -76,10 +83,21 @@ class Responder(models.Model):
     phone_number = models.CharField(max_length=20)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    is_available = models.BooleanField(default=True)
+    status = models.CharField(max_length=20, choices=RESPONSE_STATUS_CHOICES, default='available')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    """Helper methods for responder status and display"""
+    def is_available(self):
+        return self.status == 'available'
+
+    def full_name(self):
+        return self.user.get_full_name()
+
+    def location_display(self):
+        return self.department.location_name if self.department else "Unknown"
+
+
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.department.get_name_display()}"
 

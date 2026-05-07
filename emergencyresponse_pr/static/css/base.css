@@ -1,3 +1,4 @@
+/* ================== ROOT ================== */
 :root {
     --primary: #E53935;
     --bg: #F7F8FA;
@@ -9,59 +10,108 @@
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* ================== GLOBAL ================== */
 body {
     background: var(--bg);
     font-family: 'Inter', sans-serif;
+    margin: 0;
 }
 
-.navbar {
-    background-color: #d3d3d3;
-    box-shadow: 0 2px 10px rgba(29, 22, 22, 0.1);
+/* ================== LAYOUT ================== */
+.app-layout {
+    display: flex;
+    min-height: 100vh;
 }
 
-.nav-link {
-    color: #272727;
-    font-weight: 500;
-    transition: color 0.3s ease;
+/* ===== SIDEBAR ===== */
+.sidebar {
+    width: 250px;
+    background: #0B1B2B;
+    color: white;
+    padding: 20px;
+    flex-shrink: 0;
 }
 
-.navbar-brand {
+.sidebar-logo {
+    font-size: 20px;
     font-weight: bold;
-    font-size: 1.5rem;
-    color: black;
+    margin-bottom: 30px;
 }
 
-.emergency-btn {
-    background-color: var(--emergency-red);
-    color: black;
-    padding: 10px 20px;
-    border-radius: 25px;
-    border: none;
-    font-weight: bold;
-    animation: pulse 2s infinite;
+.sidebar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #cbd5e1;
+    padding: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-bottom: 8px;
 }
 
-.emergency-btn:hover {
-    background-color: #c0392b;
-    transform: scale(1.05);
+.sidebar-nav .nav-link:hover,
+.sidebar-nav .nav-link.active {
+    background: #1e293b;
+    color: white;
 }
 
-@keyframes pulse {
-
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
-    }
-
-    50% {
-        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
-    }
+.sidebar-alert {
+    background: #1e293b;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 14px;
 }
 
+/* ===== MAIN AREA ===== */
+.main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+    background: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+}
+
+.search-input {
+    width: 300px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    background: #eee;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== CONTENT ===== */
+.app-main {
+    padding: 20px;
+}
+
+/* ================== MAP ================== */
 .map-container {
     height: 500px;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow);
     margin: 20px 0;
 }
 
@@ -69,22 +119,21 @@ body {
     height: 600px;
 }
 
+.map-wrapper {
+    height: 250px;
+    width: 100%;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+/* ================== INCIDENT UI ================== */
 .card {
-    border-left: 4px solid var(--primary-color);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow);
     margin-bottom: 15px;
-}
-
-.incident-card.pending {
-    border-left-color: var(--warning-yellow);
-}
-
-.incident-card.in-progress {
-    border-left-color: var(--info-blue);
-}
-
-.incident-card.resolved {
-    border-left-color: var(--success-green);
+    border-radius: var(--radius-sm);
 }
 
 .priority-high {
@@ -95,71 +144,9 @@ body {
 .priority-critical {
     color: #8b0000;
     font-weight: bold;
-    animation: blink 1s infinite;
 }
 
-@keyframes blink {
-    50% {
-        opacity: 0.7;
-    }
-}
-
-.dept-badge {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    margin: 5px 0;
-}
-
-.dept-fire {
-    background-color: #ff6b6b;
-    color: white;
-}
-
-.dept-medical {
-    background-color: #51cf66;
-    color: white;
-}
-
-.dept-police {
-    background-color: #748ffc;
-    color: white;
-}
-
-.marker-cluster {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-clip: padding-box;
-    border-radius: 50%;
-    font-weight: bold;
-    color: white;
-}
-
-.marker-cluster-small {
-    background-color: rgba(181, 226, 140, 0.6);
-    border: 2px solid rgba(110, 204, 57, 0.5);
-}
-
-.marker-cluster-medium {
-    background-color: rgba(240, 194, 123, 0.6);
-    border: 2px solid rgba(241, 128, 23, 0.5);
-}
-
-.marker-cluster-large {
-    background-color: rgba(253, 156, 115, 0.6);
-    border: 2px solid rgba(241, 61, 23, 0.5);
-}
-
-.footer {
-    background-color: #343a40;
-    color: white;
-    padding: 20px 0;
-    margin-top: 40px;
-    text-align: center;
-}
-
+/* ================== STATUS BADGES ================== */
 .status-badge {
     padding: 5px 10px;
     border-radius: 15px;
@@ -168,87 +155,24 @@ body {
 }
 
 .status-pending {
-    background-color: #ffc107;
-    color: black;
+    background: #ffc107;
 }
 
 .status-assigned {
-    background-color: #0dcaf0;
-    color: black;
+    background: #0dcaf0;
 }
 
 .status-in_progress {
-    background-color: #0d6efd;
+    background: #0d6efd;
     color: white;
 }
 
 .status-resolved {
-    background-color: #198754;
+    background: #198754;
     color: white;
 }
 
-.leaflet-popup-content {
-    font-size: 0.9rem;
-}
-
-.leaflet-popup-content p {
-    margin: 5px 0;
-}
-
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-label {
-    font-weight: 600;
-    color: #333;
-}
-
-/* Mobile Bottom Nav */
-.mobile-bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #111;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height: 65px;
-    z-index: 1000;
-    border-top: 1px solid #333;
-}
-
-/* Each item */
-.mobile-bottom-nav .nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: #aaa;
-    text-decoration: none;
-    font-size: 12px;
-    flex: 1;
-}
-
-/* Icons */
-.mobile-bottom-nav .nav-item i {
-    font-size: 18px;
-    margin-bottom: 2px;
-}
-
-/* Active / hover */
-.mobile-bottom-nav .nav-item:hover {
-    color: #fff;
-}
-
-/* Active state (optional) */
-.mobile-bottom-nav .nav-item.active {
-    color: #0d6efd;
-}
-
-
-
+/* ================== MOBILE ================== */
 .mobile-header {
     position: sticky;
     top: 0;
@@ -257,53 +181,9 @@ body {
     border-bottom: 1px solid #eee;
 }
 
-/* Warm subtle color instead of harsh red */
-.sos-btn {
-    background: #ff6b6b;
-    color: white;
-    font-weight: 600;
-}
-
-.sos-btn:hover {
-    background: #ff5252;
-}
-
-/* Give space so content doesn't hide under header */
-@media (max-width: 991px) {
-    main {
-        padding-top: 10px;
-    }
-}
-
-/* Prevent content from being hidden behind nav */
-footer {
-    margin-bottom: 65px;
-}
-
-@media (min-width: 992px) {
-    .mobile-bottom-nav {
-        display: none;
-    }
-}
-
-/* General spacing for main content */
-.app-main {
-    padding-bottom: 90px;
-    /* space for bottom nav */
-}
-
-.app-section {
-    padding: 16px;
-}
-
-/* Header with gradient and rounded corners */
 .app-header {
     background: linear-gradient(135deg, #cecbcb, #ffffff);
-    color: white;
     padding: 16px;
-    /*border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;*/
-
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -319,15 +199,7 @@ footer {
     opacity: 0.8;
 }
 
-.app-avatar {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 8px;
-    border-radius: 50%;
-    color: white;
-}
-
-
-/* Bottom navigation */
+/* ===== BOTTOM NAV ===== */
 .app-bottom-nav {
     position: fixed;
     bottom: 0;
@@ -345,7 +217,6 @@ footer {
     z-index: 1000;
 }
 
-/* Nav items */
 .app-bottom-nav .nav-item {
     flex: 1;
     text-align: center;
@@ -359,18 +230,15 @@ footer {
     justify-content: center;
 }
 
-/* Icons */
 .app-bottom-nav .nav-item i {
     font-size: 18px;
-    margin-bottom: 2px;
 }
 
-/* Active state */
 .app-bottom-nav .nav-item.active {
-    color: #E53935;
+    color: var(--primary);
 }
 
-/* 🔴 CENTER SOS BUTTON */
+/* ===== SOS BUTTON ===== */
 .nav-sos {
     position: absolute;
     top: -25px;
@@ -381,7 +249,7 @@ footer {
     height: 65px;
     border-radius: 50%;
 
-    background: #E53935;
+    background: var(--primary);
     color: white;
 
     display: flex;
@@ -393,125 +261,19 @@ footer {
 
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
     border: 4px solid white;
-    /* this gives that floating cut-out look */
 }
 
-/* Slight hover feedback */
-.nav-sos:active {
-    transform: translateX(-50%) scale(0.95);
-}
-
-/* Map container */
-.map-wrapper {
-    height: 250px;
-    width: 100%;
-}
-
-#map {
-    height: 100%;
-    width: 100%;
-}
-
-
-
-/* Desktop Enhancements */
-@media (min-width: 992px) {
-
-    /* Center content and limit width */
-    .container {
-        max-width: 1100px;
+/* ================== RESPONSIVE ================== */
+@media (max-width: 991px) {
+    .sidebar {
+        display: none;
     }
 
-    /* Improve spacing */
-    main {
-        padding-top: 30px;
-        padding-bottom: 30px;
+    .search-input {
+        width: 100%;
     }
 
-    /* Card grid layout */
-    .grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
+    .app-main {
+        padding-bottom: 90px;
     }
-
-    .grid-3 {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
-    }
-
-    /* Cards shouldn't be too wide */
-    .incident-card {
-        max-width: 700px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-}
-
-
-
-
-
-
-/* BIG SOS BUTTON in home.html */
-.sos-container {
-    padding-top: 10px;
-}
-
-.sos-big-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 140px;
-    height: 140px;
-    margin: 0 auto;
-
-    border-radius: 50%;
-
-    background: radial-gradient(circle, #ff4d4d, #E53935);
-    color: white;
-
-    font-size: 28px;
-    font-weight: bold;
-    text-decoration: none;
-
-    box-shadow:
-        0 0 0 10px rgba(229, 57, 53, 0.15),
-        0 0 0 20px rgba(229, 57, 53, 0.08),
-        0 10px 25px rgba(0, 0, 0, 0.2);
-
-    transition: transform 0.2s ease;
-}
-
-/* Press feedback */
-.sos-big-btn:active {
-    transform: scale(0.95);
-}
-
-/* Optional subtle pulse */
-@keyframes sosPulse {
-    0% {
-        box-shadow:
-            0 0 0 0 rgba(229, 57, 53, 0.4),
-            0 10px 25px rgba(0, 0, 0, 0.2);
-    }
-
-    70% {
-        box-shadow:
-            0 0 0 25px rgba(229, 57, 53, 0),
-            0 10px 25px rgba(0, 0, 0, 0.2);
-    }
-
-    100% {
-        box-shadow:
-            0 0 0 0 rgba(229, 57, 53, 0),
-            0 10px 25px rgba(0, 0, 0, 0.2);
-    }
-}
-
-.sos-big-btn {
-    animation: sosPulse 2s infinite;
 }

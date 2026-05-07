@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.container {
+    padding: 20px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: white;
+}
+
+.available { background: #28a745; }
+.busy { background: #6f42c1; }
+.offline { background: #dc3545; }
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.table th, .table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.actions button {
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.btn-available { background: #28a745; color: white; }
+.btn-busy { background: #6f42c1; color: white; }
+.btn-offline { background: #dc3545; color: white; }
+</style>
+
+<div class="container">
+
+    <h2>Responders</h2>
+
+    <!-- STATS -->
+    <div class="stats">
+        <div class="card">
+            <h4>Total</h4>
+            <h2>{{ stats.total }}</h2>
+        </div>
+        <div class="card">
+            <h4>Available</h4>
+            <h2>{{ stats.available }}</h2>
+        </div>
+        <div class="card">
+            <h4>Busy</h4>
+            <h2>{{ stats.busy }}</h2>
+        </div>
+        <div class="card">
+            <h4>Offline</h4>
+            <h2>{{ stats.offline }}</h2>
+        </div>
+    </div>
+
+    <!-- SEARCH -->
+    <form method="get">
+        <input type="text" name="search" placeholder="Search responders..." />
+        <button type="submit">Search</button>
+    </form>
+
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h2>Responders</h2>
+    <a href="{% url 'create_responder' %}" class="btn btn-primary">
+        + Add Responder
+    </a>
+</div>
+
+    <!-- TABLE -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Status</th>
+                <th>Location</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for responder in responders %}
+            <tr>
+                <td>{{ responder.user.get_full_name }}</td>
+                <td>{{ responder.department.get_name_display }}</td>
+                <td>
+                    <span class="status {{ responder.status }}">
+                        {{ responder.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ responder.department.location_name }}</td>
+
+                <td class="actions">
+
+                    <!-- STATUS UPDATE -->
+                    <form method="post" action="{% url 'update_responder_status' responder.id %}">
+                        {% csrf_token %}
+                        <button name="status" value="available" class="btn-available">Available</button>
+                        <button name="status" value="busy" class="btn-busy">Busy</button>
+                        <button name="status" value="offline" class="btn-offline">Offline</button>
+                    </form>
+
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5">No responders found</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}

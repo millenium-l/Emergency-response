@@ -84,7 +84,7 @@ def report_incident(request, department):
         form = IncidentReportForm(request.POST)
 
         if form.is_valid():
-            with transaction.atomic():  # ✅ ACID
+            with transaction.atomic():  #  ACID
                 incident = form.save(commit=False)
                 incident.user = request.user.profile
                 incident.department = department_obj
@@ -156,6 +156,89 @@ def all_incidents(request):
     })
 
 
+# Incident management views (start, cancel, resolve) with proper status checks and atomic transactions
+from django.contrib.admin.views.decorators import staff_member_required
+
+@staff_member_required
+def responders_list(request):
+
+    #  SUPERUSER → sees everything
+    if request.user.is_superuser:
+        responders = Responder.objects.select_related('user', 'department')
+
+    #  DEPARTMENT ADMIN → filter by department
+    else:
+        #  You MUST decide how admin is linked to department
+        # Using responder relation (same pattern as your incidents view)
+        if hasattr(request.user, "responder"):
+            responders = Responder.objects.select_related('user', 'department').filter(
+                department=request.user.responder.department
+            )
+        else:
+            responders = Responder.objects.none()
+
+    # Filters (apply AFTER role filtering)
+    status_filter = request.GET.get('status')
+    if status_filter:
+        responders = responders.filter(status=status_filter)
+
+    search = request.GET.get('search')
+    if search:
+        responders = responders.filter(
+            Q(user__first_name__icontains=search) |
+            Q(user__last_name__icontains=search) |
+            Q(department__name__icontains=search)
+        )
+
+    stats = {
+        "total": responders.count(),
+        "available": responders.filter(status='available').count(),
+        "busy": responders.filter(status='busy').count(),
+        "offline": responders.filter(status='offline').count(),
+    }
+
+    return render(request, "templates/responders_list.html", {
+        "responders": responders,
+        "stats": stats
+    })
+
+# API view to update responder location with proper authentication and error handling
+@login_required
+@require_http_methods(["POST"])
+def update_responder_status(request, responder_id):
+    responder = get_object_or_404(Responder, id=responder_id)
+
+    new_status = request.POST.get("status")
+    if new_status in ['available', 'busy', 'offline']:
+        responder.status = new_status
+        responder.save()
+
+    return redirect('responders_list')
+
+# API view to assign responder to incident with proper status checks and atomic transaction
+@login_required
+@transaction.atomic
+def assign_responder(request, responder_id, incident_id):
+    responder = get_object_or_404(Responder, id=responder_id)
+    incident = get_object_or_404(Incident, id=incident_id)
+
+    if responder.status == "available":
+        responder.status = "busy"
+        responder.save()
+
+        incident.assigned_responder = responder
+        incident.status = "assigned"
+        incident.save()
+
+        IncidentResponse.objects.create(
+            incident=incident,
+            responder=responder,
+            status="assigned"
+        )
+
+    return redirect("responders_list")
+
+
 @staff_member_required
 @transaction.atomic
 def resolve_incident(request, incident_id):
@@ -174,12 +257,87 @@ def incident_detail(request, incident_id):
     incident = get_object_or_404(Incident, id=incident_id)
     responses = incident.responses.all()
 
+
+    available_responders = Responder.objects.filter(
+        status='available',
+        department=incident.department
+    )
+
+
     context = {
         'incident': incident,
         'responses': responses,
+        'available_responders': available_responders,
         'can_edit': incident.user.user == request.user,
     }
     return render(request, 'templates/incident_detail.html', context)
+
+
+from django.contrib.auth.hashers import make_password
+
+@staff_member_required
+def create_responder(request):
+    departments = Department.objects.all()
+
+    if request.method == "POST":
+        form = ResponderCreateForm(request.POST, departments=departments)
+
+        if form.is_valid():
+            # Create User
+            user = User.objects.create(
+                username=form.cleaned_data['username'],
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
+            )
+
+            # Create Responder
+            Responder.objects.create(
+                user=user,
+                department=form.cleaned_data['department'],
+                phone_number=form.cleaned_data['phone_number'],
+                status='offline'  # default safer
+            )
+
+            return redirect("responders_list")
+
+    else:
+        form = ResponderCreateForm(departments=departments)
+
+    return render(request, "templates/create_responder.html", {
+        "form": form
+    })
+
+@staff_member_required
+@transaction.atomic
+def assign_responder_to_incident(request, incident_id):
+    incident = get_object_or_404(Incident.objects.select_for_update(), id=incident_id)
+
+    if request.method == "POST":
+        responder_id = request.POST.get("responder_id")
+        responder = get_object_or_404(Responder.objects.select_for_update(), id=responder_id)
+
+        # Only assign if available
+        if responder.status != "available":
+            return redirect("incident_detail", incident_id=incident.id)
+
+        #  Assign
+        incident.assigned_responder = responder
+        incident.status = "assigned"
+        incident.save()
+
+        #  Update responder
+        responder.status = "busy"
+        responder.save()
+
+        #  Track response
+        IncidentResponse.objects.create(
+            incident=incident,
+            responder=responder,
+            status="assigned"
+        )
+
+    return redirect("incident_detail", incident_id=incident.id)
+
 
 
 @login_required
@@ -198,7 +356,7 @@ def incidents_list(request):
 def start_incident(request, incident_id):
     incident = Incident.objects.select_for_update().get(id=incident_id)
 
-    if incident.status == "pending":
+    if incident.status == "assigned":
         incident.status = "in_progress"
         incident.save()
 
@@ -219,7 +377,7 @@ def cancel_incident(request, incident_id):
 
 @login_required
 def responders_map(request):
-    responders = Responder.objects.filter(is_available=True)
+    responders = Responder.objects.filter(status='available').select_related('department')
     departments = Department.objects.all()
 
     context = {
@@ -255,7 +413,7 @@ def api_get_departments(request):
 @require_http_methods(["GET"])
 def api_get_responders(request):
     responders = Responder.objects.filter(
-        is_available=True
+        status='available'
     ).values(
         'id', 'user__first_name', 'user__last_name',
         'latitude', 'longitude', 'department__name'

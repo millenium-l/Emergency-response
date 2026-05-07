@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container" style="max-width:500px;">
+
+    <h3>Add Responder</h3>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-2">
+            <label>First Name</label>
+            {{ form.first_name }}
+        </div>
+
+        <div class="mb-2">
+            <label>Last Name</label>
+            {{ form.last_name }}
+        </div>
+
+        <div class="mb-2">
+            <label>Username</label>
+            {{ form.username }}
+        </div>
+
+
+        <div class="mb-2">
+            <label>Department</label>
+            {{ form.department }}
+        </div>
+
+        <div class="mb-2">
+            <label>Phone</label>
+            {{ form.phone_number }}
+        </div>
+
+        <button class="btn btn-success w-100">Create Responder</button>
+
+    </form>
+
+</div>
+
+{% endblock %}

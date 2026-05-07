@@ -33,170 +33,136 @@
   </head>
   <body>
 
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark d-none d-lg-flex">
-      <div class="container">
-        <a class="navbar-brand" href="{% url 'home' %}">
-          <i class="fas fa-map"></i> Emergency Response System
-        </a>
+<div class="app-layout">
 
-        <div class="navbar-nav ms-auto d-flex flex-row gap-3">
-          <ul class="navbar-nav ms-auto">
-            {% if user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'home' %}"
-                ><i class="fas fa-home"></i> Home</a
-              >
-            </li>
+  <!-- SIDEBAR -->
+  <aside class="sidebar d-none d-lg-flex flex-column">
 
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'incidents_list' %}"
-                ><i class="fas fa-list"></i> My Incidents</a
-              >
-            </li>
+    <a href="{% url 'home' %}" class="text-decoration-none">
+    <div class="sidebar-logo">
+      🚑 Emergency
+    </div>
+    </a>
 
-            {% if user.is_staff %}
-            <li class="nav-item">
-            <a href="{% url 'all_incidents' %}" class="nav-link">
-              <i class="fas fa-shield-alt"></i> All Incidents
-            </a>
-            </li>
+    <nav class="sidebar-nav">
 
-            {% endif %}
+      <a href="{% url 'home' %}" class="nav-link">Dashboard</a>
+      <a href="{% url 'incidents_list' %}" class="nav-link">My Incidents</a>
 
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'responders_map' %}"
-                ><i class="fas fa-map"></i> Responders</a
-              >
-            </li>
+      {% if user.is_staff %}
+      <a href="{% url 'all_incidents' %}" class="nav-link">All Incidents</a>
+      <a href="{% url 'responders_list' %}" class="nav-link">Manage Responders</a>
+      {% endif %}
 
-            <li>
-              <a class="nav-link" href="{% url 'profile' %}"
-                ><i class="fas fa-user"></i> Profile</a
-              >
-            </li>
-            <li class="nav-item">
-              <!-- Using GET since view now permits logout_on_get=True -->
-              <a class="nav-link" href="{% url 'logout' %}"
-                ><i class="fas fa-sign-out-alt"></i> Logout</a
-              >
-            </li>
-            {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'login' %}"
-                ><i class="fas fa-sign-in-alt"></i> Login</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'register' %}"
-                ><i class="fas fa-user-plus"></i> Register</a
-              >
-            </li>
-            {% endif %}
-          </ul>
-        </div>
-      </div>
+      <a href="{% url 'responders_map' %}" class="nav-link ">Responders</a>
+      <a href="{% url 'profile' %}" class="nav-link">Profile</a>
+      <a href="{% url 'logout' %}" class="nav-link btn btn-outline-danger" >Logout</a>
+
     </nav>
 
-
-    <!-- MOBILE HEADER -->
-    <div class="mobile-header d-lg-none">
-    <div class="app-header">
-
-      <a href="{% url 'home' %}"class="text-decoration-none text-black">
-        <div>
-            <div class="app-greeting">Hello, {{ user.username|default:"Guest" }} 👋</div>
-            <div class="app-subtext">Stay safe, we’re here to help.</div>
-        </div>
-      </a>
-
-
-
-        <!--
-        <div class="d-flex align-items-center gap-3">
-            <i class="fas fa-bell"></i>
-        </div>-->
-
-        {% if user.is_authenticated %}
-        <a href="{% url 'profile' %}" class="text-decoration-none text-dark">
-  <div class="d-flex align-items-center gap-2 p-2 rounded-3 profile-link">
-
-    <div class="bg-light d-flex justify-content-center align-items-center rounded-circle"
-         style="width: 36px; height: 36px;">
-      <i class="fas fa-user"></i>
+    <div class="sidebar-alert mt-auto">
+      <strong>Emergency Alert</strong>
+      <p>Incident reported in Tudor</p>
+      <a href="#" class="btn btn-sm btn-danger w-100">View</a>
     </div>
 
-    <span class="fw-medium">{{ user.username|default:"User" }}</span>
+  </aside>
 
-  </div>
-</a>
+
+  <!-- MAIN -->
+  <div class="main-area">
+
+    <!-- TOPBAR -->
+    <div class="topbar d-none d-lg-flex">
+      {% if user.is_authenticated %}
+       <div class="topbar-greeting">
+        Hello, {{ user.username }} 👋
+        </div>
+      {% else %}
+        <div class="topbar-greeting">
+          Hello, Guest 👋
+        </div>
+      {% endif %}
+
+      <a href="{% url 'profile' %}" class="text-decoration-none">
+      <div class="topbar-user">
+        {% if user.is_authenticated %}
+        <div>
+          <strong>{{ user.username }}</strong><br>
+        </div>
+        <div class="user-avatar">
+          <i class="fas fa-user"></i>
+        </div>
         {% else %}
         <div>
-          <a href="{% url 'login' %}" class="btn btn-sm btn-primary">Login</a>
-          <a href="{% url 'register' %}" class="btn btn-sm btn-secondary">Register</a>
+          <a href="{% url 'login' %}" class="text-decoration-none btn btn-primary">Login</a>
+          <a href="{% url 'register' %}" class="text-decoration-none btn btn-secondary">Register</a>
         </div>
         {% endif %}
       </div>
-</div>
-
-
-
-    <!-- Main Content -->
-    <main class="app-main">
-    {% if messages %}
-        <div class="app-alerts px-3">
-            {% for message in messages %}
-                <div class="app-alert">{{ message }}</div>
-            {% endfor %}
+    </div>
+    </a>
+    <!-- MOBILE HEADER (RESTORE REAL CONTENT) -->
+    <div class="mobile-header d-lg-none">
+      <div class="app-header">
+        <div>
+          <div class="app-greeting">Hello, {{ user.username|default:"Guest" }} 👋</div>
+          <div class="app-subtext">Stay safe, we’re here to help.</div>
         </div>
-    {% endif %}
+      </div>
+    </div>
 
-    {% block content %}{% endblock %}
-</main>
+    
+
+    <!-- CONTENT -->
+    <main class="app-main">
+      {% block content %}{% endblock %}
+    </main>
 
 
 
-
-
-<!-- Mobile Bottom Navigation -->
-
+    <!-- MOBILE NAV (MOVE IT HERE) -->
     <nav class="app-bottom-nav d-lg-none">
 
-    <a href="{% url 'home' %}" class="nav-item">
+      <a href="{% url 'home' %}" class="nav-item">
         <i class="fas fa-home"></i>
         <span>Home</span>
-    </a>
+      </a>
 
-    <a href="{% url 'incidents_list' %}" class="nav-item">
+      <a href="{% url 'incidents_list' %}" class="nav-item">
         <i class="fas fa-list"></i>
-        <span>Incidents</span>
-    </a>
+        <span>My Incidents</span>
+      </a>
 
-    {% if user.is_staff %}
-    <a href="{% url 'all_incidents' %}" class="nav-item">
-        <i class="fas fa-shield-alt"></i>
-        <span>All</span>
-    </a>
-    {% else %}
-    <a href="{% url 'home' %}#emergency-options" class="nav-sos">
-        SOS
-    </a>
-    {% endif %}
+      {% if user.is_staff %}
+        <a href="{% url 'all_incidents' %}" class="nav-item">
+          <i class="fas fa-shield-alt"></i>
+          <span>All</span>
+        </a>
+      {% else %}
+        <a href="{% url 'home' %}#emergency-options" class="nav-sos">
+          SOS
+        </a>
+      {% endif %}
 
-    <a href="{% url 'responders_map' %}" class="nav-item">
+      <a href="{% url 'responders_map' %}" class="nav-item">
         <i class="fas fa-map"></i>
         <span>Map</span>
-    </a>
+      </a>
 
-    <a href="{% url 'profile' %}" class="nav-item">
+      <a href="{% url 'profile' %}" class="nav-item">
         <i class="fas fa-user"></i>
         <span>Profile</span>
-    </a>
+      </a>
 
-</nav>
+    </nav>
 
-      </div>
-    </main>
+
+  </div>
+
+</div>
+
+</body>
 
     <!-- Footer -->
 

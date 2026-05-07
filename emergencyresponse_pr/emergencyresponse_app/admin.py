@@ -15,15 +15,15 @@ class DepartmentAdmin(admin.ModelAdmin):
 
 @admin.register(Responder)
 class ResponderAdmin(admin.ModelAdmin):
-    list_display = ('get_full_name', 'get_department', 'phone_number', 'is_available', 'created_at')
-    list_filter = ('is_available', 'department', 'created_at')
+    list_display = ('get_full_name', 'get_department', 'phone_number', 'get_status_display', 'created_at')
+    list_filter = ('status', 'department', 'created_at')
     search_fields = ('user__first_name', 'user__last_name', 'phone_number', 'department__name')
     readonly_fields = ('created_at', 'updated_at')
     fieldsets = (
         ('User', {'fields': ('user', 'department')}),
         ('Contact', {'fields': ('phone_number',)}),
         ('Location', {'fields': ('latitude', 'longitude')}),
-        ('Status', {'fields': ('is_available',)}),
+        ('Status', {'fields': ('status',)}),
         ('Timestamps', {'fields': ('created_at', 'updated_at'), 'classes': ('collapse',)}),
     )
     
