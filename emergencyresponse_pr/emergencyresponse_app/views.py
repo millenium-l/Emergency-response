@@ -154,7 +154,13 @@ def all_incidents(request):
             Q(department__name__icontains=search)
         )
 
-    top_incident = incidents.first()
+    # Apply pagination - 5 items per page
+    paginator = Paginator(incidents, 5)
+    page_number = request.GET.get('page')
+    incidents_page = paginator.get_page(page_number)
+
+    # Get top incident from the full queryset for the sidebar
+    top_incident = paginator.object_list.first()
     if top_incident and top_incident.latitude is not None and top_incident.longitude is not None:
         top_lat = top_incident.latitude
         top_lng = top_incident.longitude
@@ -167,13 +173,8 @@ def all_incidents(request):
     else:
         top_location_text = "Mombasa Chuda"
 
-    # Pagination
-    paginator = Paginator(incidents, 5)
-    page_number = request.GET.get('page')
-    incidents = paginator.get_page(page_number)
-
     context = {
-        "incidents": incidents,
+        "incidents": incidents_page,
         "departments": departments,
         "top_incident": top_incident,
         "top_lat": top_lat,
