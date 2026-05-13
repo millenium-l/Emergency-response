@@ -11,6 +11,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from datetime import datetime
 from .forms import *
+from django.core.paginator import Paginator
 
 
 from .models import (
@@ -166,7 +167,12 @@ def all_incidents(request):
     else:
         top_location_text = "Mombasa Chuda"
 
-    return render(request, "templates/allincidents.html", {
+    # Pagination
+    paginator = Paginator(incidents, 5)
+    page_number = request.GET.get('page')
+    incidents = paginator.get_page(page_number)
+
+    context = {
         "incidents": incidents,
         "departments": departments,
         "top_incident": top_incident,
@@ -174,7 +180,9 @@ def all_incidents(request):
         "top_lng": top_lng,
         "top_location_text": top_location_text,
         "map_zoom": 14,
-    })
+    }
+    return render(request, "templates/allincidents.html", context)
+
 
 
 # Incident management views (start, cancel, resolve) with proper status checks and atomic transactions
