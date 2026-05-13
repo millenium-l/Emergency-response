@@ -12,12 +12,14 @@ from django.utils import timezone
 from datetime import datetime
 from .forms import *
 
+
 from .models import (
     Department, Profile, Responder, EmergencyUser, Incident, 
     IncidentResponse, PRIORITY_CHOICES, CHUDA_AREA_CHOICES
 )
 
 
+# home view with role-based incident filtering and map integration
 def home(request):
     departments = Department.objects.all()
 
@@ -51,7 +53,7 @@ def home(request):
 
     return render(request, 'templates/home.html', context)
 
-
+# Profile views with proper authentication and form handling
 @login_required
 def profile(request):
     profile = request.user.profile
@@ -60,7 +62,7 @@ def profile(request):
         'profile': profile,
     })
 
-
+# Profile edit view with proper authentication and form handling
 @login_required
 def profile_edit(request):
     profile = request.user.profile
@@ -76,6 +78,7 @@ def profile_edit(request):
     return render(request, 'templates/profile_edit.html', {'form': form})
 
 
+# Incident reporting view with proper authentication, form handling, and atomic transaction to ensure data integrity
 @login_required
 def report_incident(request, department):
     department_obj = Department.objects.get(name=department)
@@ -101,7 +104,7 @@ def report_incident(request, department):
         "form": form
     })
 
-
+# My Incidents view with proper authentication and role-based filtering
 @login_required
 def my_incidents(request):
     profile = request.user.profile
@@ -111,7 +114,7 @@ def my_incidents(request):
         "incidents": incidents
     })
 
-
+# All Incidents view with proper authentication, role-based filtering, and search functionality
 @staff_member_required
 def all_incidents(request):
     search = request.GET.get('search', '')
@@ -157,7 +160,7 @@ def all_incidents(request):
 
 
 # Incident management views (start, cancel, resolve) with proper status checks and atomic transactions
-from django.contrib.admin.views.decorators import staff_member_required
+# Responder list view with role-based filtering, search, and status filters
 
 @staff_member_required
 def responders_list(request):
@@ -202,7 +205,8 @@ def responders_list(request):
         "stats": stats
     })
 
-# API view to update responder location with proper authentication and error handling
+
+# API view to update responder status with proper authentication, validation, and error handling
 @login_required
 @require_http_methods(["POST"])
 def update_responder_status(request, responder_id):

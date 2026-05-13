@@ -1,5 +1,9 @@
 {% extends 'base.html' %} {% block title %}Home - Emergency Response System{%endblock %} {% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
 <style>
+
+
   /* BIG SOS BUTTON in home.html */
   .sos-container {
     padding-top: 10px;
@@ -60,12 +64,18 @@
   .sos-big-btn {
     animation: sosPulse 2s infinite;
   }
+
+  @Media (max-width: 576px) {
+    .statistics-row {
+      display: none;
+    }
+  }
 </style>
 
 <div class="row mb-4"></div>
 
 
-<div class="container">
+<div class="container ";>
   <div class="row g-4 mb-4">
     <!-- SOS Button -->
     <div class="col-12 text-center">
@@ -257,7 +267,7 @@
 </div>
 
 <!-- Statistics Row -->
-<div class="container">
+<div class="container statistics-row">
   <div class="row mt-4">
     <div class="col-md-3 mb-4">
       <div class="card border-0 shadow-sm rounded-4 h-100">
