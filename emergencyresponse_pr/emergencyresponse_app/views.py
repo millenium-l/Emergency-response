@@ -75,7 +75,7 @@ def profile_edit(request):
 
     return render(request, 'templates/profile_edit.html', {'form': form})
 
-
+# View to report incidents with proper form handling and validation, using atomic transaction for data integrity
 @login_required
 def report_incident(request, department):
     department_obj = Department.objects.get(name=department)
@@ -101,7 +101,7 @@ def report_incident(request, department):
         "form": form
     })
 
-
+# View to list user's incidents with proper filtering and search functionality
 @login_required
 def my_incidents(request):
     profile = request.user.profile
@@ -111,7 +111,7 @@ def my_incidents(request):
         "incidents": incidents
     })
 
-
+# View to list all incidents with proper filtering and search functionality, accessible only to staff
 @staff_member_required
 def all_incidents(request):
     search = request.GET.get('search', '')
@@ -150,9 +150,27 @@ def all_incidents(request):
             Q(department__name__icontains=search)
         )
 
+    top_incident = incidents.first()
+    if top_incident and top_incident.latitude is not None and top_incident.longitude is not None:
+        top_lat = top_incident.latitude
+        top_lng = top_incident.longitude
+    else:
+        top_lat = -4.0435
+        top_lng = 39.6682
+
+    if top_incident:
+        top_location_text = top_incident.location_name or top_incident.location_description or "Unknown location"
+    else:
+        top_location_text = "Mombasa Chuda"
+
     return render(request, "templates/allincidents.html", {
         "incidents": incidents,
-        "departments": departments
+        "departments": departments,
+        "top_incident": top_incident,
+        "top_lat": top_lat,
+        "top_lng": top_lng,
+        "top_location_text": top_location_text,
+        "map_zoom": 14,
     })
 
 
@@ -275,6 +293,7 @@ def incident_detail(request, incident_id):
 
 from django.contrib.auth.hashers import make_password
 
+# View to create responders with proper form handling and validation
 @staff_member_required
 def create_responder(request):
     departments = Department.objects.all()
@@ -307,6 +326,7 @@ def create_responder(request):
         "form": form
     })
 
+# API view to assign responder to incident with proper status checks and atomic transaction
 @staff_member_required
 @transaction.atomic
 def assign_responder_to_incident(request, incident_id):
@@ -339,7 +359,7 @@ def assign_responder_to_incident(request, incident_id):
     return redirect("incident_detail", incident_id=incident.id)
 
 
-
+# API view to accept incident with proper status checks and response tracking
 @login_required
 def incidents_list(request):
     try:
@@ -400,7 +420,6 @@ def api_get_incidents(request):
     )
     return JsonResponse(list(incidents), safe=False)
 
-
 @require_http_methods(["GET"])
 def api_get_departments(request):
     departments = Department.objects.values(
@@ -439,3 +458,50 @@ def api_update_responder_location(request):
         return JsonResponse({'error': 'Responder not found'}, status=404)
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    
+@login_required
+def responder_dashboard(request):
+
+    responder = Responder.objects.get(user=request.user)
+
+    assigned_incidents = Incident.objects.filter(
+        assigned_responder=responder
+    ).order_by('-created_at')
+
+    return render(request, "responder/dashboard.html", {
+        "assigned_incidents": assigned_incidents,
+        "responder": responder
+    })
+
+@login_required
+def accept_incident(request, incident_id):
+
+    responder = get_object_or_404(
+        Responder,
+        user=request.user
+    )
+
+    incident = get_object_or_404(
+        Incident,
+        id=incident_id,
+        assigned_responder=responder
+    )
+
+    # Update incident
+    incident.status = "accepted"
+    incident.accepted_at = timezone.now()
+    incident.save()
+
+    # Update response tracking
+    response = IncidentResponse.objects.filter(
+        incident=incident,
+        responder=responder
+    ).first()
+
+    if response:
+        response.status = "accepted"
+        response.responded_at = timezone.now()
+        response.save()
+
+    return redirect("responder_dashboard")
+

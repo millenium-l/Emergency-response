@@ -16,17 +16,47 @@ class IncidentReportForm(forms.ModelForm):
             'longitude': forms.HiddenInput(),
         }
 
-from django import forms
-from django.contrib.auth.models import User
-from .models import Responder
-
 class ResponderCreateForm(forms.Form):
-    first_name = forms.CharField(max_length=100)
-    last_name = forms.CharField(max_length=100)
-    username = forms.CharField(max_length=100)
+    first_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'First name',
+        }),
+        label='First Name',
+    )
+    last_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Last name',
+        }),
+        label='Last Name',
+    )
+    username = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Username',
+        }),
+        label='Username',
+    )
 
-    department = forms.ModelChoiceField(queryset=None)
-    phone_number = forms.CharField(max_length=20)
+    department = forms.ModelChoiceField(
+        queryset=None,
+        widget=forms.Select(attrs={
+            'class': 'form-select',
+        }),
+        label='Department',
+    )
+    phone_number = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Phone number',
+        }),
+        label='Phone',
+    )
 
     def __init__(self, *args, **kwargs):
         departments = kwargs.pop('departments', None)

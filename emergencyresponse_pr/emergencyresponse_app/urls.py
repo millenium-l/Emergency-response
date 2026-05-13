@@ -31,6 +31,10 @@ urlpatterns = [
     path('incident/<int:incident_id>/assign-responder/', views.assign_responder_to_incident, name='assign_responder_to_incident'),
     path('incident/<int:incident_id>/assign/', views.assign_responder_to_incident, name='assign_responder'),
     path('responders/create/', views.create_responder, name='create_responder'),
+    path("responder/dashboard/",views.responder_dashboard,name="responder_dashboard"),
+
+    # Accept Incident
+    path("incident/<int:incident_id>/accept/",views.accept_incident,name="accept_incident"),
 
     # API endpoints
     path('api/incidents/', views.api_get_incidents, name='api_incidents'),

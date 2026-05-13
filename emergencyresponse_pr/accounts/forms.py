@@ -56,7 +56,7 @@ class CustomUserCreationForm(UserCreationForm):
             ),
 
             # THE MISSING PIECE: The Submit Button added via the Helper
-            Submit('submit', 'PROTECT MY ACCOUNT', css_class='btn btn-primary-custom w-100 mt-4 fw-bold shadow-sm')
+            Submit('submit', 'CREATE ACCOUNT', css_class='btn btn-primary-custom w-100 mt-4 fw-bold shadow-sm')
         )
 
     def save(self, commit=True):

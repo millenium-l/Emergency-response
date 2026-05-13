@@ -52,13 +52,16 @@
       {% if user.is_staff %}
       <a href="{% url 'all_incidents' %}" class="nav-link">All Incidents</a>
       <a href="{% url 'responders_list' %}" class="nav-link">Manage Responders</a>
+
       {% endif %}
 
       <a href="{% url 'responders_map' %}" class="nav-link ">Responders</a>
-      <a href="{% url 'profile' %}" class="nav-link">Profile</a>
-      <a href="{% url 'logout' %}" class="nav-link btn btn-outline-danger" >Logout</a>
 
+      <!--<a href="{% url 'responder_dashboard' %}" class="nav-link btn btn-danger text-white mt-3">My Assignments</a>-->
+      
+      <a href="{% url 'profile' %}" class="nav-link">Profile</a>
     </nav>
+      <a href="{% url 'logout' %}" class="nav-link btn btn-danger" ;>Logout</a>
 
     <div class="sidebar-alert mt-auto">
       <strong>Emergency Alert</strong>
