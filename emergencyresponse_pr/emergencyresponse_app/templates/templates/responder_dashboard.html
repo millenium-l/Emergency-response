@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">
+        Assigned Emergency Incidents
+    </h2>
+
+    {% for incident in assigned_incidents %}
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between">
+
+                <h4>{{ incident.title }}</h4>
+
+                <span class="badge bg-warning text-dark">
+                    {{ incident.status }}
+                </span>
+
+            </div>
+
+            <hr>
+
+            <p>
+                <strong>Description:</strong><br>
+                {{ incident.description }}
+            </p>
+
+            <p>
+                <strong>Location:</strong>
+                {{ incident.location }}
+            </p>
+
+            <p>
+                <strong>Reported:</strong>
+                {{ incident.created_at }}
+            </p>
+
+            {% if incident.status == "assigned" %}
+
+            <a href="{% url 'accept_incident' incident.id %}"
+               class="btn btn-success">
+
+               Accept Incident
+
+            </a>
+
+            <a href="{% url 'reject_incident' incident.id %}"
+               class="btn btn-danger">
+
+               Reject
+
+            </a>
+
+            {% endif %}
+
+            {% if incident.status == "accepted" %}
+
+            <span class="badge bg-success">
+                Accepted
+            </span>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <div class="alert alert-info">
+        No assigned incidents available.
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

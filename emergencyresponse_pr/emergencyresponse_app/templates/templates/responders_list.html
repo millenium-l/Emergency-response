@@ -1,61 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-
-<style>
-.container {
-    padding: 20px;
-}
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.status {
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    color: white;
-}
-
-.available { background: #28a745; }
-.busy { background: #6f42c1; }
-.offline { background: #dc3545; }
-
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.table th, .table td {
-    padding: 12px;
-    border-bottom: 1px solid #eee;
-}
-
-.actions button {
-    border: none;
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-right: 5px;
-}
-
-.btn-available { background: #28a745; color: white; }
-.btn-busy { background: #6f42c1; color: white; }
-.btn-offline { background: #dc3545; color: white; }
-</style>
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/responder_list.css' %}">
 
 <div class="container">
 
