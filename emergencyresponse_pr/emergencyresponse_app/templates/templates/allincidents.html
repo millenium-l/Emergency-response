@@ -6,16 +6,8 @@
 
 <div class="all-page">
   <div class="dashboard-header">
-    <!--
-    <div>
-      <div class="dashboard-title">Incident Reports</div>
-      <div class="dashboard-subtitle">Review and analyze historical emergency data and response metrics.</div>
-    </div>
-    <div class="header-actions">
-      <a href="#" class="btn btn-outline-dark">Export CSV</a>
-      <a href="{% url 'all_incidents' %}" class="btn btn-danger">Full Archive</a>
-    </div>
-    -->
+
+    
   </div>
 
   <form method="GET" class="filter-panel">
@@ -43,8 +35,8 @@
         </select>
       </div>
           <div class="filter-actions">
-      <a href="{% url 'all_incidents' %}" class="btn btn-outline-secondary">Clear</a>
-      <button type="submit" class="btn btn-dark">Apply Filters</button>
+      <a href="{% url 'all_incidents' %}" class="btn btn-outline-secondary" style="height: 1cm;">Clear</a>
+      <button type="submit" class="btn btn-dark" style="height: 1cm;">Apply Filters</button>
     </div>
     </div>
   </form>
