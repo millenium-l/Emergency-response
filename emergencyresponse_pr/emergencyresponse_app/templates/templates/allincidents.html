@@ -59,7 +59,7 @@
           </thead>
           <tbody>
             {% for incident in incidents %}
-            <tr>
+              <tr class="clickable-row" style="cursor: pointer;" onclick="window.location.href='{% url 'incident_detail' incident.id %}'">
               <td class="title-cell">{{ incident.title }}</td>
               <td><span class="badge-pill status-{{ incident.status }}">{{ incident.get_status_display }}</span></td>
               <td><span class="badge-pill priority-{{ incident.priority }}">{{ incident.get_priority_display }}</span></td>
