@@ -1,5 +1,6 @@
 from django import forms
 from .models import *
+from django.contrib.auth.models import User
 
 class ProfileForm(forms.ModelForm):
     class Meta:
@@ -17,8 +18,7 @@ class IncidentReportForm(forms.ModelForm):
         }
 
 class ResponderCreateForm(forms.Form):
-    first_name = forms.CharField(
-        max_length=100,
+    first_name = forms.CharField(max_length=100,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': 'First name',
@@ -58,9 +58,19 @@ class ResponderCreateForm(forms.Form):
         label='Phone',
     )
 
+    def clean_username(self):
+        username = self.cleaned_data['username']
+
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Username already exists.")
+
+        return username
+
     def __init__(self, *args, **kwargs):
         departments = kwargs.pop('departments', None)
         super().__init__(*args, **kwargs)
 
         if departments:
             self.fields['department'].queryset = departments
+
+    

@@ -23,7 +23,7 @@ urlpatterns = [
     path("incident/<int:incident_id>/cancel/", views.cancel_incident, name="cancel_incident"),
 
     # Responder views
-    path('responders/', views.responders_map, name='responders_map'),
+    path('responders_map/', views.responders_map, name='responders_map'),
     # responders management
     path('responders/manage/', views.responders_list, name='responders_list'),
     path('responders/<int:responder_id>/status/', views.update_responder_status, name='update_responder_status'),
@@ -32,9 +32,11 @@ urlpatterns = [
     path('incident/<int:incident_id>/assign/', views.assign_responder_to_incident, name='assign_responder'),
     path('responders/create/', views.create_responder, name='create_responder'),
     path("responder/dashboard/",views.responder_dashboard,name="responder_dashboard"),
+    path("responder/<int:responder_id>/", views.responder_detail, name="responder_detail"),
 
-    # Accept Incident
-    path("incident/<int:incident_id>/accept/",views.accept_incident,name="accept_incident"),
+    # Accept and reject assignment requests
+    path("assignment/<int:request_id>/accept/",views.accept_assignment,name="accept_assignment"),
+    path("assignment/<int:request_id>/reject/",views.reject_assignment,name="reject_assignment"),
 
     # API endpoints
     path('api/incidents/', views.api_get_incidents, name='api_incidents'),

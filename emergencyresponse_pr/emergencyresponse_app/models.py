@@ -165,7 +165,7 @@ class Incident(models.Model):
 
 class IncidentResponse(models.Model):
     """Tracking response to incidents"""
-    incident = models.ForeignKey(Incident, on_delete=models.CASCADE, related_name='responses')
+    incident = models.ForeignKey(Incident, on_delete=models.CASCADE, related_name='responses', null=True)
     responder = models.ForeignKey(Responder, on_delete=models.SET_NULL, null=True)
     response_time = models.DateTimeField(auto_now_add=True)
     estimated_arrival = models.DateTimeField(null=True, blank=True)
@@ -185,3 +185,36 @@ class IncidentResponse(models.Model):
             'resolved': '#198754',
             'cancelled': '#dc3545',
         }.get(self.status, '#ffc107')
+
+# Assignment request status choices
+ASSIGNMENT_STATUS = [
+    ('pending', 'Pending'),
+    ('accepted', 'Accepted'),
+    ('rejected', 'Rejected'),
+    ('expired', 'Expired'),
+]
+
+class AssignmentRequest(models.Model):
+    incident = models.ForeignKey(Incident, on_delete=models.CASCADE, related_name='assignment_requests', null=True, blank=True)
+    responder = models.ForeignKey(Responder, on_delete=models.CASCADE, related_name='assignment_requests', null=True, blank=True)
+    status = models.CharField(max_length=20, choices=ASSIGNMENT_STATUS, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    responded_at = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    dispatched_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='dispatches_sent')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['incident', 'responder'],
+                name='unique_incident_responder_assignment'
+            )
+        ]
+
+    indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['created_at']),
+        ]
+
+    def __str__(self):
+        return f"{self.incident.title} -> {self.responder.user.username} ({self.status})"

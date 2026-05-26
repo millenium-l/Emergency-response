@@ -5,10 +5,10 @@
 <div class="container mt-4">
 
     <h2 class="mb-4">
-        Assigned Emergency Incidents
+        Pending Emergency Assignments
     </h2>
 
-    {% for incident in assigned_incidents %}
+    {% for assignment in pending_assignments %}
 
     <div class="card shadow-sm mb-4">
 
@@ -16,10 +16,10 @@
 
             <div class="d-flex justify-content-between">
 
-                <h4>{{ incident.title }}</h4>
+                <h4>{{ assignment.incident.title }}</h4>
 
                 <span class="badge bg-warning text-dark">
-                    {{ incident.status }}
+                    {{ assignment.status }}
                 </span>
 
             </div>
@@ -28,42 +28,34 @@
 
             <p>
                 <strong>Description:</strong><br>
-                {{ incident.description }}
+                {{ assignment.incident.description }}
             </p>
 
             <p>
                 <strong>Location:</strong>
-                {{ incident.location }}
+                {{ assignment.incident.location }}
             </p>
 
             <p>
                 <strong>Reported:</strong>
-                {{ incident.created_at }}
+                {{ assignment.incident.created_at }}
             </p>
 
-            {% if incident.status == "assigned" %}
+            {% if assignment.status == "pending" %}
 
-            <a href="{% url 'accept_incident' incident.id %}"
+            <a href="{% url 'accept_assignment' assignment.id %}"
                class="btn btn-success">
 
                Accept Incident
 
             </a>
 
-            <a href="{% url 'reject_incident' incident.id %}"
+            <a href="{% url 'reject_assignment' assignment.id %}"
                class="btn btn-danger">
 
                Reject
 
             </a>
-
-            {% endif %}
-
-            {% if incident.status == "accepted" %}
-
-            <span class="badge bg-success">
-                Accepted
-            </span>
 
             {% endif %}
 
@@ -74,7 +66,7 @@
     {% empty %}
 
     <div class="alert alert-info">
-        No assigned incidents available.
+        No pending assignments available.
     </div>
 
     {% endfor %}

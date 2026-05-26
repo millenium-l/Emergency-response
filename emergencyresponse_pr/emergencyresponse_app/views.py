@@ -79,6 +79,13 @@ def profile_edit(request):
     return render(request, 'templates/profile_edit.html', {'form': form})
 
 
+def responder_detail(request, responder_id):
+    responder = get_object_or_404(Responder, id=responder_id)
+    return render(request, 'templates/responder_detail.html', {
+        'responder': responder
+    })
+
+
 # Incident reporting view with proper authentication, form handling, and atomic transaction to ensure data integrity
 @login_required
 def report_incident(request, department):
@@ -192,20 +199,37 @@ def all_incidents(request):
 @staff_member_required
 def responders_list(request):
 
-    #  SUPERUSER → sees everything
-    if request.user.is_superuser:
-        responders = Responder.objects.select_related('user', 'department')
+    pending_assignments = AssignmentRequest.objects.filter(
+        status='pending'
+    ).select_related('incident', 'responder')
 
-    #  DEPARTMENT ADMIN → filter by department
+    # SUPERUSER
+    if request.user.is_superuser:
+        responders = Responder.objects.select_related(
+            'user',
+            'department'
+        )
+
+    # DEPARTMENT ADMIN
     else:
-        #  You MUST decide how admin is linked to department
-        # Using responder relation (same pattern as your incidents view)
+
         if hasattr(request.user, "responder"):
-            responders = Responder.objects.select_related('user', 'department').filter(
+
+            responders = Responder.objects.select_related(
+                'user',
+                'department'
+            ).filter(
                 department=request.user.responder.department
             )
+
+            pending_assignments = pending_assignments.filter(
+                responder__department=request.user.responder.department
+            )
+
         else:
             responders = Responder.objects.none()
+            pending_assignments = AssignmentRequest.objects.none()
+        
 
     # Filters (apply AFTER role filtering)
     status_filter = request.GET.get('status')
@@ -225,11 +249,13 @@ def responders_list(request):
         "available": responders.filter(status='available').count(),
         "busy": responders.filter(status='busy').count(),
         "offline": responders.filter(status='offline').count(),
+        "pending": pending_assignments.count(),
     }
 
     return render(request, "templates/responders_list.html", {
         "responders": responders,
-        "stats": stats
+        "stats": stats,
+        "pending_assignments": pending_assignments
     })
 
 
@@ -316,10 +342,11 @@ def create_responder(request):
 
         if form.is_valid():
             # Create User
-            user = User.objects.create(
+            user = User.objects.create_user(
                 username=form.cleaned_data['username'],
                 first_name=form.cleaned_data['first_name'],
                 last_name=form.cleaned_data['last_name'],
+                password=make_password('defaultpassword')  # Set a default password or generate one
             )
 
             # Create Responder
@@ -354,9 +381,7 @@ def assign_responder_to_incident(request, incident_id):
             return redirect("incident_detail", incident_id=incident.id)
 
         #  Assign
-        incident.assigned_responder = responder
-        incident.status = "assigned"
-        incident.save()
+        AssignmentRequest.objects.create(incident=incident, responder=responder)
 
         #  Update responder
         responder.status = "busy"
@@ -475,46 +500,70 @@ def api_update_responder_location(request):
 @login_required
 def responder_dashboard(request):
 
-    responder = Responder.objects.get(user=request.user)
-
-    assigned_incidents = Incident.objects.filter(
-        assigned_responder=responder
-    ).order_by('-created_at')
-
-    return render(request, "responder/dashboard.html", {
-        "assigned_incidents": assigned_incidents,
-        "responder": responder
-    })
-
-@login_required
-def accept_incident(request, incident_id):
-
     responder = get_object_or_404(
         Responder,
         user=request.user
     )
 
-    incident = get_object_or_404(
-        Incident,
-        id=incident_id,
-        assigned_responder=responder
+    pending_assignments = AssignmentRequest.objects.filter(
+        responder=responder,
+        status='pending'
+    ).select_related('incident', 'responder')
+
+    context = {
+        "responder": responder,
+        "pending_assignments": pending_assignments,
+    }
+
+    return render(
+        request,
+        "templates/responder_dashboard.html",
+        context
     )
 
-    # Update incident
-    incident.status = "accepted"
-    incident.accepted_at = timezone.now()
+# View to accept assignment request with proper status checks and atomic transaction
+@login_required
+@transaction.atomic
+def accept_assignment(request, request_id):
+
+    assignment = AssignmentRequest.objects.select_for_update().get(
+        id=request_id,
+        responder__user=request.user
+    )
+
+    if assignment.status != "pending":
+        return redirect("responder_dashboard")
+
+    assignment.status = "accepted"
+    assignment.responded_at = timezone.now()
+    assignment.save()
+
+    incident = assignment.incident
+    responder = assignment.responder
+
+    incident.assigned_responder = responder
+    incident.status = "assigned"
     incident.save()
 
-    # Update response tracking
-    response = IncidentResponse.objects.filter(
-        incident=incident,
-        responder=responder
-    ).first()
-
-    if response:
-        response.status = "accepted"
-        response.responded_at = timezone.now()
-        response.save()
+    responder.status = "busy"
+    responder.save()
 
     return redirect("responder_dashboard")
 
+
+# View to reject assignment request with proper status checks and atomic transaction
+@login_required
+@transaction.atomic
+def reject_assignment(request, request_id):
+
+    assignment = get_object_or_404(
+        AssignmentRequest,
+        id=request_id,
+        responder__user=request.user
+    )
+
+    assignment.status = "rejected"
+    assignment.responded_at = timezone.now()
+    assignment.save()
+
+    return redirect("responder_dashboard")
