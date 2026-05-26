@@ -199,50 +199,112 @@ def all_incidents(request):
 @staff_member_required
 def responders_list(request):
 
+    # BASE QUERYSETS
     pending_assignments = AssignmentRequest.objects.filter(
         status='pending'
-    ).select_related('incident', 'responder')
+    ).select_related(
+        'incident',
+        'responder',
+        'responder__user',
+        'responder__department'
+    )
 
     # SUPERUSER
     if request.user.is_superuser:
+
         responders = Responder.objects.select_related(
             'user',
             'department'
         )
+
+        # ACTIVE INCIDENTS
+        active_department_incidents = Incident.objects.filter(
+            status__in=['assigned', 'in_progress']
+        ).select_related(
+            'assigned_responder',
+            'assigned_responder__user',
+            'department'
+        ).order_by('-created_at')
+
+        # RESOLVED HISTORY
+        department_history = Incident.objects.filter(
+            status='resolved'
+        ).select_related(
+            'assigned_responder',
+            'assigned_responder__user',
+            'department'
+        ).order_by('-resolved_at')
 
     # DEPARTMENT ADMIN
     else:
 
         if hasattr(request.user, "responder"):
 
+            department = request.user.responder.department
+
             responders = Responder.objects.select_related(
                 'user',
                 'department'
             ).filter(
-                department=request.user.responder.department
+                department=department
             )
 
+            # FILTER PENDING ASSIGNMENTS
             pending_assignments = pending_assignments.filter(
-                responder__department=request.user.responder.department
+                responder__department=department
             )
+
+            # ACTIVE INCIDENTS
+            active_department_incidents = Incident.objects.filter(
+                department=department,
+                status__in=['assigned', 'in_progress']
+            ).select_related(
+                'assigned_responder',
+                'assigned_responder__user',
+                'department'
+            ).order_by('-created_at')
+
+            # RESOLVED HISTORY
+            department_history = Incident.objects.filter(
+                department=department,
+                status='resolved'
+            ).select_related(
+                'assigned_responder',
+                'assigned_responder__user',
+                'department'
+            ).order_by('-resolved_at')
 
         else:
-            responders = Responder.objects.none()
-            pending_assignments = AssignmentRequest.objects.none()
-        
 
-    # Filters (apply AFTER role filtering)
+            responders = Responder.objects.none()
+
+            pending_assignments = AssignmentRequest.objects.none()
+
+            active_department_incidents = Incident.objects.none()
+
+            department_history = Incident.objects.none()
+
+    # FILTERS
+
     status_filter = request.GET.get('status')
+
     if status_filter:
-        responders = responders.filter(status=status_filter)
+
+        responders = responders.filter(
+            status=status_filter
+        )
 
     search = request.GET.get('search')
+
     if search:
+
         responders = responders.filter(
             Q(user__first_name__icontains=search) |
             Q(user__last_name__icontains=search) |
             Q(department__name__icontains=search)
         )
+
+    # STATS
 
     stats = {
         "total": responders.count(),
@@ -250,14 +312,25 @@ def responders_list(request):
         "busy": responders.filter(status='busy').count(),
         "offline": responders.filter(status='offline').count(),
         "pending": pending_assignments.count(),
+        "active_incidents": active_department_incidents.count(),
+        "resolved": department_history.count(),
     }
 
-    return render(request, "templates/responders_list.html", {
+    # RENDER
+
+    context = {
         "responders": responders,
         "stats": stats,
-        "pending_assignments": pending_assignments
-    })
+        "pending_assignments": pending_assignments,
+        "active_department_incidents": active_department_incidents,
+        "department_history": department_history,
+    }
 
+    return render(
+        request,
+        "templates/responders_list.html",
+        context
+    )
 
 # API view to update responder status with proper authentication, validation, and error handling
 @login_required
@@ -505,14 +578,42 @@ def responder_dashboard(request):
         user=request.user
     )
 
+    # Pending assignment requests
     pending_assignments = AssignmentRequest.objects.filter(
         responder=responder,
         status='pending'
-    ).select_related('incident', 'responder')
+    ).select_related(
+        'incident',
+        'responder'
+    ).order_by('-created_at')
+
+    # Department incident history for sidebar
+    active_department_incidents = Incident.objects.filter(
+    department=request.user.responder.department,
+    status__in=['assigned', 'in_progress']
+)
+
+    # Active incidents
+    active_incidents = Incident.objects.select_related(
+        'department',
+        'assigned_responder'
+    ).filter(
+        assigned_responder=responder,
+        status__in=['assigned', 'in_progress']
+    ).order_by('-created_at')
+
+    # Resolved incidents history
+    resolved_incidents = Incident.objects.filter(
+        assigned_responder=responder,
+        status='resolved'
+    ).order_by('-resolved_at')
 
     context = {
         "responder": responder,
         "pending_assignments": pending_assignments,
+        "active_incidents": active_incidents,
+        "resolved_incidents": resolved_incidents,
+        "active_department_incidents": active_department_incidents,
     }
 
     return render(
@@ -567,3 +668,25 @@ def reject_assignment(request, request_id):
     assignment.save()
 
     return redirect("responder_dashboard")
+
+'''
+@staff_member_required
+@transaction.atomic
+def resolve_incident(request, incident_id):
+
+    incident = Incident.objects.select_for_update().get(id=incident_id)
+
+    if incident.status != "resolved":
+
+        incident.status = "resolved"
+        incident.resolved_at = timezone.now()
+        incident.save()
+
+        if incident.assigned_responder:
+            responder = incident.assigned_responder
+            responder.status = "available"
+            responder.save()
+
+    return redirect("incident_detail", incident_id=incident.id)
+
+'''

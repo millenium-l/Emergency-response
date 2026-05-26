@@ -8,81 +8,161 @@
 
     <!-- PAGE HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
-        <h2 class="mb-2">Responders Dashboard</h2>
 
-        <a href="{% url 'create_responder' %}" class="btn btn-primary">
+        <div>
+            <h2 class="fw-bold mb-1">
+                Responders Dashboard
+            </h2>
+
+            <p class="text-muted mb-0">
+                Manage responders, monitor incidents, and track assignment activity.
+            </p>
+        </div>
+
+        <a href="{% url 'create_responder' %}"
+           class="btn btn-primary shadow-sm">
+
             + Add Responder
+
         </a>
+
     </div>
 
     <!-- STATS -->
     <div class="row g-3 mb-4">
 
-        <div class="col-md-2 col-6">
-            <div class="card shadow-sm text-center p-3">
-                <h6>Total</h6>
-                <h3>{{ stats.total }}</h3>
+        <div class="col-lg col-md-4 col-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Total Responders
+                    </h6>
+
+                    <h2 class="fw-bold">
+                        {{ stats.total }}
+                    </h2>
+
+                </div>
             </div>
         </div>
 
-        <div class="col-md-2 col-6">
-            <div class="card shadow-sm text-center p-3">
-                <h6>Available</h6>
-                <h3 class="text-success">{{ stats.available }}</h3>
+        <div class="col-lg col-md-4 col-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Available
+                    </h6>
+
+                    <h2 class="fw-bold text-success">
+                        {{ stats.available }}
+                    </h2>
+
+                </div>
             </div>
         </div>
 
-        <div class="col-md-2 col-6">
-            <div class="card shadow-sm text-center p-3">
-                <h6>Busy</h6>
-                <h3 class="text-warning">{{ stats.busy }}</h3>
+        <div class="col-lg col-md-4 col-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Busy
+                    </h6>
+
+                    <h2 class="fw-bold text-warning">
+                        {{ stats.busy }}
+                    </h2>
+
+                </div>
             </div>
         </div>
 
-        <div class="col-md-2 col-6">
-            <div class="card shadow-sm text-center p-3">
-                <h6>Offline</h6>
-                <h3 class="text-danger">{{ stats.offline }}</h3>
+        <div class="col-lg col-md-4 col-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Offline
+                    </h6>
+
+                    <h2 class="fw-bold text-danger">
+                        {{ stats.offline }}
+                    </h2>
+
+                </div>
             </div>
         </div>
 
-        <div class="col-md-4 col-12">
-            <div class="card shadow-sm text-center p-3">
-                <h6>Pending Assignments</h6>
-                <h3 class="text-primary">{{ stats.pending }}</h3>
+        <div class="col-lg col-md-4 col-12">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Pending Assignments
+                    </h6>
+
+                    <h2 class="fw-bold text-primary">
+                        {{ stats.pending }}
+                    </h2>
+
+                </div>
             </div>
         </div>
 
     </div>
 
     <!-- SEARCH -->
-    <div class="card shadow-sm mb-4">
+    <div class="card border-0 shadow-sm mb-4">
+
         <div class="card-body">
 
-            <form method="get" class="d-flex gap-2 flex-wrap">
+            <form method="get"
+                  class="row g-2 align-items-center">
 
-                <input
-                    type="text"
-                    name="search"
-                    value="{{ request.GET.search }}"
-                    class="form-control"
-                    placeholder="Search responders..."
-                >
+                <div class="col-md">
+                    <input
+                        type="text"
+                        name="search"
+                        value="{{ request.GET.search }}"
+                        class="form-control"
+                        placeholder="Search responders by name or department..."
+                    >
+                </div>
 
-                <button type="submit" class="btn btn-dark">
-                    Search
-                </button>
+                <div class="col-md-auto">
+                    <button type="submit"
+                            class="btn btn-dark w-100">
+
+                        Search
+
+                    </button>
+                </div>
 
             </form>
 
         </div>
+
     </div>
 
     <!-- RESPONDERS TABLE -->
-    <div class="card shadow-sm mb-5">
+    <div class="card border-0 shadow-sm mb-5">
 
-        <div class="card-header">
-            <h4 class="mb-0">Responders</h4>
+        <div class="card-header bg-white border-0 py-3">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+                <h4 class="mb-0 fw-semibold">
+                    Responders
+                </h4>
+
+                <small class="text-muted">
+                    Manage responder availability and status.
+                </small>
+
+            </div>
+
         </div>
 
         <div class="table-responsive">
@@ -90,13 +170,15 @@
             <table class="table table-hover align-middle mb-0">
 
                 <thead class="table-dark">
+
                     <tr>
                         <th>Name</th>
                         <th>Department</th>
                         <th>Status</th>
                         <th>Location</th>
-                        <th width="280">Actions</th>
+                        <th width="320">Actions</th>
                     </tr>
+
                 </thead>
 
                 <tbody>
@@ -105,7 +187,7 @@
 
                     <tr>
 
-                        <td>
+                        <td class="fw-semibold">
                             {{ responder.user.get_full_name }}
                         </td>
 
@@ -116,19 +198,23 @@
                         <td>
 
                             {% if responder.status == "available" %}
-                                <span class="badge bg-success">
+
+                                <span class="badge bg-success px-3 py-2">
                                     Available
                                 </span>
 
                             {% elif responder.status == "busy" %}
-                                <span class="badge bg-warning text-dark">
+
+                                <span class="badge bg-warning text-dark px-3 py-2">
                                     Busy
                                 </span>
 
                             {% else %}
-                                <span class="badge bg-danger">
+
+                                <span class="badge bg-danger px-3 py-2">
                                     Offline
                                 </span>
+
                             {% endif %}
 
                         </td>
@@ -141,29 +227,35 @@
 
                             <form method="post"
                                   action="{% url 'update_responder_status' responder.id %}"
-                                  class="d-flex gap-2 flex-wrap">
+                                  class="d-flex flex-wrap gap-2">
 
                                 {% csrf_token %}
 
-                                <button
-                                    name="status"
-                                    value="available"
-                                    class="btn btn-sm btn-success">
+                                <button type="submit"
+                                        name="status"
+                                        value="available"
+                                        class="btn btn-sm btn-outline-success">
+
                                     Available
+
                                 </button>
 
-                                <button
-                                    name="status"
-                                    value="busy"
-                                    class="btn btn-sm btn-warning">
+                                <button type="submit"
+                                        name="status"
+                                        value="busy"
+                                        class="btn btn-sm btn-outline-warning">
+
                                     Busy
+
                                 </button>
 
-                                <button
-                                    name="status"
-                                    value="offline"
-                                    class="btn btn-sm btn-danger">
+                                <button type="submit"
+                                        name="status"
+                                        value="offline"
+                                        class="btn btn-sm btn-outline-danger">
+
                                     Offline
+
                                 </button>
 
                             </form>
@@ -175,9 +267,14 @@
                 {% empty %}
 
                     <tr>
-                        <td colspan="5" class="text-center py-4">
+
+                        <td colspan="5"
+                            class="text-center py-5 text-muted">
+
                             No responders found.
+
                         </td>
+
                     </tr>
 
                 {% endfor %}
@@ -190,11 +287,23 @@
 
     </div>
 
-    <!-- PENDING ASSIGNMENTS TABLE -->
-    <div class="card shadow-sm">
+    <!-- PENDING ASSIGNMENTS -->
+    <div class="card border-0 shadow-sm mb-5">
 
-        <div class="card-header">
-            <h4 class="mb-0">Pending Assignments</h4>
+        <div class="card-header bg-white border-0 py-3">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+                <h4 class="mb-0 fw-semibold">
+                    Pending Assignments
+                </h4>
+
+                <small class="text-muted">
+                    Waiting for responder approval.
+                </small>
+
+            </div>
+
         </div>
 
         <div class="table-responsive">
@@ -202,13 +311,15 @@
             <table class="table table-hover align-middle mb-0">
 
                 <thead class="table-dark">
+
                     <tr>
                         <th>Incident</th>
                         <th>Responder</th>
                         <th>Department</th>
                         <th>Status</th>
-                        <th>Created</th>
+                        <th>Reported</th>
                     </tr>
+
                 </thead>
 
                 <tbody>
@@ -217,10 +328,8 @@
 
                     <tr>
 
-                        <td>
-                            <strong>
-                                {{ assignment.incident.title }}
-                            </strong>
+                        <td class="fw-semibold">
+                            {{ assignment.incident.title }}
                         </td>
 
                         <td>
@@ -232,9 +341,11 @@
                         </td>
 
                         <td>
-                            <span class="badge bg-warning text-dark">
-                                {{ assignment.status }}
+
+                            <span class="badge bg-warning text-dark px-3 py-2">
+                                Pending
                             </span>
+
                         </td>
 
                         <td>
@@ -246,9 +357,207 @@
                 {% empty %}
 
                     <tr>
-                        <td colspan="5" class="text-center py-4">
-                            No pending assignments.
+
+                        <td colspan="5"
+                            class="text-center py-5 text-muted">
+
+                            No pending assignments available.
+
                         </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- ACTIVE INCIDENTS -->
+    <div class="card border-0 shadow-sm mb-5">
+
+        <div class="card-header bg-white border-0 py-3">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+                <h4 class="mb-0 fw-semibold">
+                    Active Incidents
+                </h4>
+
+                <small class="text-muted">
+                    Ongoing emergency operations.
+                </small>
+
+            </div>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-dark">
+
+                    <tr>
+                        <th>Incident</th>
+                        <th>Responder</th>
+                        <th>Department</th>
+                        <th>Status</th>
+                        <th>Started</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for incident in active_department_incidents %}
+
+                    <tr>
+
+                        <td class="fw-semibold">
+                            {{ incident.title }}
+                        </td>
+
+                        <td>
+
+                            {% if incident.assigned_responder %}
+                                {{ incident.assigned_responder.user.get_full_name }}
+                            {% else %}
+                                Unassigned
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {{ incident.department.get_name_display }}
+                        </td>
+
+                        <td>
+
+                            {% if incident.status == "assigned" %}
+
+                                <span class="badge bg-warning text-dark px-3 py-2">
+                                    Assigned
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-primary px-3 py-2">
+                                    In Progress
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {{ incident.created_at }}
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="5"
+                            class="text-center py-5 text-muted">
+
+                            No active incidents available.
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- INCIDENT HISTORY -->
+    <div class="card border-0 shadow-sm mb-5">
+
+        <div class="card-header bg-white border-0 py-3">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+                <h4 class="mb-0 fw-semibold">
+                    Resolved Incident History
+                </h4>
+
+                <small class="text-muted">
+                    Completed emergency response records.
+                </small>
+
+            </div>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-dark">
+
+                    <tr>
+                        <th>Incident</th>
+                        <th>Responder</th>
+                        <th>Department</th>
+                        <th>Resolved At</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for incident in department_history %}
+
+                    <tr>
+
+                        <td class="fw-semibold">
+                            {{ incident.title }}
+                        </td>
+
+                        <td>
+
+                            {% if incident.assigned_responder %}
+                                {{ incident.assigned_responder.user.get_full_name }}
+                            {% else %}
+                                Unassigned
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {{ incident.department.get_name_display }}
+                        </td>
+
+                        <td>
+                            {{ incident.resolved_at }}
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="4"
+                            class="text-center py-5 text-muted">
+
+                            No resolved incidents available.
+
+                        </td>
+
                     </tr>
 
                 {% endfor %}
