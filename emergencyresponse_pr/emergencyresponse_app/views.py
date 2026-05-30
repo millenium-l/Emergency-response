@@ -1,3 +1,4 @@
+import http
 from urllib import request
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -62,6 +63,10 @@ def profile(request):
         'title': profile,
         'profile': profile,
     })
+
+@login_required
+def custom_403(request):
+    return render(request, 'templates/custom_403.html', status=403)
 
 # Profile edit view with proper authentication and form handling
 @login_required
@@ -570,13 +575,16 @@ def api_update_responder_location(request):
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
     
+from django.http import HttpResponseForbidden
 @login_required
 def responder_dashboard(request):
     # Get responder profile
-    responder = get_object_or_404(
-        Responder,
-        user=request.user
-    )
+    try:
+        responder = Responder.objects.get(user=request.user)
+        print("Responder found:", responder)
+    except Responder.DoesNotExist:
+        print("Responder not found for user:", request.user)
+        return redirect('custom_403')
 
     # Pending assignment requests
     pending_assignments = AssignmentRequest.objects.filter(

@@ -18,6 +18,8 @@ urlpatterns = [
     path('incidents/', views.my_incidents, name='incidents_list'),
     path('all-incidents/', views.all_incidents, name='all_incidents'),
     path("incident/<int:incident_id>/resolve/",views.resolve_incident,name="resolve_incident"),
+    # handle 403 errors with custom view
+    path('403/', views.custom_403, name='custom_403'),
 
     path("incident/<int:incident_id>/start/", views.start_incident, name="start_incident"),
     path("incident/<int:incident_id>/cancel/", views.cancel_incident, name="cancel_incident"),
