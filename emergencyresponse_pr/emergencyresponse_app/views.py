@@ -572,7 +572,7 @@ def api_update_responder_location(request):
     
 @login_required
 def responder_dashboard(request):
-
+    # Get responder profile
     responder = get_object_or_404(
         Responder,
         user=request.user
