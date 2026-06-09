@@ -11,31 +11,56 @@
     <form method="post">
         {% csrf_token %}
 
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
         <div class="mb-2">
             <label>First Name</label>
             {{ form.first_name }}
+            {{ form.first_name.errors }}
         </div>
 
         <div class="mb-2">
             <label>Last Name</label>
             {{ form.last_name }}
+            {{ form.last_name.errors }}
         </div>
 
         <div class="mb-2">
             <label>Username</label>
             {{ form.username }}
+            {{ form.username.errors }}
         </div>
 
 
         <div class="mb-2">
             <label>Department</label>
             {{ form.department }}
+            {{ form.department.errors }}
         </div>
 
         <div class="mb-2">
             <label>Phone</label>
             {{ form.phone_number }}
+            {{ form.phone_number.errors }}
         </div>
+
+        <div class="mb-2">
+            <label>Password</label>
+            {{ form.password1 }}
+            {{ form.password1.errors }}
+        </div>
+
+        <div class="mb-2">
+            <label>Confirm Password</label>
+            {{ form.password2 }}
+            {{ form.password2.errors }}
+        </div>
+
+
 
         <button class="btn btn-success w-100">Create Responder</button>
 

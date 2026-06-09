@@ -408,8 +408,6 @@ def incident_detail(request, incident_id):
     return render(request, 'templates/incident_detail.html', context)
 
 
-from django.contrib.auth.hashers import make_password
-
 # View to create responders with proper form handling and validation
 @staff_member_required
 def create_responder(request):
@@ -424,8 +422,10 @@ def create_responder(request):
                 username=form.cleaned_data['username'],
                 first_name=form.cleaned_data['first_name'],
                 last_name=form.cleaned_data['last_name'],
-                password=make_password('defaultpassword')  # Set a default password or generate one
+                password=form.cleaned_data['password1']
             )
+            user.set_password(form.cleaned_data['password1'])
+            user.save()
 
             # Create Responder
             Responder.objects.create(
