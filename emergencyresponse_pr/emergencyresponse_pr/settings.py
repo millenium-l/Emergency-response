@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-+6wqzq-o4bp_wzc!0y092ln0@y&h!$f5iaj^fo3-f4rp_xb-@8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['KainguMike.pythonanywhere.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['KainguMike.pythonanywhere.com', 'rick2000.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 # Security settings
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
