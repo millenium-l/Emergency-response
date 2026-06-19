@@ -14,7 +14,7 @@ from datetime import datetime
 from .forms import *
 from django.core.paginator import Paginator
 
-
+# Import models with proper relationships and fields
 from .models import (
     Department, Profile, Responder, EmergencyUser, Incident, 
     IncidentResponse, PRIORITY_CHOICES, CHUDA_AREA_CHOICES
@@ -63,7 +63,7 @@ def profile(request):
         'title': profile,
         'profile': profile,
     })
-
+# Custom 403 view for unauthorized access with proper authentication check
 @login_required
 def custom_403(request):
     return render(request, 'templates/custom_403.html', status=403)
@@ -83,7 +83,7 @@ def profile_edit(request):
 
     return render(request, 'templates/profile_edit.html', {'form': form})
 
-
+# Responder detail view with proper authentication and data retrieval
 def responder_detail(request, responder_id):
     responder = get_object_or_404(Responder, id=responder_id)
     return render(request, 'templates/responder_detail.html', {
@@ -373,7 +373,7 @@ def assign_responder(request, responder_id, incident_id):
 
     return redirect("responders_list")
 
-
+# API view to resolve incident with proper status checks and atomic transaction
 @staff_member_required
 @transaction.atomic
 def resolve_incident(request, incident_id):
@@ -386,7 +386,7 @@ def resolve_incident(request, incident_id):
 
     return redirect("incident_detail", incident_id=incident.id)
 
-
+# Incident detail view with proper authentication, data retrieval, and role-based access control
 @login_required
 def incident_detail(request, incident_id):
     incident = get_object_or_404(Incident, id=incident_id)
@@ -486,7 +486,7 @@ def incidents_list(request):
 
     return render(request, 'templates/incidents_list.html', {'incidents': incidents})
 
-
+# View to start incident with proper status checks and atomic transaction
 @login_required
 @transaction.atomic
 def start_incident(request, incident_id):
@@ -498,7 +498,7 @@ def start_incident(request, incident_id):
 
     return redirect("incident_detail", incident_id=incident_id)
 
-
+# View to cancel incident with proper status checks and atomic transaction
 @login_required
 @transaction.atomic
 def cancel_incident(request, incident_id):
@@ -510,7 +510,7 @@ def cancel_incident(request, incident_id):
 
     return redirect("incident_detail", incident_id=incident_id)
 
-
+# Responder map view with proper authentication, data retrieval, and map integration
 @login_required
 def responders_map(request):
     responders = Responder.objects.filter(status='available').select_related('department')
@@ -525,7 +525,7 @@ def responders_map(request):
     }
     return render(request, 'templates/responders_map.html', context)
 
-
+# API endpoints for incidents, departments, responders, and location updates with proper authentication, validation, and error handling
 @require_http_methods(["GET"])
 def api_get_incidents(request):
     incidents = Incident.objects.filter(
@@ -536,6 +536,7 @@ def api_get_incidents(request):
     )
     return JsonResponse(list(incidents), safe=False)
 
+# API endpoint to get departments with proper authentication and data retrieval
 @require_http_methods(["GET"])
 def api_get_departments(request):
     departments = Department.objects.values(
@@ -544,7 +545,7 @@ def api_get_departments(request):
     )
     return JsonResponse(list(departments), safe=False)
 
-
+# API endpoint to get available responders with proper authentication and data retrieval
 @require_http_methods(["GET"])
 def api_get_responders(request):
     responders = Responder.objects.filter(
@@ -555,7 +556,7 @@ def api_get_responders(request):
     )
     return JsonResponse(list(responders), safe=False)
 
-
+# API endpoint to update responder location with proper authentication, validation, and error handling
 @login_required
 @require_http_methods(["POST"])
 @transaction.atomic
@@ -574,7 +575,8 @@ def api_update_responder_location(request):
         return JsonResponse({'error': 'Responder not found'}, status=404)
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
-    
+
+# Additional views for responder dashboard, assignment acceptance/rejection, and incident resolution with proper authentication, status checks, and atomic transactions  
 from django.http import HttpResponseForbidden
 @login_required
 def responder_dashboard(request):
