@@ -24,6 +24,7 @@ from .models import (
 # home view with role-based incident filtering and map integration
 def home(request):
     departments = Department.objects.all()
+    profile = request.user.profile if request.user.is_authenticated else None
 
     if request.user.is_authenticated:
         if request.user.is_superuser:
@@ -51,6 +52,7 @@ def home(request):
         'mombasa_lat': -4.0435,
         'mombasa_lng': 39.6682,
         'map_zoom': 14,
+        'profile': profile,
     }
 
     return render(request, 'templates/home.html', context)
