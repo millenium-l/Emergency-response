@@ -153,15 +153,17 @@
         </div>
 
         {% for incident in active_incidents %}
+        <a href="{% url 'incident_detail' incident.id %}" class="text-decoration-none, cursor-pointer ">
         <div class="mobile-incident-row">
             <div class="d-flex justify-content-between align-items-start mb-2">
                 <div>
-                    <h6 class="fw-bold text-dark mb-1">{{ incident.title }}</h6>
+                    <h6 class="fw-bold text-dark mb-1 text-decoration-none">{{ incident.title }}</h6>
                     <div class="d-flex align-items-center gap-2 text-muted small">
                         <span class="dept-indicator-dot bg-danger"></span>
                         <span>{{ incident.department.get_name_display }}</span>
                     </div>
                 </div>
+                
                 <div>
                     {% if incident.status == "assigned" %}
                     <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1">Assigned</span>
@@ -175,6 +177,7 @@
                 <span><i class="far fa-calendar-alt me-1"></i>{{ incident.created_at|date:"M d, H:i" }}</span>
             </div>
         </div>
+        </a>
         {% empty %}
         <div class="p-4 text-center bg-white border rounded-4 text-muted small">
             No active operations currently open.
