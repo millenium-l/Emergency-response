@@ -80,11 +80,11 @@
     <div class="topbar d-none d-lg-flex">
       {% if user.is_authenticated %}
        <div class="topbar-greeting">
-        Hello, {{ user.username }} 👋
+        Hello, {{ user.username }} 
         </div>
       {% else %}
         <div class="topbar-greeting">
-          Hello, Guest 👋
+          Hello, Guest 
         </div>
       {% endif %}
 
@@ -110,7 +110,7 @@
     <div class="mobile-header d-lg-none">
       <div class="app-header">
         <div>
-          <div class="app-greeting">Hello, {{ user.username|default:"Guest" }} 👋</div>
+          <div class="app-greeting">Hello, {{ user.username|default:"Guest" }} </div>
           <div class="app-subtext">Stay safe, we’re here to help.</div>
         </div>
       </div>
