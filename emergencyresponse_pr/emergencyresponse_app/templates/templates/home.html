@@ -165,7 +165,7 @@
             <div class="card native-feed-card">
                 <div class="card-header bg-transparent border-0 pt-4 pb-2 px-3 d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-bullhorn text-warning me-2"></i>Recent Incidents</h5>
-                    <a href="#" class="text-decoration-none small fw-semibold text-danger">View all <i class="fas fa-chevron-right ms-1" style="font-size: 0.7rem;"></i></a>
+                    <a href="{% url 'all_incidents' %}" class="text-decoration-none small fw-semibold text-danger">View all <i class="fas fa-chevron-right ms-1" style="font-size: 0.7rem;"></i></a>
                 </div>
                 <div class="card-body p-0" style="max-height: 420px; overflow-y: auto;">
                     {% if incidents %}
