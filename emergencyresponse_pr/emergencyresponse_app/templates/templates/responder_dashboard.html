@@ -2,340 +2,211 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<style>
+    body {
+        background-color: #f6f8fa;
+    }
+    .incoming-alert-card {
+        background: #ffffff;
+        border: 2px solid #dc3545;
+        border-radius: 18px;
+        box-shadow: 0 8px 24px rgba(220, 53, 69, 0.12);
+        position: relative;
+        overflow: hidden;
+        animation: pulse-border 2s infinite alternate;
+    }
+    @keyframes pulse-border {
+        0% { border-color: #dc3545; box-shadow: 0 8px 24px rgba(220, 53, 69, 0.12); }
+        100% { border-color: #f5c2c7; box-shadow: 0 8px 30px rgba(220, 53, 69, 0.25); }
+    }
+    .alert-banner-indicator {
+        background-color: #dc3545;
+        color: #fff;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        padding: 0.4rem 1rem;
+        display: inline-block;
+        border-bottom-right-radius: 12px;
+    }
+    .meta-detail-pill {
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+    }
+    .mobile-incident-row {
+        background: #ffffff;
+        border: 1px solid #e9ecef;
+        border-radius: 14px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        transition: transform 0.15s ease;
+    }
+    .mobile-incident-row:active {
+        transform: scale(0.99);
+        background-color: #f8f9fa;
+    }
+    .dept-indicator-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .btn-action-mobile {
+        padding: 0.85rem 1rem;
+        font-weight: 600;
+        border-radius: 12px;
+    }
+</style>
 
-    <!-- PAGE HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+<div class="container px-3 pt-3 pb-5">
 
-        <div>
-
-            <h2 class="fw-bold mb-1">
-                Responder Dashboard
-            </h2>
-
-            <p class="text-muted mb-0">
-                Manage emergency assignments and monitor active incidents.
-            </p>
-
-        </div>
-
+    <div class="mb-4 mt-2">
+        <h3 class="fw-bold text-dark mb-1">Responder Dashboard</h3>
+        <p class="text-secondary small mb-0">Manage emergency assignments and monitor active incidents real-time.</p>
     </div>
 
-    <!-- PENDING ASSIGNMENTS -->
-    <div class="card border-0 shadow-sm mb-5">
-
-        <div class="card-header bg-white border-0 py-3">
-
-            <div class="d-flex justify-content-between align-items-center flex-wrap">
-
-                <h4 class="mb-0 fw-semibold">
-                    Pending Emergency Assignments
-                </h4>
-
-                <small class="text-muted">
-                    Review and respond to incoming emergency requests.
-                </small>
-
-            </div>
-
+    <div class="mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3 px-1">
+            <h5 class="fw-bold mb-0 text-dark">
+                <span class="position-relative d-inline-block">
+                    Incoming Dispatches
+                    {% if pending_assignments %}<span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle ms-1"></span>{% endif %}
+                </span>
+            </h5>
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1.5 font-monospace small">Live Monitoring</span>
         </div>
 
-        <div class="card-body">
+        {% for assignment in pending_assignments %}
+        <div class="incoming-alert-card mb-4">
+            <div class="d-flex justify-content-between align-items-center bg-light-subtle border-bottom">
+                <div class="alert-banner-indicator">
+                    <i class="fas fa-bullhorn me-1"></i> Urgent Assignment
+                </div>
+                <div class="pe-3">
+                    <span class="badge bg-warning text-dark px-2.5 py-1.5 rounded-pill fw-semibold">Pending Response</span>
+                </div>
+            </div>
 
-            {% for assignment in pending_assignments %}
-
-            <div class="card border shadow-sm mb-4">
-
-                <div class="card-body">
-
-                    <!-- INCIDENT HEADER -->
-                    <div class="d-flex justify-content-between align-items-start flex-wrap mb-3">
-
-                        <div>
-
-                            <h4 class="fw-bold mb-1">
-                                {{ assignment.incident.title }}
-                            </h4>
-
-                            <small class="text-muted">
-                                Emergency Incident Assignment
-                            </small>
-
-                        </div>
-
-                        <span class="badge bg-warning text-dark px-3 py-2">
-                            Pending
-                        </span>
-
-                    </div>
-
-                    <hr>
-
-                    <!-- INCIDENT DETAILS -->
-                    <div class="row g-4">
-
-                        <div class="col-md-6">
-
-                            <h6 class="fw-semibold">
-                                Description
-                            </h6>
-
-                            <p class="text-muted">
-                                {{ assignment.incident.description }}
-                            </p>
-
-                        </div>
-
-                        <div class="col-md-6">
-
-                            <div class="mb-3">
-
-                                <h6 class="fw-semibold">
-                                    Location
-                                </h6>
-
-                                <p class="text-muted mb-0">
-                                    {{ assignment.incident.latitude }}, {{ assignment.incident.longitude }}
-                                </p>
-
-                            </div>
-
-                            <div>
-
-                                <h6 class="fw-semibold">
-                                    Reported At
-                                </h6>
-
-                                <p class="text-muted mb-0">
-                                    {{ assignment.incident.created_at }}
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <!-- ACTION BUTTONS -->
-                    {% if assignment.status == "pending" %}
-
-                    <div class="d-flex gap-3 mt-4 flex-wrap">
-
-                        <a href="{% url 'accept_assignment' assignment.id %}"
-                           class="btn btn-success">
-
-                            Accept Incident
-
-                        </a>
-
-                        <a href="{% url 'reject_assignment' assignment.id %}"
-                           class="btn btn-outline-danger">
-
-                            Reject Assignment
-
-                        </a>
-
-                    </div>
-
-                    {% endif %}
-
+            <div class="p-3">
+                <div class="mb-3">
+                    <h4 class="fw-bold text-dark mb-1">{{ assignment.incident.title }}</h4>
+                    <p class="text-secondary mb-0 small"><i class="fas fa-shield-alt text-danger me-1"></i>Emergency incident requires immediate field deployment.</p>
                 </div>
 
+                <div class="p-3 bg-light rounded-3 mb-3 border-start border-danger border-3">
+                    <span class="text-muted d-block small text-uppercase fw-bold mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">Incident Description</span>
+                    <p class="text-dark mb-0 fw-medium" style="font-size: 0.95rem;">
+                        {{ assignment.incident.description }}
+                    </p>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <div class="meta-detail-pill">
+                            <span class="text-muted d-block small mb-1"><i class="fas fa-map-marker-alt text-danger me-1"></i>Location</span>
+                            <code class="text-dark small d-block text-truncate fw-semibold">{{ assignment.incident.latitude }}, {{ assignment.incident.longitude }}</code>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="meta-detail-pill">
+                            <span class="text-muted d-block small mb-1"><i class="fas fa-clock text-secondary me-1"></i>Reported At</span>
+                            <span class="text-dark small d-block fw-semibold text-truncate">{{ assignment.incident.created_at|date:"H:i" }} hrs</span>
+                        </div>
+                    </div>
+                </div>
+
+                {% if assignment.status == "pending" %}
+                <div class="row g-2 pt-2">
+                    <div class="col-12 col-sm-8 order-1 order-sm-2">
+                        <a href="{% url 'accept_assignment' assignment.id %}" class="btn btn-success btn-action-mobile w-100 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                            <i class="fas fa-check-circle fs-5"></i> Accept Incident
+                        </a>
+                    </div>
+                    <div class="col-12 col-sm-4 order-2 order-sm-1">
+                        <a href="{% url 'reject_assignment' assignment.id %}" class="btn btn-outline-secondary btn-action-mobile w-100 border-1">
+                            Decline
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
             </div>
-
-            {% empty %}
-
-            <div class="alert alert-info mb-0">
-
-                No pending emergency assignments available.
-
-            </div>
-
-            {% endfor %}
-
         </div>
-
+        {% empty %}
+        <div class="text-center py-4 px-3 bg-white border rounded-4 shadow-sm">
+            <div class="text-success mb-2">
+                <i class="far fa-check-circle fs-1"></i>
+            </div>
+            <h6 class="fw-bold text-dark mb-1">Clear Horizon</h6>
+            <p class="text-muted small mb-0">No pending emergency dispatches at this moment.</p>
+        </div>
+        {% endfor %}
     </div>
 
-    <!-- ACTIVE INCIDENTS -->
-    <div class="card border-0 shadow-sm mb-5">
+    <div class="mb-5">
+        <div class="mb-3 px-1">
+            <h5 class="fw-bold text-dark mb-1">Active Incidents</h5>
+            <p class="text-muted small mb-0">Ongoing incidents currently assigned to your path.</p>
+        </div>
 
-        <div class="card-header bg-white border-0 py-3">
-
-            <div class="d-flex justify-content-between align-items-center flex-wrap">
-
-                <h4 class="mb-0 fw-semibold">
-                    Active Incidents
-                </h4>
-
-                <small class="text-muted">
-                    Ongoing incidents currently assigned to you.
-                </small>
-
+        {% for incident in active_incidents %}
+        <div class="mobile-incident-row">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <h6 class="fw-bold text-dark mb-1">{{ incident.title }}</h6>
+                    <div class="d-flex align-items-center gap-2 text-muted small">
+                        <span class="dept-indicator-dot bg-danger"></span>
+                        <span>{{ incident.department.get_name_display }}</span>
+                    </div>
+                </div>
+                <div>
+                    {% if incident.status == "assigned" %}
+                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1">Assigned</span>
+                    {% else %}
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1">In Progress</span>
+                    {% endif %}
+                </div>
             </div>
-
+            <div class="pt-2 border-top d-flex justify-content-between text-muted" style="font-size: 0.75rem;">
+                <span><i class="fas fa-compass me-1"></i>{{ incident.latitude|slice:":7" }}, {{ incident.longitude|slice:":7" }}</span>
+                <span><i class="far fa-calendar-alt me-1"></i>{{ incident.created_at|date:"M d, H:i" }}</span>
+            </div>
         </div>
-
-        <div class="table-responsive">
-
-            <table class="table table-hover align-middle mb-0">
-
-                <thead class="table-dark">
-
-                    <tr>
-                        <th>Incident</th>
-                        <th>Department</th>
-                        <th>Status</th>
-                        <th>Location</th>
-                        <th>Started</th>
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                {% for incident in active_incidents %}
-
-                    <tr>
-
-                        <td class="fw-semibold">
-                            {{ incident.title }}
-                        </td>
-
-                        <td>
-                            {{ incident.department.get_name_display }}
-                        </td>
-
-                        <td>
-
-                            {% if incident.status == "assigned" %}
-
-                                <span class="badge bg-warning text-dark px-3 py-2">
-                                    Assigned
-                                </span>
-
-                            {% else %}
-
-                                <span class="badge bg-primary px-3 py-2">
-                                    In Progress
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-                        <td>
-                            {{ incident.latitude }}, {{ incident.longitude }}
-                        </td>
-
-                        <td>
-                            {{ incident.created_at }}
-                        </td>
-
-                    </tr>
-
-                {% empty %}
-
-                    <tr>
-
-                        <td colspan="5"
-                            class="text-center py-5 text-muted">
-
-                            No active incidents assigned.
-
-                        </td>
-
-                    </tr>
-
-                {% endfor %}
-
-                </tbody>
-
-            </table>
-
+        {% empty %}
+        <div class="p-4 text-center bg-white border rounded-4 text-muted small">
+            No active operations currently open.
         </div>
-
+        {% endfor %}
     </div>
 
-    <!-- RESOLVED INCIDENT HISTORY -->
-    <div class="card border-0 shadow-sm">
+    <div>
+        <div class="mb-3 px-1">
+            <h5 class="fw-bold text-dark mb-1">Resolved History</h5>
+            <p class="text-muted small mb-0">Previously completed emergency operations.</p>
+        </div>
 
-        <div class="card-header bg-white border-0 py-3">
-
-            <div class="d-flex justify-content-between align-items-center flex-wrap">
-
-                <h4 class="mb-0 fw-semibold">
-                    Resolved Incident History
-                </h4>
-
-                <small class="text-muted">
-                    Previously completed emergency incidents.
-                </small>
-
+        {% for incident in resolved_incidents %}
+        <div class="mobile-incident-row" style="opacity: 0.85;">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <h6 class="fw-normal text-secondary text-decoration-line-through mb-1">{{ incident.title }}</h6>
+                    <small class="text-muted d-block" style="font-size: 0.75rem;">{{ incident.department.get_name_display }}</small>
+                </div>
+                <span class="badge bg-light text-success border rounded-pill px-2.5 py-1"><i class="fas fa-check me-1"></i>Done</span>
             </div>
-
+            <div class="pt-2 border-top d-flex justify-content-between text-muted" style="font-size: 0.75rem;">
+                <span><i class="fas fa-map-marker-alt me-1"></i>Mombasa Area</span>
+                <span>Resolved: {{ incident.resolved_at|date:"M d, H:i" }}</span>
+            </div>
         </div>
-
-        <div class="table-responsive">
-
-            <table class="table table-hover align-middle mb-0">
-
-                <thead class="table-dark">
-
-                    <tr>
-                        <th>Incident</th>
-                        <th>Department</th>
-                        <th>Location</th>
-                        <th>Resolved At</th>
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                {% for incident in resolved_incidents %}
-
-                    <tr>
-
-                        <td class="fw-semibold">
-                            {{ incident.title }}
-                        </td>
-
-                        <td>
-                            {{ incident.department.get_name_display }}
-                        </td>
-
-                        <td>
-                            {{ incident.latitude }}, {{ incident.longitude }}
-                        </td>
-
-                        <td>
-                            {{ incident.resolved_at }}
-                        </td>
-
-                    </tr>
-
-                {% empty %}
-
-                    <tr>
-
-                        <td colspan="4"
-                            class="text-center py-5 text-muted">
-
-                            No resolved incidents available.
-
-                        </td>
-
-                    </tr>
-
-                {% endfor %}
-
-                </tbody>
-
-            </table>
-
+        {% empty %}
+        <div class="p-4 text-center bg-white border rounded-4 text-muted small">
+            No history entries archived.
         </div>
-
+        {% endfor %}
     </div>
 
 </div>
