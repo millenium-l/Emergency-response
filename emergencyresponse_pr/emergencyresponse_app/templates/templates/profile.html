@@ -166,51 +166,76 @@
             </div>
             <i class="fas fa-chevron-right text-muted small"></i>
         </a>
-        <div class="menu-item-row">
+        <div class="menu-item-row" data-bs-toggle="collapse" data-bs-target="#emergencyContactsCollapse" aria-expanded="false" aria-controls="emergencyContactsCollapse" style="cursor: pointer;">
             <div class="d-flex align-items-center">
-                <div class="menu-icon-box danger-light">
+                <div class="menu-icon-box danger-light me-2">
                     <i class="fas fa-id-card"></i>
                 </div>
                 <div>
                     <div class="fw-semibold text-dark" style="font-size: 0.95rem;">Emergency Contacts</div>
-                    <div class="text-muted small" style="font-size: 0.75rem;">{{ profile.emergency_contact_name }} · {{ profile.emergency_contact_phone }}</div>
+                    <div class="text-muted small" style="font-size: 0.75rem;">View details here or update them in Personal Info above</div>
+                </div>           
+            </div>
+            <i class="fas fa-chevron-down text-muted small collapse-icon"></i>
+        </div>
+
+        <div class="collapse bg-light border-bottom" id="emergencyContactsCollapse">
+            <div class="p-3">
+                <div class="text-secondary small fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Primary Contact</div>
+                <div class="text-dark fw-semibold" style="font-size: 0.95rem;">
+                    {{ profile.emergency_contact_name|default:"No contact name provided" }}
+                </div>
+                <div class="text-muted small">
+                    {{ profile.emergency_contact_phone|default:"No phone number on file" }}
                 </div>
             </div>
-            <i class="fas fa-chevron-right text-muted small"></i>
         </div>
     </div>
 
+    <!-- Support & Information -->
     <p class="text-secondary small fw-bold px-1 mb-2 text-uppercase" style="letter-spacing: 0.5px; font-size: 0.75rem;">Support & Information</p>
-    <div class="card menu-group-card mb-4">
-        <a href="#" class="menu-item-row">
-            <div class="d-flex align-items-center">
-                <div class="menu-icon-box">
-                    <i class="fas fa-info-circle"></i>
-                </div>
-                <div class="fw-semibold text-dark" style="font-size: 0.95rem;">About ERS</div>
+<div class="card menu-group-card mb-4">
+    
+    <div class="menu-item-row" data-bs-toggle="collapse" data-bs-target="#aboutErsCollapse" aria-expanded="false" aria-controls="aboutErsCollapse" style="cursor: pointer;">
+        <div class="d-flex align-items-center">
+            <div class="menu-icon-box">
+                <i class="fas fa-info-circle"></i>
             </div>
-            <i class="fas fa-chevron-right text-muted small"></i>
-        </a>
-        <a href="#" class="menu-item-row">
-            <div class="d-flex align-items-center">
-                <div class="menu-icon-box">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                <div class="fw-semibold text-dark" style="font-size: 0.95rem;">Terms & Conditions</div>
-            </div>
-            <i class="fas fa-chevron-right text-muted small"></i>
-        </a>
-        <a href="#" class="menu-item-row">
-            <div class="d-flex align-items-center">
-                <div class="menu-icon-box">
-                    <i class="fas fa-bug"></i>
-                </div>
-                <div class="fw-semibold text-dark" style="font-size: 0.95rem;">Report a Bug</div>
-            </div>
-            <i class="fas fa-chevron-right text-muted small"></i>
-        </a>
+            <div class="fw-semibold text-dark" style="font-size: 0.95rem;">About ERS</div>
+        </div>
+        <i class="fas fa-chevron-down text-muted small collapse-icon"></i>
+    </div>
+    <div class="collapse bg-light border-bottom" id="aboutErsCollapse">
+        <div class="p-3 small text-muted">
+            The Emergency Response System (ERS) coordinates rapid dispatch and critical communication channels during crisis events. Version 2.4.1.
+        </div>
     </div>
 
+    <div class="menu-item-row" data-bs-toggle="collapse" data-bs-target="#termsCollapse" aria-expanded="false" aria-controls="termsCollapse" style="cursor: pointer;">
+        <div class="d-flex align-items-center">
+            <div class="menu-icon-box">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <div class="fw-semibold text-dark" style="font-size: 0.95rem;">Terms & Conditions</div>
+        </div>
+        <i class="fas fa-chevron-down text-muted small collapse-icon"></i>
+    </div>
+    <div class="collapse bg-light border-bottom" id="termsCollapse">
+        <div class="p-3 small text-muted">
+            By using ERS, you agree to local data compliance laws. Emergency data logs are strictly confidential and encrypted end-to-end.
+        </div>
+    </div>
+
+    <a href="#" class="menu-item-row">
+        <div class="d-flex align-items-center">
+            <div class="menu-icon-box">
+                <i class="fas fa-bug"></i>
+            </div>
+            <div class="fw-semibold text-dark" style="font-size: 0.95rem;">Report a Bug</div>
+        </div>
+        <i class="fas fa-chevron-right text-muted small"></i>
+    </a>
+</div>
     <div class="text-center py-3 mb-2">
         <div class="text-danger opacity-70 mb-1">
             <i class="fas fa-shield-alt fs-4"></i>
