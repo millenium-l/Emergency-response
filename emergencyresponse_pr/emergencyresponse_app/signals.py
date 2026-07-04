@@ -24,11 +24,11 @@ def create_assignment_notification(sender, instance, created, **kwargs):
         message = f"""
 New Emergency Assignment:
 
-**Incident:** {incident.title}
-**Priority:** {priority_display}
-**Location:** {location}
-**Description:** {incident.description}
-**Assigned by:** {dispatcher_name}
+Incident: {incident.title}
+Priority: {priority_display}
+Location: {location}
+Description: {incident.description}
+Assigned by: {dispatcher_name}
 
 Please accept or reject this assignment in your dashboard.
         """.strip()
