@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 # Department types for emergency services
 DEPARTMENT_CHOICES = [
@@ -218,3 +219,43 @@ class AssignmentRequest(models.Model):
 
     def __str__(self):
         return f"{self.incident.title} -> {self.responder.user.username} ({self.status})"
+
+
+class Notification(models.Model):
+    """Notifications for responders when assigned to incidents"""
+    NOTIFICATION_TYPES = [
+        ('assignment', 'New Assignment'),
+        ('update', 'Assignment Update'),
+        ('alert', 'Alert'),
+    ]
+    
+    responder = models.ForeignKey(Responder, on_delete=models.CASCADE, related_name='notifications')
+    incident = models.ForeignKey(Incident, on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
+    assignment_request = models.ForeignKey(AssignmentRequest, on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
+    
+    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, default='assignment')
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    
+    is_read = models.BooleanField(default=False)
+    read_at = models.DateTimeField(null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['responder', '-created_at']),
+            models.Index(fields=['responder', 'is_read']),
+        ]
+    
+    def mark_as_read(self):
+        """Mark notification as read"""
+        if not self.is_read:
+            self.is_read = True
+            self.read_at = timezone.now()
+            self.save()
+    
+    def __str__(self):
+        return f"Notification for {self.responder.user.get_full_name()}: {self.title}"
