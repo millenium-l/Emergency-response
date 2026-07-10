@@ -15,24 +15,24 @@ class DepartmentAdmin(admin.ModelAdmin):
 
 @admin.register(Responder)
 class ResponderAdmin(admin.ModelAdmin):
-    list_display = ('get_full_name', 'get_department', 'phone_number', 'get_status_display', 'created_at')
-    list_filter = ('status', 'department', 'created_at')
-    search_fields = ('user__first_name', 'user__last_name', 'phone_number', 'department__name')
+    list_display = ('get_full_name', 'get_department', 'get_status_display', 'created_at')
+    list_filter = ('status', 'profile__department', 'created_at')
+    search_fields = ('profile__full_name', 'profile__department__name')
     readonly_fields = ('created_at', 'updated_at')
     fieldsets = (
-        ('User', {'fields': ('user', 'department')}),
-        ('Contact', {'fields': ('phone_number',)}),
+        ('Profile', {'fields': ('profile',)}),
         ('Location', {'fields': ('latitude', 'longitude')}),
         ('Status', {'fields': ('status',)}),
-        ('Timestamps', {'fields': ('created_at', 'updated_at'), 'classes': ('collapse',)}),
+        ('Timestamps', {'fields': ('created_at', 'updated_at')}),
     )
-    
     def get_full_name(self, obj):
-        return obj.user.get_full_name()
+        return obj.profile.full_name if obj.profile else "Unknown"
     get_full_name.short_description = 'Responder'
-    
+
     def get_department(self, obj):
-        return obj.department.get_name_display() if obj.department else 'N/A'
+        if obj.profile and obj.profile.department:
+            return obj.profile.department.get_name_display()
+        return "N/A"
     get_department.short_description = 'Department'
 
 
@@ -79,7 +79,7 @@ class IncidentAdmin(admin.ModelAdmin):
 class IncidentResponseAdmin(admin.ModelAdmin):
     list_display = ('get_incident_title', 'get_responder_name', 'get_status_display', 'response_time', 'actual_arrival')
     list_filter = ('status', 'response_time')
-    search_fields = ('incident__title', 'responder__user__first_name', 'responder__user__last_name')
+    search_fields = ('incident__title', 'responder__profile__full_name',)
     readonly_fields = ('response_time',)
     
     fieldsets = (
@@ -93,7 +93,11 @@ class IncidentResponseAdmin(admin.ModelAdmin):
     get_incident_title.short_description = 'Incident'
     
     def get_responder_name(self, obj):
-        return obj.responder.user.get_full_name() if obj.responder else 'N/A'
+        return (
+            obj.responder.profile.full_name
+            if obj.responder and obj.responder.profile
+            else 'N/A'
+        )
     get_responder_name.short_description = 'Responder'
 
 admin.site.register(Profile)
@@ -103,7 +107,7 @@ admin.site.register(Profile)
 class AssignmentRequestAdmin(admin.ModelAdmin):
     list_display = ('get_incident_title', 'get_responder_name', 'get_status_display', 'created_at', 'responded_at')
     list_filter = ('status', 'created_at')
-    search_fields = ('incident__title', 'responder__user__first_name', 'responder__user__last_name')
+    search_fields = ('incident__title', 'responder__profile__full_name',)
     readonly_fields = ('created_at', 'responded_at')
     
     fieldsets = (
@@ -117,7 +121,11 @@ class AssignmentRequestAdmin(admin.ModelAdmin):
     get_incident_title.short_description = 'Incident'
     
     def get_responder_name(self, obj):
-        return obj.responder.user.get_full_name() if obj.responder else 'N/A'
+        return (
+        obj.responder.profile.full_name
+        if obj.responder and obj.responder.profile
+        else 'N/A'
+    )
     get_responder_name.short_description = 'Responder'
     
     def get_status_display(self, obj):
@@ -129,7 +137,7 @@ class AssignmentRequestAdmin(admin.ModelAdmin):
 class NotificationAdmin(admin.ModelAdmin):
     list_display = ('title', 'get_responder_name', 'notification_type', 'is_read', 'created_at')
     list_filter = ('notification_type', 'is_read', 'created_at')
-    search_fields = ('title', 'message', 'responder__user__first_name', 'responder__user__last_name')
+    search_fields = ('title', 'message', 'responder__profile__full_name',)
     readonly_fields = ('created_at', 'updated_at', 'read_at')
     
     fieldsets = (
@@ -140,5 +148,9 @@ class NotificationAdmin(admin.ModelAdmin):
     )
     
     def get_responder_name(self, obj):
-        return obj.responder.user.get_full_name() if obj.responder else 'N/A'
+        return (
+            obj.responder.profile.full_name
+            if obj.responder and obj.responder.profile
+            else 'N/A'
+        )
     get_responder_name.short_description = 'Responder'

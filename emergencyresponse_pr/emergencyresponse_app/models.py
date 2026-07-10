@@ -55,6 +55,7 @@ class Profile(models.Model):
         ('superadmin', 'Super Admin'),
         ('department_admin', 'Department Admin'),
         ('responder', 'Responder'),
+        ('user', 'User'),
     ]
     """Extended user profile for emergency users and responders"""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -64,6 +65,8 @@ class Profile(models.Model):
     emergency_contact_name = models.CharField(max_length=255)
     emergency_contact_phone = models.CharField(max_length=20)
     role = models.CharField(max_length=20, choices=Role_CHOICES, default='user')
+    department = models.ForeignKey('Department', on_delete=models.SET_NULL, null=True, blank=True, default=None )
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.full_name
@@ -87,9 +90,7 @@ class Department(models.Model):
 
 class Responder(models.Model):
     """Emergency Response Personnel"""
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True)
-    phone_number = models.CharField(max_length=20)
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=RESPONSE_STATUS_CHOICES, default='available')
@@ -101,14 +102,14 @@ class Responder(models.Model):
         return self.status == 'available'
 
     def full_name(self):
-        return self.user.get_full_name()
+        return self.profile.full_name if self.profile else "Unknown"
 
     def location_display(self):
-        return self.department.location_name if self.department else "Unknown"
+        return self.profile.department.location_name if self.profile and self.profile.department else "Unknown"
 
 
     def __str__(self):
-        return f"{self.user.get_full_name()} - {self.department.get_name_display()}"
+        return f"{self.profile.full_name if self.profile else 'Unknown'} - {self.profile.department.get_name_display() if self.profile and self.profile.department else 'N/A'}"
 
 
 class EmergencyUser(models.Model):
@@ -226,8 +227,15 @@ class AssignmentRequest(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.incident.title} -> {self.responder.user.username} ({self.status})"
+        incident = self.incident.title if self.incident else "No Incident"
 
+        username = (
+            self.responder.profile.user.username
+            if self.responder and self.responder.profile
+            else "Unknown"
+        )
+
+        return f"{incident} -> {username} ({self.status})"
 
 class Notification(models.Model):
     """Notifications for responders when assigned to incidents"""
@@ -266,4 +274,6 @@ class Notification(models.Model):
             self.save()
     
     def __str__(self):
-        return f"Notification for {self.responder.user.get_full_name()}: {self.title}"
+        if self.responder and self.responder.profile:
+            return f"Notification for {self.responder.profile.full_name}: {self.title}"
+        return self.title

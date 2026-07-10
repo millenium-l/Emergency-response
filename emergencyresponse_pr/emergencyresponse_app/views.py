@@ -481,9 +481,9 @@ def assign_responder_to_incident(request, incident_id):
 @login_required
 def incidents_list(request):
     try:
-        emergency_user = EmergencyUser.objects.get(user=request.user)
-        incidents = Incident.objects.filter(user=emergency_user).order_by('-created_at')
-    except EmergencyUser.DoesNotExist:
+        profile = request.user.profile
+        incidents = Incident.objects.filter(user=profile).order_by('-created_at')
+    except Profile.DoesNotExist:
         incidents = []
 
     return render(request, 'templates/incidents_list.html', {'incidents': incidents})
