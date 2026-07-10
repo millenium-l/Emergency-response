@@ -63,7 +63,7 @@ class Profile(models.Model):
     location = models.CharField(max_length=100, choices=CHUDA_AREA_CHOICES, default=CHUDA_AREA_CHOICES[0][0])
     emergency_contact_name = models.CharField(max_length=255)
     emergency_contact_phone = models.CharField(max_length=20)
-    role = models.CharField(max_length=20, choices=Role_CHOICES, default='responder')
+    role = models.CharField(max_length=20, choices=Role_CHOICES, default='user')
 
     def __str__(self):
         return self.full_name
