@@ -12,7 +12,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from datetime import datetime
 from .forms import *
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator  # Import Paginator for pagination of querysets
+from django.contrib.auth.models import Group  # Import Group model for user group management
 
 # Import models with proper relationships and fields
 from .models import (
@@ -409,6 +410,12 @@ def incident_detail(request, incident_id):
     }
     return render(request, 'templates/incident_detail.html', context)
 
+# Utility functions to check user roles for access control
+def is_responder(user):
+    return user.is_authenticated and user.groups.filter(name='RESPONDERS').exists()
+
+def is_department_admin(user):
+    return user.is_authenticated and user.groups.filter(name='DEPARTMENT_ADMINS').exists()
 
 # View to create responders with proper form handling and validation
 @staff_member_required
@@ -426,19 +433,22 @@ def create_responder(request):
                 last_name=form.cleaned_data['last_name'],
                 password=form.cleaned_data['password1']
             )
-            user.set_password(form.cleaned_data['password1'])
             user.save()
+
+            # --- ADD TO DJANGO GROUP ---
+            responder_group, created = Group.objects.get_or_create(name='RESPONDERS')
+            user.groups.add(responder_group)
+            # ---------------------------
 
             # Create Responder
             Responder.objects.create(
                 user=user,
                 department=form.cleaned_data['department'],
                 phone_number=form.cleaned_data['phone_number'],
-                status='offline'  # default safer
+                status='offline'
             )
 
             return redirect("responders_list")
-
     else:
         form = ResponderCreateForm(departments=departments)
 
