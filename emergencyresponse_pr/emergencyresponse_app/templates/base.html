@@ -60,6 +60,14 @@
       <a href="{% url 'responders_map' %}" class="nav-link ">Responders map</a>
 
       <a href="{% url 'responder_dashboard' %}" class="nav-link btn btn-danger text-white mt-3">Responder Dashboard</a>
+
+      <a href="{% url 'responder_notifications' %}" class="nav-link position-relative">
+        Notifications
+        {% if user.is_authenticated %}
+          <span id="notif-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+            0
+          </span>
+        {% endif %}
       
       <a href="{% url 'profile' %}" class="nav-link">Profile</a>
     </nav>
@@ -124,6 +132,15 @@
     {% if not user.is_authenticated %}
       <div class="header-actions">
         <a href="{% url 'login' %}" class="btn btn-secondary btn-sm">Login</a>
+      </div>
+    {% else %}
+      <div class="header-actions d-flex align-items-center gap-2">
+        {% if user.is_authenticated and user.responder %}
+        <a href="{% url 'responder_notifications' %}" style="position: relative; font-size: 20px; text-decoration: none; color: inherit;">
+          <i class="fas fa-bell"></i>
+          <span id="mobile-notif-badge" style="display: none; position: absolute; top: -8px; right: -8px; background: #dc3545; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center;"></span>
+        </a>
+        {% endif %}
       </div>
     {% endif %}
 
@@ -253,6 +270,36 @@
         });
       }
     </script>
+
+    <!-- Notifications Badge Script -->
+    {% if user.is_authenticated and user.responder %}
+    <script>
+      // Fetch unread notifications count
+      function updateNotificationBadge() {
+        fetch('/api/notifications/unread-count/')
+          .then(response => response.json())
+          .then(data => {
+            const mobileBadge = document.getElementById('mobile-notif-badge');
+            
+            if (data.unread_count > 0) {
+              if (mobileBadge) {
+                mobileBadge.textContent = data.unread_count;
+                mobileBadge.style.display = 'flex';
+              }
+            } else {
+              if (mobileBadge) mobileBadge.style.display = 'none';
+            }
+          })
+          .catch(error => console.error('Error fetching notification count:', error));
+      }
+
+      // Update on page load
+      document.addEventListener('DOMContentLoaded', updateNotificationBadge);
+      
+      // Update every 30 seconds
+      setInterval(updateNotificationBadge, 30000);
+    </script>
+    {% endif %}
 
     {% block extra_js %}{% endblock %}
   </body>

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Department, Responder, EmergencyUser, Incident, IncidentResponse, Profile
+from .models import Department, Responder, EmergencyUser, Incident, IncidentResponse, Profile, AssignmentRequest, Notification
 
 
 @admin.register(Department)
@@ -97,3 +97,48 @@ class IncidentResponseAdmin(admin.ModelAdmin):
     get_responder_name.short_description = 'Responder'
 
 admin.site.register(Profile)
+
+
+@admin.register(AssignmentRequest)
+class AssignmentRequestAdmin(admin.ModelAdmin):
+    list_display = ('get_incident_title', 'get_responder_name', 'get_status_display', 'created_at', 'responded_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('incident__title', 'responder__user__first_name', 'responder__user__last_name')
+    readonly_fields = ('created_at', 'responded_at')
+    
+    fieldsets = (
+        ('Assignment', {'fields': ('incident', 'responder', 'dispatched_by')}),
+        ('Status', {'fields': ('status',)}),
+        ('Timeline', {'fields': ('created_at', 'responded_at', 'expires_at')}),
+    )
+    
+    def get_incident_title(self, obj):
+        return obj.incident.title
+    get_incident_title.short_description = 'Incident'
+    
+    def get_responder_name(self, obj):
+        return obj.responder.user.get_full_name() if obj.responder else 'N/A'
+    get_responder_name.short_description = 'Responder'
+    
+    def get_status_display(self, obj):
+        return obj.get_status_display()
+    get_status_display.short_description = 'Status'
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('title', 'get_responder_name', 'notification_type', 'is_read', 'created_at')
+    list_filter = ('notification_type', 'is_read', 'created_at')
+    search_fields = ('title', 'message', 'responder__user__first_name', 'responder__user__last_name')
+    readonly_fields = ('created_at', 'updated_at', 'read_at')
+    
+    fieldsets = (
+        ('Notification Info', {'fields': ('responder', 'incident', 'assignment_request', 'notification_type')}),
+        ('Content', {'fields': ('title', 'message')}),
+        ('Read Status', {'fields': ('is_read', 'read_at')}),
+        ('Timestamps', {'fields': ('created_at', 'updated_at'), 'classes': ('collapse',)}),
+    )
+    
+    def get_responder_name(self, obj):
+        return obj.responder.user.get_full_name() if obj.responder else 'N/A'
+    get_responder_name.short_description = 'Responder'

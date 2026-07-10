@@ -17,7 +17,7 @@ from django.core.paginator import Paginator
 # Import models with proper relationships and fields
 from .models import (
     Department, Profile, Responder, EmergencyUser, Incident, 
-    IncidentResponse, PRIORITY_CHOICES, CHUDA_AREA_CHOICES
+    IncidentResponse, AssignmentRequest, Notification, PRIORITY_CHOICES, CHUDA_AREA_CHOICES
 )
 
 
@@ -599,6 +599,12 @@ def responder_dashboard(request):
         'responder'
     ).order_by('-created_at')
 
+    # Unread notifications
+    unread_notifications = Notification.objects.filter(
+        responder=responder,
+        is_read=False
+    ).count()
+
     # Department incident history for sidebar
     active_department_incidents = Incident.objects.filter(
     department=request.user.responder.department,
@@ -626,6 +632,7 @@ def responder_dashboard(request):
         "active_incidents": active_incidents,
         "resolved_incidents": resolved_incidents,
         "active_department_incidents": active_department_incidents,
+        "unread_notifications": unread_notifications,
     }
 
     return render(
@@ -700,5 +707,113 @@ def resolve_incident(request, incident_id):
             responder.save()
 
     return redirect("incident_detail", incident_id=incident.id)
-
 '''
+
+# Notification view for responders with proper authentication and data retrieval
+@login_required
+def notifications(request):
+    responder = get_object_or_404(Responder, user=request.user)
+    notifications = AssignmentRequest.objects.filter(
+        responder=responder
+    ).order_by('-created_at')
+
+    return render(request, 'templates/notifications.html', {
+        'notifications': notifications
+    })
+
+
+# Responder Notifications List View - Show all notifications for logged-in responder
+@login_required
+def responder_notifications(request):
+    """Display all notifications for the logged-in responder"""
+    try:
+        responder = Responder.objects.get(user=request.user)
+    except Responder.DoesNotExist:
+        return redirect('home')
+    
+    # Get all notifications for this responder
+    all_notifications = Notification.objects.filter(responder=responder).select_related(
+        'incident', 'assignment_request', 'assignment_request__dispatched_by'
+    )
+    
+    # Pagination
+    paginator = Paginator(all_notifications, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Mark old unread notifications as read (for the page)
+    unread_count = Notification.objects.filter(responder=responder, is_read=False).count()
+    
+    context = {
+        'page_obj': page_obj,
+        'notifications': page_obj.object_list,
+        'unread_count': unread_count,
+        'total_count': all_notifications.count(),
+    }
+    
+    return render(request, 'templates/responder_notifications.html', context)
+
+
+# Mark Notification as Read
+@login_required
+def mark_notification_as_read(request, notification_id):
+    """Mark a single notification as read"""
+    try:
+        responder = Responder.objects.get(user=request.user)
+    except Responder.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Responder not found'})
+    
+    try:
+        notification = Notification.objects.get(id=notification_id, responder=responder)
+        notification.mark_as_read()
+        return JsonResponse({'success': True, 'message': 'Notification marked as read'})
+    except Notification.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Notification not found'})
+
+
+# Mark All Notifications as Read
+@login_required
+def mark_all_notifications_as_read(request):
+    """Mark all unread notifications as read"""
+    try:
+        responder = Responder.objects.get(user=request.user)
+    except Responder.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Responder not found'})
+    
+    unread_notifications = Notification.objects.filter(responder=responder, is_read=False)
+    count = unread_notifications.count()
+    
+    for notification in unread_notifications:
+        notification.mark_as_read()
+    
+    return JsonResponse({'success': True, 'marked_count': count})
+
+
+# Delete Notification
+@login_required
+def delete_notification(request, notification_id):
+    """Delete a single notification"""
+    try:
+        responder = Responder.objects.get(user=request.user)
+    except Responder.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Responder not found'})
+    
+    try:
+        notification = Notification.objects.get(id=notification_id, responder=responder)
+        notification.delete()
+        return JsonResponse({'success': True, 'message': 'Notification deleted'})
+    except Notification.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Notification not found'})
+
+
+# API Endpoint - Get Unread Notification Count
+@login_required
+@require_http_methods(["GET"])
+def api_unread_notification_count(request):
+    """Get count of unread notifications for the responder"""
+    try:
+        responder = Responder.objects.get(user=request.user)
+        unread_count = Notification.objects.filter(responder=responder, is_read=False).count()
+        return JsonResponse({'unread_count': unread_count, 'success': True})
+    except Responder.DoesNotExist:
+        return JsonResponse({'unread_count': 0, 'success': False})

@@ -40,9 +40,16 @@ urlpatterns = [
     path("assignment/<int:request_id>/accept/",views.accept_assignment,name="accept_assignment"),
     path("assignment/<int:request_id>/reject/",views.reject_assignment,name="reject_assignment"),
 
+    # Notification views
+    path('notifications/', views.responder_notifications, name='responder_notifications'),
+    path('notifications/<int:notification_id>/read/', views.mark_notification_as_read, name='mark_notification_read'),
+    path('notifications/mark-all-as-read/', views.mark_all_notifications_as_read, name='mark_all_read'),
+    path('notifications/<int:notification_id>/delete/', views.delete_notification, name='delete_notification'),
+
     # API endpoints
     path('api/incidents/', views.api_get_incidents, name='api_incidents'),
     path('api/departments/', views.api_get_departments, name='api_departments'),
     path('api/responders/', views.api_get_responders, name='api_responders'),
     path('api/responder/location/', views.api_update_responder_location, name='api_update_location'),
+    path('api/notifications/unread-count/', views.api_unread_notification_count, name='api_unread_count'),
 ]

@@ -1,0 +1,545 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Notifications - Emergency Response{% endblock %}
+
+{% block content %}
+
+<style>
+.notifications-page {
+    padding: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.notifications-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.notification-count {
+    display: inline-block;
+    background: #dc2626;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-mark-all {
+    padding: 8px 16px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-mark-all:hover {
+    background: #2563eb;
+    text-decoration: none;
+    color: white;
+}
+
+.notifications-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.notification-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.notification-card:hover {
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+    transform: translateY(-2px);
+}
+
+.notification-card.unread {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.notification-type {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.notification-type.alert {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.notification-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.notification-message {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-bottom: 12px;
+}
+
+.notification-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin: 12px 0;
+    padding: 12px 0;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.detail-item {
+    font-size: 13px;
+}
+
+.detail-label {
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    color: #0f172a;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.notification-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.action-btn {
+    padding: 6px 12px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background: #f1f5f9;
+}
+
+.action-btn.mark-read {
+    color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.action-btn.delete {
+    color: #dc2626;
+    border-color: #dc2626;
+}
+
+.action-btn.delete:hover {
+    background: #fee2e2;
+}
+
+.read-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #f59e0b;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.empty-state {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 60px 24px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+}
+
+.empty-icon {
+    font-size: 48px;
+    color: #cbd5e1;
+    margin-bottom: 16px;
+}
+
+.empty-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.empty-message {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 28px;
+}
+
+.pagination {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.page-link {
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    color: #0f172a;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.page-link:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.page-link.active {
+    background: #0f172a;
+    color: white;
+    border-color: #0f172a;
+}
+
+.page-link.disabled {
+    color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+.stats-bar {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+.stat-item {
+    flex: 1;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+    .notifications-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+    .notification-details {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .notification-actions {
+        flex-wrap: wrap;
+    }
+}
+</style>
+
+<div class="notifications-page">
+    <!-- Header -->
+    <div class="notifications-header">
+        <div>
+            <h1 class="notifications-title">
+                Notifications
+                {% if unread_count > 0 %}
+                <span class="notification-count">{{ unread_count }} New</span>
+                {% endif %}
+            </h1>
+        </div>
+        <div class="header-actions">
+            {% if unread_count > 0 %}
+            <button class="btn-mark-all" onclick="markAllAsRead()">Mark All as Read</button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    {% if total_count > 0 %}
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-label">Total Notifications</div>
+            <div class="stat-value">{{ total_count }}</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">Unread</div>
+            <div class="stat-value">{{ unread_count }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Notifications Container -->
+    {% if notifications %}
+    <div class="notifications-container">
+        {% for notification in notifications %}
+        <div class="notification-card {% if not notification.is_read %}unread{% endif %}" id="notification-{{ notification.id }}">
+            <!-- Notification Header -->
+            <div class="notification-header">
+                <div>
+                    <span class="notification-type {% if notification.notification_type == 'alert' %}alert{% endif %}">
+                        {{ notification.get_notification_type_display }}
+                    </span>
+                    {% if not notification.is_read %}
+                    <span class="read-indicator"></span>
+                    {% endif %}
+                </div>
+                <div class="notification-time" title="{{ notification.created_at|date:'M d, Y H:i' }}">
+                    {{ notification.created_at|timesince }} ago
+                </div>
+            </div>
+
+            <!-- Notification Title -->
+            <div class="notification-title">{{ notification.title }}</div>
+
+            <!-- Notification Message -->
+            <div class="notification-message">{{ notification.message }}</div>
+
+            <!-- Details Grid -->
+            {% if notification.incident %}
+            <div class="notification-details">
+                <div class="detail-item">
+                    <div class="detail-label">Incident</div>
+                    <div class="detail-value">{{ notification.incident.title }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Priority</div>
+                    <div class="detail-value">
+                        <span style="color: {{ notification.incident.priority_color }}; font-weight: 700;">
+                            {{ notification.incident.get_priority_display }}
+                        </span>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Location</div>
+                    <div class="detail-value">{{ notification.incident.location_name }}</div>
+                </div>
+                {% if notification.assignment_request.dispatched_by %}
+                <div class="detail-item">
+                    <div class="detail-label">Assigned By</div>
+                    <div class="detail-value">{{ notification.assignment_request.dispatched_by.get_full_name }}</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Actions -->
+            <div class="notification-actions">
+                {% if not notification.is_read %}
+                <button class="action-btn mark-read" onclick="markAsRead({{ notification.id }})">
+                    <i class="fas fa-check"></i> Mark as Read
+                </button>
+                {% endif %}
+                <button class="action-btn delete" onclick="deleteNotification({{ notification.id }})">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+                {% if notification.incident %}
+                <a href="{% url 'incident_detail' notification.incident.id %}" class="action-btn" style="text-decoration: none;">
+                    <i class="fas fa-arrow-right"></i> View Incident
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination-container">
+        <nav class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page=1" class="page-link">« First</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="page-link">Previous</a>
+            {% else %}
+            <span class="page-link disabled">« First</span>
+            <span class="page-link disabled">Previous</span>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="page-link active">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="page-link">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">Last »</a>
+            {% else %}
+            <span class="page-link disabled">Next</span>
+            <span class="page-link disabled">Last »</span>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="fas fa-inbox"></i>
+        </div>
+        <div class="empty-title">No Notifications</div>
+        <div class="empty-message">You're all caught up! Check back soon for new assignments.</div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Scripts -->
+<script>
+function markAsRead(notificationId) {
+    fetch(`/notifications/${notificationId}/read/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const card = document.getElementById(`notification-${notificationId}`);
+            card.classList.remove('unread');
+            card.querySelector('.read-indicator').style.display = 'none';
+            location.reload();
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function markAllAsRead() {
+    fetch('/notifications/mark-all-as-read/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function deleteNotification(notificationId) {
+    if (confirm('Are you sure you want to delete this notification?')) {
+        fetch(`/notifications/${notificationId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const card = document.getElementById(`notification-${notificationId}`);
+                card.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => card.remove(), 300);
+                location.reload();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+
+{% endblock %}

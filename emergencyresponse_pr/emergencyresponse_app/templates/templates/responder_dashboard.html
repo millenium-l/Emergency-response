@@ -146,6 +146,36 @@
         {% endfor %}
     </div>
 
+    <!-- Notifications Section -->
+    {% if unread_notifications > 0 %}
+    <div class="mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3 px-1">
+            <h5 class="fw-bold mb-0 text-dark">
+                <span class="position-relative d-inline-block">
+                    <i class="fas fa-bell text-warning me-2"></i>Notifications
+                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-warning border border-light rounded-circle ms-1"></span>
+                </span>
+            </h5>
+            <a href="{% url 'responder_notifications' %}" class="badge bg-warning text-dark border rounded-pill px-2.5 py-1.5 font-monospace small text-decoration-none">
+                {{ unread_notifications }} New
+            </a>
+        </div>
+
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <div class="d-flex align-items-start gap-3">
+                <i class="fas fa-exclamation-triangle flex-shrink-0 mt-1"></i>
+                <div>
+                    <h6 class="alert-heading fw-bold mb-2">You have {{ unread_notifications }} unread notification{{ unread_notifications|pluralize }}</h6>
+                    <p class="mb-0 small">Review your notifications to stay updated on new assignments and important updates.</p>
+                </div>
+            </div>
+            <a href="{% url 'responder_notifications' %}" class="btn btn-sm btn-warning mt-2">
+                <i class="fas fa-envelope-open me-1"></i>View All Notifications
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
     <div class="mb-5">
         <div class="mb-3 px-1">
             <h5 class="fw-bold text-dark mb-1">Active Incidents</h5>
