@@ -188,7 +188,7 @@
                     <tr>
 
                         <td class="fw-semibold">
-                            {{ responder.user.get_full_name }}
+                            {{ responder.profile.get_full_name }}
                         </td>
 
                         <td>
@@ -220,7 +220,7 @@
                         </td>
 
                         <td>
-                            {{ responder.department.location_name }}
+                            {{ responder.profile.department.location_name }}
                         </td>
 
                         <td>
@@ -333,11 +333,11 @@
                         </td>
 
                         <td>
-                            {{ assignment.responder.user.get_full_name }}
+                            {{ assignment.responder.profile.get_full_name }}
                         </td>
 
                         <td>
-                            {{ assignment.responder.department.get_name_display }}
+                            {{ assignment.responder.profile.department.get_name_display }}
                         </td>
 
                         <td>

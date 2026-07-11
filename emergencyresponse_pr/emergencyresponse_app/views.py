@@ -212,16 +212,17 @@ def responders_list(request):
     ).select_related(
         'incident',
         'responder',
-        'responder__user',
-        'responder__department'
+        'responder__profile__user',
+        'responder__profile__department'
     )
 
     # SUPERUSER
     if request.user.is_superuser:
 
         responders = Responder.objects.select_related(
-            'user',
-            'department'
+            'profile',
+            'profile__user',
+            'profile__department'
         )
 
         # ACTIVE INCIDENTS
@@ -229,7 +230,7 @@ def responders_list(request):
             status__in=['assigned', 'in_progress']
         ).select_related(
             'assigned_responder',
-            'assigned_responder__user',
+            'assigned_responder__profile',
             'department'
         ).order_by('-created_at')
 
@@ -238,7 +239,7 @@ def responders_list(request):
             status='resolved'
         ).select_related(
             'assigned_responder',
-            'assigned_responder__user',
+            'assigned_responder__profile',
             'department'
         ).order_by('-resolved_at')
 
@@ -247,37 +248,38 @@ def responders_list(request):
 
         if hasattr(request.user, "responder"):
 
-            department = request.user.responder.department
+            department = request.user.responder.profile.department
 
             responders = Responder.objects.select_related(
-                'user',
-                'department'
+                'profile',
+                'profile__user',
+                'profile__department'
             ).filter(
-                department=department
+                profile__department=department
             )
 
             # FILTER PENDING ASSIGNMENTS
             pending_assignments = pending_assignments.filter(
-                responder__department=department
+                responder__profile__department=department
             )
 
             # ACTIVE INCIDENTS
             active_department_incidents = Incident.objects.filter(
-                department=department,
+                profile__department=department,
                 status__in=['assigned', 'in_progress']
             ).select_related(
                 'assigned_responder',
-                'assigned_responder__user',
+                'assigned_responder__profile',
                 'department'
             ).order_by('-created_at')
 
             # RESOLVED HISTORY
             department_history = Incident.objects.filter(
-                department=department,
+                profile__department=department,
                 status='resolved'
             ).select_related(
                 'assigned_responder',
-                'assigned_responder__user',
+                'assigned_responder__profile',
                 'department'
             ).order_by('-resolved_at')
 
@@ -306,9 +308,9 @@ def responders_list(request):
     if search:
 
         responders = responders.filter(
-            Q(user__first_name__icontains=search) |
-            Q(user__last_name__icontains=search) |
-            Q(department__name__icontains=search)
+            Q(profile__user__first_name__icontains=search) |
+            Q(profile__user__last_name__icontains=search) |
+            Q(profile__department__name__icontains=search)
         )
 
     # STATS
