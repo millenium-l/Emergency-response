@@ -3,6 +3,7 @@ from urllib import request
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+#from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -11,6 +12,7 @@ import json
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from datetime import datetime
+
 from .forms import *
 from django.core.paginator import Paginator
 
@@ -581,52 +583,71 @@ def api_update_responder_location(request):
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
 # Additional views for responder dashboard, assignment acceptance/rejection, and incident resolution with proper authentication, status checks, and atomic transactions  
-from django.http import HttpResponseForbidden
+from django.shortcuts import render, redirect
+
+#helper function to get the logged-in responder profile
+def get_logged_in_responder(user):
+    profile = user.profile
+
+    if profile.role != "responder":
+        return redirect("custom_403")
+
+    return profile.responder
+
+
+from .decorators import responder_required
 @login_required
+@responder_required
 def responder_dashboard(request):
-    # Get responder profile
     try:
-        responder = Responder.objects.get(user=request.user)
-        print("Responder found:", responder)
-    except Responder.DoesNotExist:
-        print("Responder not found for user:", request.user)
-        return redirect('custom_403')
+        profile = request.user.profile
+        responder = profile.responder
+    except (Profile.DoesNotExist, Responder.DoesNotExist):
+        return redirect("custom_403")
 
-    # Pending assignment requests
-    pending_assignments = AssignmentRequest.objects.filter(
-        responder=responder,
-        status='pending'
-    ).select_related(
-        'incident',
-        'responder'
-    ).order_by('-created_at')
+    pending_assignments = (
+        AssignmentRequest.objects
+        .filter(
+            responder=responder,
+            status="pending"
+        )
+        .select_related("incident", "responder")
+        .order_by("-created_at")
+    )
 
-    # Unread notifications
     unread_notifications = Notification.objects.filter(
         responder=responder,
         is_read=False
     ).count()
 
-    # Department incident history for sidebar
-    active_department_incidents = Incident.objects.filter(
-    department=request.user.responder.department,
-    status__in=['assigned', 'in_progress']
-)
+    active_department_incidents = (
+        Incident.objects
+        .filter(
+            department=profile.department,
+            status__in=["assigned", "in_progress"]
+        )
+        .select_related("assigned_responder")
+        .order_by("-created_at")
+    )
 
-    # Active incidents
-    active_incidents = Incident.objects.select_related(
-        'department',
-        'assigned_responder'
-    ).filter(
-        assigned_responder=responder,
-        status__in=['assigned', 'in_progress']
-    ).order_by('-created_at')
+    active_incidents = (
+        Incident.objects
+        .filter(
+            assigned_responder=responder,
+            status__in=["assigned", "in_progress"]
+        )
+        .select_related("department", "assigned_responder")
+        .order_by("-created_at")
+    )
 
-    # Resolved incidents history
-    resolved_incidents = Incident.objects.filter(
-        assigned_responder=responder,
-        status='resolved'
-    ).order_by('-resolved_at')
+    resolved_incidents = (
+        Incident.objects
+        .filter(
+            assigned_responder=responder,
+            status="resolved"
+        )
+        .order_by("-resolved_at")
+    )
 
     context = {
         "responder": responder,
@@ -637,11 +658,8 @@ def responder_dashboard(request):
         "unread_notifications": unread_notifications,
     }
 
-    return render(
-        request,
-        "templates/responder_dashboard.html",
-        context
-    )
+    return render(request, "responder_dashboard.html", context)
+
 
 # View to accept assignment request with proper status checks and atomic transaction
 @login_required
