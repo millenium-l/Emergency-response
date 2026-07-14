@@ -417,7 +417,7 @@ def incident_detail(request, incident_id):
 # View to create responders with proper form handling and validation
 # using @ transaction.atomic to ensure that user, profile, and responder are created together
 @staff_member_required
-@ transaction.atomic
+@transaction.atomic
 def create_responder(request):
     departments = Department.objects.all()
 
@@ -430,16 +430,16 @@ def create_responder(request):
                 username=form.cleaned_data['username'],
                 password=form.cleaned_data['password1']
             )
-            user.save()
 
-            # Create Profile
-            profile = Profile.objects.create(
-                user=user,
-                full_name=form.cleaned_data['full_name'],
-                department=form.cleaned_data['department'],
-                phone_number=form.cleaned_data['phone_number'],
-                role='responder',
-            )
+            # instead of creating a new profile, we can use the signal to create the profile automatically
+            # Get the automatically created profile
+            profile, created = Profile.objects.get_or_create(user=user)
+            # Populate it
+            profile.full_name = form.cleaned_data["full_name"]
+            profile.phone_number = form.cleaned_data["phone_number"]
+            profile.department = form.cleaned_data["department"]
+            profile.role = "responder"
+            profile.save()
 
             # Create Responder
             Responder.objects.create(

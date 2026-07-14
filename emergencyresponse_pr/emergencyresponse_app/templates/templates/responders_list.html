@@ -28,7 +28,7 @@
 
     </div>
 
-    <!-- STATS -->
+<!-- STATS -->
     <div class="row g-3 mb-4">
 
         <div class="col-lg col-md-4 col-6">
@@ -113,7 +113,7 @@
 
     </div>
 
-    <!-- SEARCH -->
+<!-- SEARCH -->
     <div class="card border-0 shadow-sm mb-4">
 
         <div class="card-body">
@@ -146,7 +146,7 @@
 
     </div>
 
-    <!-- RESPONDERS TABLE -->
+<!-- RESPONDERS TABLE -->
     <div class="card border-0 shadow-sm mb-5">
 
         <div class="card-header bg-white border-0 py-3">
@@ -188,11 +188,11 @@
                     <tr>
 
                         <td class="fw-semibold">
-                            {{ responder.profile.get_full_name }}
+                            {{ responder.profile.full_name }}
                         </td>
 
                         <td>
-                            {{ responder.department.get_name_display }}
+                            {{ responder.profile.department.name }}
                         </td>
 
                         <td>
@@ -287,7 +287,7 @@
 
     </div>
 
-    <!-- PENDING ASSIGNMENTS -->
+<!-- PENDING ASSIGNMENTS -->
     <div class="card border-0 shadow-sm mb-5">
 
         <div class="card-header bg-white border-0 py-3">
@@ -333,11 +333,11 @@
                         </td>
 
                         <td>
-                            {{ assignment.responder.profile.get_full_name }}
+                            {{ assignment.responder.profile.full_name }}
                         </td>
 
                         <td>
-                            {{ assignment.responder.profile.department.get_name_display }}
+                            {{ assignment.responder.profile.department.name }}
                         </td>
 
                         <td>
@@ -377,7 +377,7 @@
 
     </div>
 
-    <!-- ACTIVE INCIDENTS -->
+<!-- ACTIVE INCIDENTS -->
     <div class="card border-0 shadow-sm mb-5">
 
         <div class="card-header bg-white border-0 py-3">
@@ -425,7 +425,7 @@
                         <td>
 
                             {% if incident.assigned_responder %}
-                                {{ incident.assigned_responder.user.get_full_name }}
+                                {{ incident.assigned_responder.profile.full_name }}
                             {% else %}
                                 Unassigned
                             {% endif %}
@@ -483,7 +483,7 @@
 
     </div>
 
-    <!-- INCIDENT HISTORY -->
+<!-- INCIDENT HISTORY -->
     <div class="card border-0 shadow-sm mb-5">
 
         <div class="card-header bg-white border-0 py-3">
@@ -530,7 +530,7 @@
                         <td>
 
                             {% if incident.assigned_responder %}
-                                {{ incident.assigned_responder.user.get_full_name }}
+                                {{ incident.assigned_responder.profile.full_name }}
                             {% else %}
                                 Unassigned
                             {% endif %}
