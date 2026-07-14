@@ -188,11 +188,11 @@
                     <tr>
 
                         <td class="fw-semibold">
-                            {{ responder.profile.full_name }}
+                            {{ responder.full_name }}
                         </td>
 
                         <td>
-                            {{ responder.profile.department.name }}
+                            {{ responder.department.name }}
                         </td>
 
                         <td>
@@ -220,7 +220,7 @@
                         </td>
 
                         <td>
-                            {{ responder.profile.department.location_name }}
+                            {{ responder.department.location_name }}
                         </td>
 
                         <td>
@@ -333,11 +333,11 @@
                         </td>
 
                         <td>
-                            {{ assignment.responder.profile.full_name }}
+                            {{ assignment.responder.full_name }}
                         </td>
 
                         <td>
-                            {{ assignment.responder.profile.department.name }}
+                            {{ assignment.responder.department.name }}
                         </td>
 
                         <td>
@@ -425,7 +425,7 @@
                         <td>
 
                             {% if incident.assigned_responder %}
-                                {{ incident.assigned_responder.profile.full_name }}
+                                {{ incident.assigned_responder.full_name }}
                             {% else %}
                                 Unassigned
                             {% endif %}
@@ -530,7 +530,7 @@
                         <td>
 
                             {% if incident.assigned_responder %}
-                                {{ incident.assigned_responder.profile.full_name }}
+                                {{ incident.assigned_responder.full_name }}
                             {% else %}
                                 Unassigned
                             {% endif %}

@@ -106,8 +106,9 @@ class Responder(models.Model):
         return self.profile.full_name if self.profile else "Unknown"
     @property
     def location_display(self):
-        return self.profile.department.location_name if self.profile and self.profile.department else "Unknown"
-
+        if self.profile and self.profile.department:
+            return getattr(self.profile.department, 'location_name', 'Unknown')
+        return 'Unknown'
     @property
     def department(self):
      return self.profile.department if self.profile else None
