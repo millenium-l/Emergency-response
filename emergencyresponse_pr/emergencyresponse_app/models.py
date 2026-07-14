@@ -98,15 +98,19 @@ class Responder(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     """Helper methods for responder status and display"""
+    @property
     def is_available(self):
         return self.status == 'available'
-
+    @property
     def full_name(self):
         return self.profile.full_name if self.profile else "Unknown"
-
+    @property
     def location_display(self):
         return self.profile.department.location_name if self.profile and self.profile.department else "Unknown"
 
+    @property
+    def department(self):
+     return self.profile.department if self.profile else None
 
     def __str__(self):
         return f"{self.profile.full_name if self.profile else 'Unknown'} - {self.profile.department.get_name_display() if self.profile and self.profile.department else 'N/A'}"
