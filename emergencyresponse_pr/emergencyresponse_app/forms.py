@@ -18,6 +18,17 @@ class IncidentReportForm(forms.ModelForm):
         }
 
 class ResponderCreateForm(forms.Form):
+    full_name = forms.CharField(max_length=255,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Full name',
+        }),
+        label='Full Name',
+    )
+
+
+
+    '''
     first_name = forms.CharField(max_length=100,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -33,6 +44,8 @@ class ResponderCreateForm(forms.Form):
         }),
         label='Last Name',
     )
+    
+    '''
     username = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={
