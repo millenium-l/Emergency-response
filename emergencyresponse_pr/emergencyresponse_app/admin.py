@@ -135,9 +135,9 @@ class AssignmentRequestAdmin(admin.ModelAdmin):
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('title', 'get_responder_name', 'notification_type', 'is_read', 'created_at')
+    list_display = ('title', 'get_responder_name', 'get_incident', 'notification_type', 'is_read', 'created_at')
     list_filter = ('notification_type', 'is_read', 'created_at')
-    search_fields = ('title', 'message', 'responder__profile__full_name',)
+    search_fields = ('title', 'message', 'assignment_request__responder__profile__full_name',)
     readonly_fields = ('created_at', 'updated_at', 'read_at')
     
     fieldsets = (
@@ -148,9 +148,19 @@ class NotificationAdmin(admin.ModelAdmin):
     )
     
     def get_responder_name(self, obj):
-        return (
-            obj.responder.profile.full_name
-            if obj.responder and obj.responder.profile
-            else 'N/A'
-        )
-    get_responder_name.short_description = 'Responder'
+        if (
+        obj.assignment_request and
+        obj.assignment_request.responder and
+        obj.assignment_request.responder.profile
+        ):
+            return obj.assignment_request.responder.profile.full_name
+        return "N/A"
+
+    get_responder_name.short_description = "Responder"
+
+    def get_incident(self, obj):
+        if obj.assignment_request and obj.assignment_request.incident:
+            return obj.assignment_request.incident.title
+        return "N/A"
+
+    get_incident.short_description = "Incident"

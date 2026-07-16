@@ -424,13 +424,21 @@
 
                         <td>
 
-                            {% if incident.assigned_responder %}
-                                {{ incident.assigned_responder.full_name }}
-                            {% else %}
-                                Unassigned
-                            {% endif %}
+    {% for assignment in incident.assignment_requests.all %}
 
-                        </td>
+        {{ assignment.responder.full_name }}
+
+        {% if not forloop.last %}
+            <br>
+        {% endif %}
+
+    {% empty %}
+
+        Unassigned
+
+    {% endfor %}
+
+</td>
 
                         <td>
                             {{ incident.department.get_name_display }}
@@ -529,13 +537,21 @@
 
                         <td>
 
-                            {% if incident.assigned_responder %}
-                                {{ incident.assigned_responder.full_name }}
-                            {% else %}
-                                Unassigned
-                            {% endif %}
+    {% for assignment in incident.assignment_requests.all %}
 
-                        </td>
+        {{ assignment.responder.profile.full_name }}
+
+        {% if not forloop.last %}
+            <br>
+        {% endif %}
+
+    {% empty %}
+
+        Unassigned
+
+    {% endfor %}
+
+</td>
 
                         <td>
                             {{ incident.department.get_name_display }}

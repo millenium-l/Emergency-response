@@ -235,59 +235,82 @@ def responders_list(request):
         active_department_incidents = Incident.objects.filter(
             status__in=['assigned', 'in_progress']
         ).select_related(
-            'assigned_responder',
-            'assigned_responder__profile',
             'department'
+        ).prefetch_related(
+            'assignment_requests__responder__profile'
         ).order_by('-created_at')
 
         # RESOLVED HISTORY
         department_history = Incident.objects.filter(
             status='resolved'
         ).select_related(
-            'assigned_responder',
-            'assigned_responder__profile',
             'department'
+        ).prefetch_related(
+            'assignment_requests__responder__profile'
         ).order_by('-resolved_at')
 
     # DEPARTMENT ADMIN
+    # DEPARTMENT ADMIN
     else:
 
-        if hasattr(request.user, "responder"):
+        if hasattr(request.user, "profile"):
 
-            department = request.user.responder.profile.department
+            department = request.user.profile.department
 
-            responders = Responder.objects.select_related(
-                'profile',
-                'profile__user',
-                'profile__department'
-            ).filter(
-                profile__department=department
+            responders = (
+                Responder.objects
+                .select_related(
+                    'profile',
+                    'profile__user',
+                    'profile__department'
+                )
+                .filter(
+                    profile__department=department
+                )
             )
 
-            # FILTER PENDING ASSIGNMENTS
-            pending_assignments = pending_assignments.filter(
-                responder__profile__department=department
+            # PENDING ASSIGNMENTS FOR THIS DEPARTMENT
+
+            pending_assignments = (
+                pending_assignments
+                .filter(
+                    responder__profile__department=department
+                )
             )
 
             # ACTIVE INCIDENTS
-            active_department_incidents = Incident.objects.filter(
-                profile__department=department,
-                status__in=['assigned', 'in_progress']
-            ).select_related(
-                'assigned_responder',
-                'assigned_responder__profile',
-                'department'
-            ).order_by('-created_at')
 
-            # RESOLVED HISTORY
-            department_history = Incident.objects.filter(
-                profile__department=department,
-                status='resolved'
-            ).select_related(
-                'assigned_responder',
-                'assigned_responder__profile',
-                'department'
-            ).order_by('-resolved_at')
+            active_department_incidents = (
+                Incident.objects
+                .filter(
+                    department=department,
+                    status__in=['assigned', 'in_progress']
+                )
+                .select_related(
+                    'department'
+                )
+                .prefetch_related(
+                    'assignment_requests__responder__profile'
+                )
+                .order_by('-created_at')
+            )
+
+            # RESOLVED INCIDENT HISTORY
+
+            department_history = (
+                Incident.objects
+                .filter(
+                    department=department,
+                    status='resolved'
+                )
+                .select_related(
+                    'department'
+                )
+                .prefetch_related(
+                    'assignment_requests__responder__profile'
+             )
+                .order_by('-resolved_at')
+            )
 
         else:
 
@@ -375,11 +398,15 @@ def assign_responder(request, responder_id, incident_id):
         incident.status = "assigned"
         incident.save()
 
-        IncidentResponse.objects.create(
+        AssignmentRequest.objects.create(
             incident=incident,
             responder=responder,
-            status="assigned"
+            status="accepted",
+            dispatched_by=request.user
         )
+
+        incident.status = "assigned"
+        incident.save()
 
     return redirect("responders_list")
 
@@ -405,9 +432,11 @@ def incident_detail(request, incident_id):
 
     available_responders = Responder.objects.filter(
         status='available',
-        department=incident.department
+        profile__department=incident.department
+    ).select_related(
+        'profile',
+        'profile__department'
     )
-
 
     context = {
         'incident': incident,
@@ -529,7 +558,14 @@ def cancel_incident(request, incident_id):
 # Responder map view with proper authentication, data retrieval, and map integration
 @login_required
 def responders_map(request):
-    responders = Responder.objects.filter(status='available').select_related('department')
+    responders = (
+    Responder.objects
+    .filter(status='available')
+    .select_related(
+        'profile',
+        'profile__department'
+    )
+)
     departments = Department.objects.all()
 
     context = {
@@ -567,9 +603,12 @@ def api_get_responders(request):
     responders = Responder.objects.filter(
         status='available'
     ).values(
-        'id', 'user__first_name', 'user__last_name',
-        'latitude', 'longitude', 'department__name'
-    )
+    'id',
+    'profile__full_name',
+    'latitude',
+    'longitude',
+    'profile__department__name'
+)
     return JsonResponse(list(responders), safe=False)
 
 # API endpoint to update responder location with proper authentication, validation, and error handling
@@ -626,9 +665,9 @@ def responder_dashboard(request):
     )
 
     unread_notifications = Notification.objects.filter(
-        responder=responder,
-        is_read=False
-    ).count()
+    assignment_request__responder=responder,
+    is_read=False
+).count()
 
     active_department_incidents = (
         Incident.objects
@@ -641,23 +680,27 @@ def responder_dashboard(request):
     )
 
     active_incidents = (
-        Incident.objects
-        .filter(
-            assigned_responder=responder,
-            status__in=["assigned", "in_progress"]
-        )
-        .select_related("department", "assigned_responder")
-        .order_by("-created_at")
+    Incident.objects
+    .filter(
+        assignment_requests__responder=responder,
+        assignment_requests__status="accepted",
+        status__in=["assigned", "in_progress"]
     )
+    .distinct()
+    .prefetch_related(
+        'assignment_requests__responder__profile'
+    )
+)
 
     resolved_incidents = (
-        Incident.objects
-        .filter(
-            assigned_responder=responder,
-            status="resolved"
-        )
-        .order_by("-resolved_at")
+    Incident.objects
+    .filter(
+        assignment_requests__responder=responder,
+        assignment_requests__status="accepted",
+        status="resolved"
     )
+    .distinct()
+)
 
     context = {
         "responder": responder,
@@ -668,7 +711,7 @@ def responder_dashboard(request):
         "unread_notifications": unread_notifications,
     }
 
-    return render(request, "responder_dashboard.html", context)
+    return render(request, "templates/responder_dashboard.html", context)
 
 
 # View to accept assignment request with proper status checks and atomic transaction
@@ -677,9 +720,9 @@ def responder_dashboard(request):
 def accept_assignment(request, request_id):
 
     assignment = AssignmentRequest.objects.select_for_update().get(
-        id=request_id,
-        responder__user=request.user
-    )
+    id=request_id,
+    responder__profile__user=request.user
+)
 
     if assignment.status != "pending":
         return redirect("responder_dashboard")
@@ -691,7 +734,6 @@ def accept_assignment(request, request_id):
     incident = assignment.incident
     responder = assignment.responder
 
-    incident.assigned_responder = responder
     incident.status = "assigned"
     incident.save()
 
@@ -709,7 +751,7 @@ def reject_assignment(request, request_id):
     assignment = get_object_or_404(
         AssignmentRequest,
         id=request_id,
-        responder__user=request.user
+        responder__profile__user=request.user
     )
 
     assignment.status = "rejected"
@@ -742,9 +784,12 @@ def resolve_incident(request, incident_id):
 # Notification view for responders with proper authentication and data retrieval
 @login_required
 def notifications(request):
-    responder = get_object_or_404(Responder, user=request.user)
-    notifications = AssignmentRequest.objects.filter(
+    responder = get_object_or_404(Responder, profile__user=request.user)
+    notifications = Notification.objects.filter(
         assignment_request__responder=responder
+    ).select_related(
+        'assignment_request',
+        'assignment_request__incident',
     ).order_by('-created_at')
 
     return render(request, 'templates/notifications.html', {
@@ -762,9 +807,14 @@ def responder_notifications(request):
         return redirect('home')
     
     # Get all notifications for this responder
-    all_notifications = Notification.objects.filter(assignment_request__responder=responder).select_related(
-        'incident', 'assignment_request', 'assignment_request__dispatched_by'
-    )
+    all_notifications = Notification.objects.filter(
+    assignment_request__responder=responder
+).select_related(
+    'assignment_request',
+    'assignment_request__incident',
+    'assignment_request__dispatched_by',
+    'assignment_request__responder__profile',
+)
     
     # Pagination
     paginator = Paginator(all_notifications, 10)
@@ -789,7 +839,7 @@ def responder_notifications(request):
 def mark_notification_as_read(request, notification_id):
     """Mark a single notification as read"""
     try:
-        responder = Responder.objects.get(user=request.user)
+        responder = Responder.objects.get(profile__user=request.user)
     except Responder.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Responder not found'})
     
@@ -806,7 +856,7 @@ def mark_notification_as_read(request, notification_id):
 def mark_all_notifications_as_read(request):
     """Mark all unread notifications as read"""
     try:
-        responder = Responder.objects.get(user=request.user)
+        responder = Responder.objects.get(profile__user=request.user)
     except Responder.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Responder not found'})
     
@@ -824,7 +874,7 @@ def mark_all_notifications_as_read(request):
 def delete_notification(request, notification_id):
     """Delete a single notification"""
     try:
-        responder = Responder.objects.get(user=request.user)
+        responder = Responder.objects.get(profile__user=request.user)
     except Responder.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Responder not found'})
     
@@ -842,7 +892,7 @@ def delete_notification(request, notification_id):
 def api_unread_notification_count(request):
     """Get count of unread notifications for the responder"""
     try:
-        responder = Responder.objects.get(user=request.user)
+        responder = Responder.objects.get(profile__user=request.user)
         unread_count = Notification.objects.filter(assignment_request__responder=responder, is_read=False).count()
         return JsonResponse({'unread_count': unread_count, 'success': True})
     except Responder.DoesNotExist:
