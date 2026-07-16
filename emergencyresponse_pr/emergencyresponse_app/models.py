@@ -144,7 +144,6 @@ class Incident(models.Model):
     longitude = models.FloatField(null=True, blank=True)
     location_name = models.CharField(max_length=255, blank=True, choices=CHUDA_AREA_CHOICES, null=True)
     location_description = models.CharField(max_length=255, blank=True, null=True)
-    assigned_responder = models.ForeignKey(Responder, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     resolved_at = models.DateTimeField(null=True, blank=True)
@@ -210,8 +209,8 @@ ASSIGNMENT_STATUS = [
 ]
 
 class AssignmentRequest(models.Model):
-    incident = models.ForeignKey(Incident, on_delete=models.CASCADE, related_name='assignment_requests', null=True, blank=True)
-    responder = models.ForeignKey(Responder, on_delete=models.CASCADE, related_name='assignment_requests', null=True, blank=True)
+    incident = models.ForeignKey(Incident, on_delete=models.CASCADE, related_name='assignment_requests')
+    responder = models.ForeignKey(Responder, on_delete=models.CASCADE, related_name='assignment_requests')
     status = models.CharField(max_length=20, choices=ASSIGNMENT_STATUS, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     responded_at = models.DateTimeField(null=True, blank=True)
@@ -226,7 +225,7 @@ class AssignmentRequest(models.Model):
             )
         ]
 
-    indexes = [
+        indexes = [
             models.Index(fields=['status']),
             models.Index(fields=['created_at']),
         ]
@@ -245,16 +244,16 @@ class AssignmentRequest(models.Model):
 class Notification(models.Model):
     """Notifications for responders when assigned to incidents"""
     NOTIFICATION_TYPES = [
-        ('assignment', 'New Assignment'),
-        ('update', 'Assignment Update'),
-        ('alert', 'Alert'),
-    ]
+    ('assignment_request', 'Assignment Request'),
+    ('assignment_accepted', 'Assignment Accepted'),
+    ('assignment_declined', 'Assignment Declined'),
+    ('incident_update', 'Incident Update'),
+    ('alert', 'General Alert'),
+]
     
-    responder = models.ForeignKey(Responder, on_delete=models.CASCADE, related_name='notifications')
-    incident = models.ForeignKey(Incident, on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
-    assignment_request = models.ForeignKey(AssignmentRequest, on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
+    assignment_request = models.ForeignKey(AssignmentRequest, on_delete=models.CASCADE, related_name='notifications')
     
-    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, default='assignment')
+    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, default='assignment_request')
     title = models.CharField(max_length=255)
     message = models.TextField()
     
@@ -266,19 +265,18 @@ class Notification(models.Model):
     
     class Meta:
         ordering = ['-created_at']
-        indexes = [
-            models.Index(fields=['responder', '-created_at']),
-            models.Index(fields=['responder', 'is_read']),
-        ]
-    
+        
     def mark_as_read(self):
         """Mark notification as read"""
         if not self.is_read:
             self.is_read = True
             self.read_at = timezone.now()
-            self.save()
-    
+            self.save(update_fields=['is_read', 'read_at'])
+
     def __str__(self):
-        if self.responder and self.responder.profile:
-            return f"Notification for {self.responder.profile.full_name}: {self.title}"
+        responder = self.assignment_request.responder
+
+        if responder and responder.profile:
+            return f"Notification for {responder.profile.full_name}: {self.title}"
+
         return self.title

@@ -141,7 +141,7 @@ class NotificationAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'updated_at', 'read_at')
     
     fieldsets = (
-        ('Notification Info', {'fields': ('responder', 'incident', 'assignment_request', 'notification_type')}),
+        ('Notification Info', {'fields': ('assignmentrequest__responder', 'assignmentrequest__incident', 'assignment_request', 'notification_type')}),
         ('Content', {'fields': ('title', 'message')}),
         ('Read Status', {'fields': ('is_read', 'read_at')}),
         ('Timestamps', {'fields': ('created_at', 'updated_at'), 'classes': ('collapse',)}),

@@ -139,7 +139,9 @@ def all_incidents(request):
 
     if request.user.is_superuser:
         incidents = Incident.objects.select_related(
-            'user', 'department', 'assigned_responder'
+            'user', 'department'
+        ).prefetch_related(
+            'assignment_requests__responder__profile'
         ).order_by('-created_at')
 
         departments = Department.objects.all()
@@ -148,10 +150,12 @@ def all_incidents(request):
         if department_id:
             incidents = incidents.filter(department_id=department_id)
     else:
-        responder = request.user.responder
+        responder = request.user.profile.responder
 
         incidents = Incident.objects.select_related(
-            'user', 'department', 'assigned_responder'
+            'user', 'department'
+        ).prefetch_related(
+            'assignment_requests__responder__profile'
         ).filter(
             department=responder.department
         ).order_by('-created_at')
@@ -740,7 +744,7 @@ def resolve_incident(request, incident_id):
 def notifications(request):
     responder = get_object_or_404(Responder, user=request.user)
     notifications = AssignmentRequest.objects.filter(
-        responder=responder
+        assignment_request__responder=responder
     ).order_by('-created_at')
 
     return render(request, 'templates/notifications.html', {
@@ -753,12 +757,12 @@ def notifications(request):
 def responder_notifications(request):
     """Display all notifications for the logged-in responder"""
     try:
-        responder = Responder.objects.get(user=request.user)
+        responder = Responder.objects.get(profile__user=request.user)
     except Responder.DoesNotExist:
         return redirect('home')
     
     # Get all notifications for this responder
-    all_notifications = Notification.objects.filter(responder=responder).select_related(
+    all_notifications = Notification.objects.filter(assignment_request__responder=responder).select_related(
         'incident', 'assignment_request', 'assignment_request__dispatched_by'
     )
     
@@ -768,7 +772,7 @@ def responder_notifications(request):
     page_obj = paginator.get_page(page_number)
     
     # Mark old unread notifications as read (for the page)
-    unread_count = Notification.objects.filter(responder=responder, is_read=False).count()
+    unread_count = Notification.objects.filter(assignment_request__responder=responder, is_read=False).count()
     
     context = {
         'page_obj': page_obj,
@@ -790,7 +794,7 @@ def mark_notification_as_read(request, notification_id):
         return JsonResponse({'success': False, 'error': 'Responder not found'})
     
     try:
-        notification = Notification.objects.get(id=notification_id, responder=responder)
+        notification = Notification.objects.get(id=notification_id, assignment_request__responder=responder)
         notification.mark_as_read()
         return JsonResponse({'success': True, 'message': 'Notification marked as read'})
     except Notification.DoesNotExist:
@@ -806,7 +810,7 @@ def mark_all_notifications_as_read(request):
     except Responder.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Responder not found'})
     
-    unread_notifications = Notification.objects.filter(responder=responder, is_read=False)
+    unread_notifications = Notification.objects.filter(assignment_request__responder=responder, is_read=False)
     count = unread_notifications.count()
     
     for notification in unread_notifications:
@@ -825,7 +829,7 @@ def delete_notification(request, notification_id):
         return JsonResponse({'success': False, 'error': 'Responder not found'})
     
     try:
-        notification = Notification.objects.get(id=notification_id, responder=responder)
+        notification = Notification.objects.get(id=notification_id, assignment_request__responder=responder)
         notification.delete()
         return JsonResponse({'success': True, 'message': 'Notification deleted'})
     except Notification.DoesNotExist:
@@ -839,7 +843,7 @@ def api_unread_notification_count(request):
     """Get count of unread notifications for the responder"""
     try:
         responder = Responder.objects.get(user=request.user)
-        unread_count = Notification.objects.filter(responder=responder, is_read=False).count()
+        unread_count = Notification.objects.filter(assignment_request__responder=responder, is_read=False).count()
         return JsonResponse({'unread_count': unread_count, 'success': True})
     except Responder.DoesNotExist:
         return JsonResponse({'unread_count': 0, 'success': False})
