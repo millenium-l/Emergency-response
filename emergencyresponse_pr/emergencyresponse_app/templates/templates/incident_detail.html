@@ -308,11 +308,11 @@
                 <div class="response-item">
 
                     <div class="fw-bold mb-1">
-                        {{ response.responder.user.get_full_name }}
+                        {{ response.responder.profile.full_name }}
                     </div>
 
                     <div class="response-meta mb-2">
-                        {{ response.responder.department.get_name_display }}
+                        {{ response.responder.profile.department.get_name_display }}
                     </div>
 
                     <div class="mb-2">
@@ -415,8 +415,8 @@
                         {% for responder in available_responders %}
 
                         <option value="{{ responder.id }}">
-                            {{ responder.user.get_full_name }}
-                            ({{ responder.department.get_name_display }})
+                            {{ responder.profile.full_name }}
+                            ({{ responder.profile.department.get_name_display }})
                         </option>
 
                         {% endfor %}
@@ -452,7 +452,7 @@
                     <div class="detail-label">Phone</div>
 
                     <div class="detail-value">
-                        <a href="tel:{{ incident.user.phone_number }}">
+                        <a href="tel:{{ incident.user.profile.phone_number }}">
                             {{ incident.user.phone_number }}
                         </a>
                     </div>
@@ -470,7 +470,7 @@
                     <div class="detail-label">Emergency Contact Phone</div>
 
                     <div class="detail-value">
-                        <a href="tel:{{ incident.user.emergency_contact_phone }}">
+                        <a href="tel:{{ incident.user.profile.emergency_contact_phone }}">
                             {{ incident.user.emergency_contact_phone }}
                         </a>
                     </div>

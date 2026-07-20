@@ -493,24 +493,47 @@ def create_responder(request):
 @staff_member_required
 @transaction.atomic
 def assign_responder_to_incident(request, incident_id):
-    incident = get_object_or_404(Incident.objects.select_for_update(), id=incident_id)
+    incident = get_object_or_404(
+        Incident.objects.select_for_update(),
+        id=incident_id
+    )
 
     if request.method == "POST":
         responder_id = request.POST.get("responder_id")
-        responder = get_object_or_404(Responder.objects.select_for_update(), id=responder_id)
+
+        responder = get_object_or_404(
+            Responder.objects.select_for_update(),
+            id=responder_id
+        )
 
         # Only assign if available
         if responder.status != "available":
-            return redirect("incident_detail", incident_id=incident.id)
+            return redirect(
+                "incident_detail",
+                incident_id=incident.id
+            )
 
-        #  Assign
-        AssignmentRequest.objects.create(incident=incident, responder=responder)
+        # Create assignment request
+        assignment = AssignmentRequest.objects.create(
+            incident=incident,
+            responder=responder,
+            status="pending",
+            dispatched_by=request.user
+        )
 
-        #  Update responder
+        # Create notification linked to the assignment
+        Notification.objects.create(
+            assignment_request=assignment,
+            notification_type="assignment_request",
+            title="New Incident Assignment",
+            message=f"You have been assigned to incident: {incident.title}"
+        )
+
+        # Update responder status
         responder.status = "busy"
         responder.save()
 
-        #  Track response
+        # Track response
         IncidentResponse.objects.create(
             incident=incident,
             responder=responder,
@@ -518,7 +541,6 @@ def assign_responder_to_incident(request, incident_id):
         )
 
     return redirect("incident_detail", incident_id=incident.id)
-
 
 # API view to accept incident with proper status checks and response tracking
 @login_required
