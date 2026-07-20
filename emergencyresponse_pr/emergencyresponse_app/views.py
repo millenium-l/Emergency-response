@@ -384,39 +384,47 @@ def update_responder_status(request, responder_id):
     return redirect('responders_list')
 
 # API view to assign responder to incident with proper status checks and atomic transaction
+from django.contrib import messages
+
 @login_required
 @transaction.atomic
 def assign_responder(request, responder_id, incident_id):
     responder = get_object_or_404(Responder, id=responder_id)
     incident = get_object_or_404(Incident, id=incident_id)
 
-    if responder.status == "available":
-        responder.status = "busy"
-        responder.save()
-
-        incident.assigned_responder = responder
-        incident.status = "assigned"
-        incident.save()
-
-        assignment, created = AssignmentRequest.objects.get_or_create(
-            incident=incident,
-            responder=responder,
-            defaults={
-                "status": "pending",
-                "dispatched_by": request.user,
-            }
+    if responder.status != "available":
+        messages.warning(
+            request,
+            "This responder is not currently available."
         )
+        return redirect("incident_detail", incident_id=incident.id)
 
-        if not created:
-            return redirect(
-                "incident_detail",
-                incident_id=incident.id
+    assignment, created = AssignmentRequest.objects.get_or_create(
+        incident=incident,
+        responder=responder,
+        defaults={
+            "status": "pending",
+            "dispatched_by": request.user,
+        }
+    )
+
+    if not created:
+        messages.warning(
+            request,
+            "This responder has already been assigned to this incident."
         )
+        return redirect("incident_detail", incident_id=incident.id)
 
-        incident.status = "assigned"
-        incident.save()
+    incident.assigned_responder = responder
+    incident.status = "assigned"
+    incident.save()
 
-    return redirect("responders_list")
+    messages.success(
+        request,
+        f"Assignment request sent to {responder.full_name}."
+    )
+
+    return redirect("incident_detail", incident_id=incident.id)
 
 # API view to resolve incident with proper status checks and atomic transaction
 @staff_member_required
