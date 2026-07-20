@@ -29,7 +29,6 @@ urlpatterns = [
     # responders management
     path('responders/manage/', views.responders_list, name='responders_list'),
     path('responders/<int:responder_id>/status/', views.update_responder_status, name='update_responder_status'),
-    path('responders/<int:responder_id>/assign/<int:incident_id>/', views.assign_responder, name='assign_responder'),
     path('incident/<int:incident_id>/assign-responder/', views.assign_responder_to_incident, name='assign_responder_to_incident'),
     path('incident/<int:incident_id>/assign/', views.assign_responder_to_incident, name='assign_responder'),
     path('responders/create/', views.create_responder, name='create_responder'),

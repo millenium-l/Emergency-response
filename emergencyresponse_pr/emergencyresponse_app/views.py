@@ -398,11 +398,19 @@ def assign_responder(request, responder_id, incident_id):
         incident.status = "assigned"
         incident.save()
 
-        AssignmentRequest.objects.create(
+        assignment, created = AssignmentRequest.objects.get_or_create(
             incident=incident,
             responder=responder,
-            status="accepted",
-            dispatched_by=request.user
+            defaults={
+                "status": "pending",
+                "dispatched_by": request.user,
+            }
+        )
+
+        if not created:
+            return redirect(
+                "incident_detail",
+                incident_id=incident.id
         )
 
         incident.status = "assigned"
@@ -521,13 +529,6 @@ def assign_responder_to_incident(request, incident_id):
             dispatched_by=request.user
         )
 
-        # Create notification linked to the assignment
-        Notification.objects.create(
-            assignment_request=assignment,
-            notification_type="assignment_request",
-            title="New Incident Assignment",
-            message=f"You have been assigned to incident: {incident.title}"
-        )
 
         # Update responder status
         responder.status = "busy"
