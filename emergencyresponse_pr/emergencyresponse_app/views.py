@@ -131,34 +131,59 @@ def my_incidents(request):
         "incidents": incidents
     })
 
-# All Incidents view with proper authentication, role-based filtering, and search functionality
 @staff_member_required
 def all_incidents(request):
     search = request.GET.get('search', '')
     status = request.GET.get('status')
 
+    profile = request.user.profile
+
     if request.user.is_superuser:
+        # Superadmin sees everything
         incidents = Incident.objects.select_related(
             'user', 'department'
         ).prefetch_related(
             'assignment_requests__responder__profile'
         ).order_by('-created_at')
+
+        responders = Responder.objects.select_related(
+            'profile',
+            'profile__department'
+        )
 
         departments = Department.objects.all()
 
         department_id = request.GET.get('department')
         if department_id:
-            incidents = incidents.filter(department_id=department_id)
-    else:
-        responder = request.user.profile.responder
+            incidents = incidents.filter(
+                department_id=department_id
+            )
+            responders = responders.filter(
+                profile__department_id=department_id
+            )
 
-        incidents = Incident.objects.select_related(
-            'user', 'department'
-        ).prefetch_related(
-            'assignment_requests__responder__profile'
-        ).filter(
-            department=responder.department
-        ).order_by('-created_at')
+    else:
+        # Department staff/admin
+        department = profile.department
+
+        if not department:
+            incidents = Incident.objects.none()
+            responders = Responder.objects.none()
+        else:
+            incidents = Incident.objects.select_related(
+                'user', 'department'
+            ).prefetch_related(
+                'assignment_requests__responder__profile'
+            ).filter(
+                department=department
+            ).order_by('-created_at')
+
+            responders = Responder.objects.select_related(
+                'profile',
+                'profile__department'
+            ).filter(
+                profile__department=department
+            )
 
         departments = None
 
@@ -174,13 +199,12 @@ def all_incidents(request):
             Q(department__name__icontains=search)
         )
 
-    # Apply pagination - 5 items per page
     paginator = Paginator(incidents, 5)
     page_number = request.GET.get('page')
     incidents_page = paginator.get_page(page_number)
 
-    # Get top incident from the full queryset for the sidebar
     top_incident = paginator.object_list.first()
+
     if top_incident and top_incident.latitude is not None and top_incident.longitude is not None:
         top_lat = top_incident.latitude
         top_lng = top_incident.longitude
@@ -189,12 +213,17 @@ def all_incidents(request):
         top_lng = 39.6682
 
     if top_incident:
-        top_location_text = top_incident.location_name or top_incident.location_description or "Unknown location"
+        top_location_text = (
+            top_incident.location_name
+            or top_incident.location_description
+            or "Unknown location"
+        )
     else:
         top_location_text = "Mombasa Chuda"
 
     context = {
         "incidents": incidents_page,
+        "responders": responders,
         "departments": departments,
         "top_incident": top_incident,
         "top_lat": top_lat,
@@ -202,10 +231,12 @@ def all_incidents(request):
         "top_location_text": top_location_text,
         "map_zoom": 14,
     }
-    return render(request, "templates/allincidents.html", context)
 
-
-
+    return render(
+        request,
+        "templates/allincidents.html",
+        context
+    )
 # Incident management views (start, cancel, resolve) with proper status checks and atomic transactions
 # Responder list view with role-based filtering, search, and status filters
 
