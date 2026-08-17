@@ -571,10 +571,6 @@ def assign_responder_to_incident(request, incident_id):
         )
 
 
-        # Update responder status
-        responder.status = "busy"
-        responder.save()
-
         # Track response
         IncidentResponse.objects.create(
             incident=incident,
