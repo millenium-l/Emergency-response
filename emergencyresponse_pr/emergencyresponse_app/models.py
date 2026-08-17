@@ -280,3 +280,24 @@ class Notification(models.Model):
             return f"Notification for {responder.profile.full_name}: {self.title}"
 
         return self.title
+
+
+class AdminNotification(models.Model):
+    NOTIFICATION_TYPES = [
+        ('assignment_accepted', 'Assignment Accepted'),
+        ('assignment_rejected', 'Assignment Rejected'),
+        ('assignment_expired', 'Assignment Expired'),
+        ('incident_resolved', 'Incident Resolved'),
+    ]
+
+    department = models.ForeignKey(Department,on_delete=models.CASCADE,null=True,blank=True)
+    incident = models.ForeignKey(Incident,on_delete=models.CASCADE,null=True,blank=True)
+    responder = models.ForeignKey(Responder,on_delete=models.SET_NULL,null=True,blank=True)
+    notification_type = models.CharField(max_length=30,choices=NOTIFICATION_TYPES)
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']

@@ -11,7 +11,7 @@ from django.db import transaction
 import json
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .forms import *
 from django.core.paginator import Paginator
@@ -567,7 +567,9 @@ def assign_responder_to_incident(request, incident_id):
             incident=incident,
             responder=responder,
             status="pending",
-            dispatched_by=request.user
+            dispatched_by=request.user,
+            expires_at=timezone.now() + timedelta(minutes=5)
+            
         )
 
 
@@ -784,6 +786,15 @@ def accept_assignment(request, request_id):
     responder__profile__user=request.user
 )
 
+    if (
+        assignment.expires_at and
+        assignment.expires_at < timezone.now()
+    ):
+        assignment.status = "expired"
+        assignment.save()
+
+        return redirect("responder_dashboard")
+
     if assignment.status != "pending":
         return redirect("responder_dashboard")
 
@@ -799,6 +810,19 @@ def accept_assignment(request, request_id):
 
     responder.status = "busy"
     responder.save()
+
+    #admin notifications after acceptance
+    AdminNotification.objects.create(
+    department=incident.department,
+    incident=incident,
+    responder=responder,
+    notification_type="accepted",
+    title="Assignment Accepted",
+    message=(
+        f"{responder.full_name} accepted "
+        f"incident #{incident.id}"
+    )
+)
 
     return redirect("responder_dashboard")
 
@@ -817,6 +841,19 @@ def reject_assignment(request, request_id):
     assignment.status = "rejected"
     assignment.responded_at = timezone.now()
     assignment.save()
+
+    # notifications for admin for rejecting assignment
+    incident = assignment.incident
+    responder = assignment.responder
+
+    AdminNotification.objects.create(
+        department=incident.department,
+        incident=incident,
+        responder=responder,
+        notification_type="rejected",
+        title="Assignment Rejected",
+        message=f"{responder.full_name} rejected incident #{incident.id}"
+    )
 
     return redirect("responder_dashboard")
 
