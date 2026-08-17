@@ -28,25 +28,27 @@ def home(request):
     departments = Department.objects.all()
     profile = request.user.profile if request.user.is_authenticated else None
 
-    if request.user.is_authenticated:
-        if request.user.is_superuser:
-            incidents = Incident.objects.filter(
-                status__in=['pending', 'assigned', 'in_progress']
-            ).order_by('-created_at')[:10]
+    active_statuses = ['pending', 'assigned', 'in_progress']
 
-        elif hasattr(request.user, "responder"):
-            responder = request.user.responder
+    if not request.user.is_authenticated:
+        incidents = Incident.objects.none()
 
+    elif request.user.is_superuser:
+        incidents = Incident.objects.filter(
+            status__in=active_statuses
+        ).order_by('-created_at')[:10]
+
+    elif profile and profile.role == 'department_admin':
+        if profile.department:
             incidents = Incident.objects.filter(
-                department=responder.department,
-                status__in=['pending', 'assigned', 'in_progress']
+                department=profile.department,
+                status__in=active_statuses
             ).order_by('-created_at')[:10]
         else:
             incidents = Incident.objects.none()
+
     else:
-        incidents = Incident.objects.filter(
-            status__in=['pending', 'assigned', 'in_progress']
-        ).order_by('-created_at')[:10]
+        incidents = Incident.objects.none()
 
     context = {
         'incidents': incidents,
