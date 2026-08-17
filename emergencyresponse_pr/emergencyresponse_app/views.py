@@ -896,6 +896,33 @@ def notifications(request):
     })
 
 
+@login_required
+def admin_notifications(request):
+
+    profile = request.user.profile
+
+    if request.user.is_superuser:
+
+        notifications = AdminNotification.objects.all()
+
+    elif profile.role == "department_admin":
+
+        notifications = AdminNotification.objects.filter(
+            department=profile.department
+        )
+
+    else:
+
+        return redirect("custom_403")
+
+    return render(
+        request,
+        "templates/admin_notifications.html",
+        {
+            "notifications": notifications
+        }
+    )
+
 # Responder Notifications List View - Show all notifications for logged-in responder
 @login_required
 def responder_notifications(request):

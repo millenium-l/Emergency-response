@@ -44,6 +44,7 @@ urlpatterns = [
     path('notifications/<int:notification_id>/read/', views.mark_notification_as_read, name='mark_notification_read'),
     path('notifications/mark-all-as-read/', views.mark_all_notifications_as_read, name='mark_all_read'),
     path('notifications/<int:notification_id>/delete/', views.delete_notification, name='delete_notification'),
+    path("admin-notifications/",views.admin_notifications,name="admin_notifications"),
 
     # API endpoints
     path('api/incidents/', views.api_get_incidents, name='api_incidents'),
