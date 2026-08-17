@@ -780,6 +780,8 @@ def responder_dashboard(request):
 @login_required
 @transaction.atomic
 def accept_assignment(request, request_id):
+    if assignment.status == "expired":
+        return redirect("responder_dashboard")
 
     assignment = AssignmentRequest.objects.select_for_update().get(
     id=request_id,

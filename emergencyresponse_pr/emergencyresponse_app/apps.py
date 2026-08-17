@@ -7,3 +7,6 @@ class EmergencyresponseAppConfig(AppConfig):
 
     def ready(self):
         import emergencyresponse_app.signals
+
+        from .scheduler import start
+        start()
