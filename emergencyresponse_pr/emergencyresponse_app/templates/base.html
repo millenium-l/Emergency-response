@@ -59,9 +59,10 @@
 
       <a href="{% url 'responders_map' %}" class="nav-link ">Responders map</a>
 
+      {% if user.profile.role == "responder" %}
       <a href="{% url 'responder_dashboard' %}" class="nav-link btn btn-danger text-white mt-3">Responder Dashboard</a>
 
-      {% if user.profile.role == "responder" %}
+      
       <a href="{% url 'responder_notifications' %}" class="nav-link position-relative">
         Notifications
       {% endif %}
