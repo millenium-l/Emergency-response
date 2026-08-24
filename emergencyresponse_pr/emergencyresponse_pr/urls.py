@@ -20,7 +20,6 @@ from django.shortcuts import redirect
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', lambda request: redirect('login')),  # Redirect root URL to login page
 
     path('', include('emergencyresponse_app.urls')),
     path('accounts/', include('accounts.urls')),
