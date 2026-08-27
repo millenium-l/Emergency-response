@@ -4,13 +4,19 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
 
+<!-- Leaflet CSS and JS for interactive map rendering 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+-->
+
+<script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js"></script>
+<link href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" rel="stylesheet" />
 
 <style>
 
 </style>
 
+<!-- Map container with overlay for user location and status 
 <div class="map-canvas-wrapper mb-4">
     <div class="floating-location-overlay p-3">
         <div class="d-flex align-items-center justify-content-between">
@@ -31,6 +37,32 @@
     
     <div id="map"></div>
 </div>
+-->
+
+<!-- Map container for rendering the interactive map using MapLibre GL JS -->
+<div id="map" style="width: 100%; height: 500px" class="map-canvas-wrapper mb-4">
+    <div class="d-flex align-items-center gap-3">
+        <div class="bg-danger-subtle text-danger rounded-circle p-2.5 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+            <i class="fas fa-map-marker-alt fs-5"></i>
+        </div>
+        <div>
+            <span class="text-muted d-block" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Your Location</span>
+            <h6 class="fw-bold text-dark mb-0" style="font-size: 0.95rem;">{{ profile.location }}</h6>
+         </div>
+    </div>
+</div>
+<script>
+  const MOMBASA_LAT = parseFloat("{{ mombasa_lat|default:-4.0435 }}");
+  const MOMBASA_LNG = parseFloat("{{ mombasa_lng|default:39.6682 }}");
+  const MAP_ZOOM = parseInt("{{ map_zoom|default:13 }}");
+  const map = new maplibregl.Map({
+    style: 'https://tiles.openfreemap.org/styles/liberty',
+    center: [MOMBASA_LNG, MOMBASA_LAT],
+    zoom: MAP_ZOOM,
+    container: 'map',
+  })
+</script>
+
 
 <div class="container px-3">
     
@@ -191,6 +223,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- Leaflet JS for map rendering 
 <script>
     // Safe evaluation parameters from Django Views context layers
     const MOMBASA_LAT = parseFloat("{{ mombasa_lat|default:-4.0435 }}");
@@ -226,4 +259,5 @@
             }).catch(err => console.log("Incident API offline or empty structural path"));
     });
 </script>
+-->
 {% endblock %}
