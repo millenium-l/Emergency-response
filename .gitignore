@@ -4,3 +4,4 @@ emergencyresponse_pr/db.sqlite3
 __pycache__/
 *.pyc
 db.sqlite3
+.secrete-keys
