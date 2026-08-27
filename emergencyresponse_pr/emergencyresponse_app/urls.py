@@ -4,9 +4,11 @@ from . import views
 
 urlpatterns = [
     # Main pages
-    path('', views.home, name='home'),
+    path('', views.index, name='index'),
+    path('home/', views.home, name='home'),
     path('profile/', views.profile, name='profile'),
     path('profile/edit/', views.profile_edit, name='profile_edit'),
+    
     
     # Django 6+: use LogoutView instead of deprecated logout_view
     # allow GET requests so simple links work (LogoutView defaults to POST only)

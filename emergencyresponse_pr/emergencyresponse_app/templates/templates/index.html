@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Response Management System</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #dc3545;
+            --secondary-color: #0d6efd;
+            --dark-color: #212529;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .hero {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(rgba(0,0,0,.65), rgba(0,0,0,.65)),
+                        url('https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1400&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+        }
+
+        .hero h1 {
+            font-weight: 700;
+        }
+
+        .section-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card,
+        .benefit-card,
+        .step-card {
+            transition: transform .3s ease;
+            height: 100%;
+        }
+
+        .feature-card:hover,
+        .benefit-card:hover,
+        .step-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .icon-box {
+            width: 70px;
+            height: 70px;
+            background: rgba(220, 53, 69, .1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+
+        .cta-section {
+            background: var(--dark-color);
+            color: white;
+        }
+
+        footer a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="#">
+            Emergency Response System
+        </a>
+
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="#how-it-works">How It Works</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#features">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#benefits">Benefits</a>
+                </li>
+
+                <!-- Django URLs -->
+                <li class="nav-item ms-lg-3">
+                    <a href="{% url 'login' %}" class="btn btn-outline-light me-2">
+                        Login
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'register' %}" class="btn btn-danger">
+                        Register
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<header class="hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h1 class="display-4 mb-4">
+                    Fast Emergency Reporting & Response Coordination
+                </h1>
+
+                <p class="lead mb-4">
+                    Report emergencies instantly, share your location,
+                    and help emergency responders reach you faster.
+                    Our platform connects citizens with emergency services
+                    through a secure and efficient response management system.
+                </p>
+
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'register' %}" class="btn btn-danger btn-lg">
+                        Report an Emergency
+                    </a>
+
+                    <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">
+                        Sign In
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- How It Works -->
+<section id="how-it-works" class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">How It Works</h2>
+            <p class="text-muted">
+                A simple process designed to get help where it is needed.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card step-card shadow-sm border-0 text-center p-4">
+                    <div class="icon-box">1</div>
+                    <h5>Create an Account</h5>
+                    <p class="text-muted">
+                        Register securely and access emergency reporting
+                        services anytime.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card step-card shadow-sm border-0 text-center p-4">
+                    <div class="icon-box">2</div>
+                    <h5>Report an Emergency</h5>
+                    <p class="text-muted">
+                        Submit emergency details and location information
+                        quickly and accurately.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card step-card shadow-sm border-0 text-center p-4">
+                    <div class="icon-box">3</div>
+                    <h5>Receive Assistance</h5>
+                    <p class="text-muted">
+                        Emergency responders are notified and dispatched
+                        to provide assistance.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Key Features</h2>
+            <p class="text-muted">
+                Built to improve communication between citizens and responders.
+            </p>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card feature-card border-0 shadow-sm text-center p-4">
+                    <div class="icon-box">📍</div>
+                    <h5>Location Tracking</h5>
+                    <p class="text-muted">
+                        Share your location to help responders reach the scene faster.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card feature-card border-0 shadow-sm text-center p-4">
+                    <div class="icon-box">🚨</div>
+                    <h5>Emergency Reporting</h5>
+                    <p class="text-muted">
+                        Submit incidents quickly with essential details.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card feature-card border-0 shadow-sm text-center p-4">
+                    <div class="icon-box">🔔</div>
+                    <h5>Real-Time Notifications</h5>
+                    <p class="text-muted">
+                        Stay informed with status updates and response activity.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card feature-card border-0 shadow-sm text-center p-4">
+                    <div class="icon-box">🛡️</div>
+                    <h5>Secure Platform</h5>
+                    <p class="text-muted">
+                        Your information is managed securely and responsibly.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Benefits -->
+<section id="benefits" class="py-5">
+    <div class="container">
+
+        <div class="text-center mb-5">
+            <h2 class="section-title">Why Use This System?</h2>
+            <p class="text-muted">
+                Designed to improve emergency response outcomes.
+            </p>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="card benefit-card border-0 shadow-sm p-4">
+                    <h5>Faster Response Times</h5>
+                    <p class="text-muted">
+                        Automated incident routing helps emergency teams
+                        respond more efficiently.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card benefit-card border-0 shadow-sm p-4">
+                    <h5>Improved Public Safety</h5>
+                    <p class="text-muted">
+                        Better communication enables quicker coordination
+                        during critical situations.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card benefit-card border-0 shadow-sm p-4">
+                    <h5>Easy Accessibility</h5>
+                    <p class="text-muted">
+                        Accessible on desktop, tablet, and mobile devices.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Call To Action -->
+<section class="cta-section py-5">
+    <div class="container text-center">
+
+        <h2 class="fw-bold mb-3">
+            Be Prepared When Every Second Matters
+        </h2>
+
+        <p class="lead mb-4">
+            Register today and gain access to a reliable emergency reporting
+            platform designed to connect you with emergency responders quickly.
+        </p>
+
+        <a href="{% url 'register' %}" class="btn btn-danger btn-lg me-2">
+            Create Account
+        </a>
+
+        <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">
+            Login
+        </a>
+
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-dark text-light py-4">
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+                <h5>Emergency Response Management System</h5>
+                <p class="text-secondary mb-0">
+                    Connecting citizens and emergency services through
+                    efficient incident reporting and response coordination.
+                </p>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <h6>Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#how-it-works" class="text-secondary">How It Works</a></li>
+                    <li><a href="#features" class="text-secondary">Features</a></li>
+                    <li><a href="#benefits" class="text-secondary">Benefits</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-3">
+                <h6>Access</h6>
+                <ul class="list-unstyled">
+                    <li>
+                        <a href="{% url 'login' %}" class="text-secondary">
+                            Login
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'register' %}" class="text-secondary">
+                            Register
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <hr>
+
+        <div class="text-center text-secondary">
+            <small>
+                &copy; 2026 Emergency Response Management System.
+                All Rights Reserved.
+            </small>
+        </div>
+
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -22,6 +22,10 @@ from .models import (
     IncidentResponse, AssignmentRequest, Notification, PRIORITY_CHOICES, CHUDA_AREA_CHOICES
 )
 
+def index(request):
+    return render(request, 'templates/index.html')
+
+
 
 # home view with role-based incident filtering and map integration
 def home(request):
