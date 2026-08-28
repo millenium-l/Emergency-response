@@ -791,6 +791,5 @@ When contributing:
 
 # License
 
-No license has been specified yet.
 
-Consider adding an appropriate open-source license before publishing the repository publicly.
+
