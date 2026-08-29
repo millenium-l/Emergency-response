@@ -1,4 +1,6 @@
 .tenv
+.env
+.emv
 emergencyresponse_pr/db.sqlite3
 .sqlite3
 __pycache__/
