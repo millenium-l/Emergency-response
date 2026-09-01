@@ -1,7 +1,10 @@
 import os
 import sys
 
-path = '/home/KainguMike/Emergency-response'
+# used truehosts wsgi.py file as a reference to create this wsgi.py file
+
+path = '/home/jsrdbhyo/public_html/Emergency-response'
+
 if path not in sys.path:
     sys.path.insert(0, path)
 
